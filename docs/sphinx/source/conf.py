@@ -26,6 +26,8 @@ exclude_patterns = []
 breathe_projects = {"apfc": "../../doxygen/xml/"}
 breathe_default_project = "apfc"
 
+myst_enable_extensions = ["dollarmath", "amsmath"]
+
 html_title = "APFC"
 
 # -- Options for HTML output -------------------------------------------------

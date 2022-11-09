@@ -8,6 +8,8 @@
     </detaileddescription>
     <programlisting>
 <codeline><highlight class="normal">#<sp/>APFC</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[Doc](https://maromei.github.io/APFC/)</highlight></codeline>
     </programlisting>
     <location file="/home/max/projects/apfc/README.md"/>
   </compounddef>
