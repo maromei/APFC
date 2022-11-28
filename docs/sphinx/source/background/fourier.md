@@ -8,7 +8,7 @@ $$
 \begin{equation}
 \frac{\partial \eta_m}{\partial t} \approx
 - | \boldsymbol{G}_m |^2 \left[
-    A \mathcal{G}_m^2 \eta_m + B(t) \eta_m + 3 D (\Phi - |\eta_m|^2) \eta_m + \frac{\partial f^s}{\partial \eta_m^*}
+    A \mathcal{G}_m^2 \eta_m + B \eta_m + 3 D (\Phi - |\eta_m|^2) \eta_m + \frac{\partial f^s}{\partial \eta_m^*}
 \right]
 \end{equation}
 $$ (eqn:apfc_flow)
@@ -18,8 +18,8 @@ With
 $$
 \begin{aligned}
 A &= B^x \\
-B(t) &= \Delta B^0 - 2 t n_0 + 3 v n_0^2 \\
-C(t) &= - (t + 3 n_0) \\
+B &= \Delta B^0 - 2 t n_0 + 3 v n_0^2 \\
+C &= - (t + 3 n_0) \\
 D &= v \\
 \Phi &= 2 \sum\limits_m^M |\eta_m|^2 \\
 \mathcal{G}_m &= \nabla^2 + 2 \mathbb{i} \boldsymbol{G}_m \nabla
@@ -30,7 +30,7 @@ For a triangular crystal with one-mode approx.:
 
 $$
 \begin{gathered}
-f = 2 C(t) (\eta_1 \eta_2 \eta_3 + \eta_1^* \eta_2^* \eta_3^*) \\
+f = 2 C (\eta_1 \eta_2 \eta_3 + \eta_1^* \eta_2^* \eta_3^*) \\
 \boldsymbol{G}_1 = \begin{bmatrix} - \sqrt{3} / 2 \\ - 1 / 2 \end{bmatrix}, \quad
 \boldsymbol{G}_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}, \quad
 \boldsymbol{G}_3 = \begin{bmatrix} \sqrt{3} / 2 \\ - 1 / 2 \end{bmatrix}
@@ -78,70 +78,17 @@ $$ (eqn:fourier_approx_sol)
 
 ## Fourier Method applied to Base equation
 
-Expanding equation {eq}`eqn:apfc_flow` with $\Phi$ from {eq}`eqn:apfc_flow_constants`.
+- decouple amplitudes
 
-$$
-\begin{equation}
-\frac{\partial \eta_m}{\partial t} =
-- |\boldsymbol{G}_m|^2 \left[
-    A \mathcal{G}_m^2 \eta_m + B(t) \eta_m
-    + 3 D (2 \sum\limits_{i \neq m}|\eta_i|^2 + |\eta_m|^2) \eta_m
-    + \frac{\partial f^s}{\partial \eta_m^*}
-\right]
-\end{equation}
-$$
-
-Then the summands are separated into linear and nonlinear parts. <br>
-Decoupling the Amplitudes from each other allows part of $\Phi$ to be moved
-to the linear part. <br>
-The summand with $B(t)$ depends on time. However, {eq}`eqn:fourier_approx_sol` assumes $\mathcal{L}_k$
-is not dependent on time. Thats why I split $B(t)$ into one constant $\gamma$ and one time dependant part $\lambda (t)$.
-
+The only linear Term is in $(A \mathcal{G}^2 + B)\eta_m$. Under the fourier transform $B$ stays a constant and $\mathcal{G}^2$ becomes:
 $$
 \begin{align}
-B(t) &= \Delta B^0 - 2 t n_0 + 3 v n_0^2 \\
-&= \gamma + \lambda(t) \\
-\gamma &= \Delta B^0 + 3 v n_0^2 \\
-\lambda &= - 2 t n_0
+\mathcal{G}_m &= \nabla^2 + 2 \mathbb{i} \boldsymbol{G}_m \nabla \\
+\widehat{\mathcal{G}_m^2} &= \left( k_x^2 + k_y^2 + 2 G_m^{(x)} k_x + 2 G_m^{(y)} k_y \right)^2
 \end{align}
-$$ (eqn:B_t_split)
+$$ (eqn:g_sq_op_fourier)
 
-Just reordering eq. {eq}`eqn:apfc_flow` gives:
+Where $k_x$ and $k_y$ are the frequency variables.
 
-$$
-\begin{equation}
-\frac{\partial \eta_m}{\partial t} =
-- |\boldsymbol{G}_m|^2 \left[
-    \left( A \mathcal{G}_m^2 + \gamma + 6 D \sum\limits_{i \neq m}|\eta_i|^2 \right) \eta_m
-    + \left( 3 D |\eta_m|^2 + \lambda(t) \right) \eta_m
-    + \frac{\partial f^s}{\partial \eta_m^*}
-\right]
-\end{equation}
-$$
-
-This defines $\mathcal{L}_m$ and $N(\eta_m)$
-
-$$
-\begin{align}
-\mathcal{L}_m &= - |\boldsymbol{G}_m|^2 \left[
-    A \mathcal{G}_m^2 + \gamma + 6 D \sum\limits_{i \neq m}|\eta_i|^2
-\right]
-\\
-N(\eta_m) &= - |\boldsymbol{G}_m|^2 \left[
-    \left( 3 D |\eta_m|^2 + \lambda(t) \right) \eta_m + \frac{\partial f^s}{\partial \eta_m^*}
-\right]
-\end{align}
-$$ (eqn:lin_non_lin_part)
-
-The next questions is how these operators transform to the fourier space.
-
-$$
-\begin{align}
-\mathcal{G}_m^2 &= \left( \nabla^2 + 2 \mathbb{i} \boldsymbol{G}_m \nabla \right)^2 \\
-&= \nabla^4 + 2 i \boldsymbol{G}_m \nabla^3 - 4 |\boldsymbol{G}_m|^2 \nabla^2 \\
-\widehat{\mathcal{G}_m^2}(\boldsymbol{k}) &=
-k^4_x + k^4_y
-+ 2 |\boldsymbol{G}_m| \left( k^3_x + k^3_y \right)
-+ 4 |\boldsymbol{G}_m|^2 \left( k^2_x + k^2_y \right)
-\end{align}
-$$
+All other parts of equation {eq}`eqn:apfc_flow` are kept in the non linear part $N(\eta_m)$. In each timestep $N(\eta_m)$ is computed and
+then fourier transformed.
