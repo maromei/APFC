@@ -7,13 +7,11 @@ from matplotlib.animation import FuncAnimation
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import sys
 import json
-from pympler.tracker import SummaryTracker
-from pympler import muppy
 
 sys.setrecursionlimit(5000)
 sns.set_theme()
 
-sim_path = "/home/max/projects/apfc/data/sim"
+sim_path = "/home/max/projects/apfc/data/stencil/0.00"
 
 with open(f"{sim_path}/config.json", "r") as f:
     config = json.load(f)

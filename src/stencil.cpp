@@ -447,7 +447,7 @@ void theta_run(double theta, std::string simDir) {
         /*v_              =*/ 1./3.,
         /*t_              =*/ 1./2.,
         /*dB0_            =*/ 0.04,
-        /*dt_             =*/ 0.1,
+        /*dt_             =*/ 0.01,
         /*numT_           =*/ 1000,
         /*initRadius_     =*/ 10.,
         /*initEta_        =*/ 0.016,
@@ -460,9 +460,7 @@ void theta_run(double theta, std::string simDir) {
     );
 
     auto sim = FFTSim(sett);
-    sim.run(simDir, 100);
-
-
+    sim.run(simDir, 1);
 }
 
 int main() {
