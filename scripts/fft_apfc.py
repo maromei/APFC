@@ -525,7 +525,7 @@ def calc_surf_en3(axis, thetas):
 
     angles = np.arctan2(ym, xm)
     ang_small_0 = angles < 0
-    angles[ang_small_0] = np.pi - np.abs(angles[ang_small_0])
+    angles[ang_small_0] = 2. * np.pi - np.abs(angles[ang_small_0])
 
     radii = np.sqrt(xm**2 + ym**2)
 
