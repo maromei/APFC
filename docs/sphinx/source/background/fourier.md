@@ -80,7 +80,8 @@ $$ (eqn:fourier_approx_sol)
 
 - decouple amplitudes
 
-The only linear Term is in $(A \mathcal{G}^2 + B)\eta_m$. Under the fourier transform $B$ stays a constant and $\mathcal{G}^2$ becomes:
+The only linear Terms are $(A \mathcal{G}^2 + B)\eta_m$. Under the fourier transform $B$ stays a constant and $\mathcal{G}^2$ becomes:
+
 $$
 \begin{align}
 \mathcal{G}_m &= \nabla^2 + 2 \mathbb{i} \boldsymbol{G}_m \nabla \\

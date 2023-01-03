@@ -617,30 +617,41 @@ int main() {
     auto start = std::chrono::system_clock::now();
 
     arr G = {
-        {-std::sqrt(3.) / 2, -0.5},
+        {-std::sqrt(3.) / 2., -0.5},
         {0., 1.},
-        {std::sqrt(3.) / 2, -0.5}
+        {std::sqrt(3.) / 2., -0.5}
     };
 
+    double Bx = 0.98;
+    double n0 = 0.;
+    double v = 1. / 3.;
+    double t = 1. / 2.;
+    double dB0 = -0.01;//8. * t * t / (135. * v) * 1.0;
+
+    //double etaInitVal = (t - xt::math::sqrt(t * t - 15. * v * dB0)) / 15. * v;
+    double etaInitVal = 4. * t / (45. * v);
+
+    std::cout << etaInitVal << " " << dB0 << std::endl;
+
     auto sett = std::make_shared<Settings>(
-        /*Bx_             =*/ 1.,
-        /*n0_             =*/ 0.,
-        /*v_              =*/ 1./3.,
-        /*t_              =*/ 1./2.,
-        /*dB0_            =*/ 0.04,
-        /*dt_             =*/ 0.1,
+        /*Bx_             =*/ Bx,
+        /*n0_             =*/ n0,
+        /*v_              =*/ v,
+        /*t_              =*/ t,
+        /*dB0_            =*/ dB0,
+        /*dt_             =*/ 0.5,
         /*numT_           =*/ 100000,
-        /*initRadius_     =*/ 10.,
-        /*initEta_        =*/ 0.016,
+        /*initRadius_     =*/ 16.,
+        /*initEta_        =*/ etaInitVal,
         /*interfaceWidth_ =*/ 3. * 3.14,
-        /*xlim_           =*/ 50.,
-        /*numPts_         =*/ 201,
+        /*xlim_           =*/ 200,
+        /*numPts_         =*/ 501,
         /*G               =*/ G,
         /*simDir          =*/ "/home/max/projects/apfc/data/sim"
     );
 
     auto sim = FFTSim(sett);
-    sim.run("/home/max/projects/apfc/data/sim", 10);
+    sim.run("/home/max/projects/apfc/data/sim", 200);
 
     auto end = std::chrono::system_clock::now();
 

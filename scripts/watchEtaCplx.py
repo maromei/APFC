@@ -11,7 +11,7 @@ import json
 sys.setrecursionlimit(5000)
 sns.set_theme()
 
-sim_path = "/home/max/projects/apfc/data/stencil/0.00"
+sim_path = "/home/max/projects/apfc/data/stencil/1.59"
 
 with open(f"{sim_path}/config.json", "r") as f:
     config = json.load(f)
@@ -106,6 +106,52 @@ def get_surf_en(thetas, etas, config):
 
     return int_sum
 
+def get_surf_en2(thetas, etas, config):
+
+    global xm, ym
+
+    G = np.array(config["G"])
+    A = config["A"]
+
+    int_sum = np.zeros(thetas.shape)
+
+    h = np.diff(xm[0])[0]
+
+    for theta_i, theta in enumerate(thetas):
+
+        rot_xm = np.cos(theta) * xm + np.sin(theta) * ym
+        rot_ym = np.cos(theta) * ym - np.sin(theta) * xm
+
+        rel_fields = np.logical_and(
+            rot_xm <= h / 2.,
+            rot_xm >= - h / 2.
+        )
+
+        radii = np.sqrt(rot_xm**2 + rot_ym**2)
+
+        for eta_i in range(G.shape[0]):
+
+            xy = np.real(np.array([
+                radii[rel_fields],
+                etas[eta_i][rel_fields]
+            ]))
+
+            xy = xy[:,xy[0].argsort()]
+
+            deta = np.gradient(xy[1])
+            d2eta = np.gradient(deta)
+
+            curv = d2eta * (1. + deta**2)**(-1.5)
+
+            int_p1 = 8 * A * (G[eta_i, 0] * np.cos(theta) + G[eta_i, 1] * np.sin(theta))**2
+            int_p1 = np.trapz(int_p1 * deta**2, xy[0])
+
+            int_p2 = np.trapz(4 * A * curv**2 * deta**4)
+
+            int_sum[theta_i] += int_p1 + int_p2
+
+    return int_sum
+
 def get_stiffness(surf_en):
     return surf_en + np.gradient(np.gradient(surf_en))
 
@@ -162,8 +208,8 @@ def plot(frame):
     for eta_i in range(len(etas)):
         eta_sum += etas[eta_i] * np.conj(etas[eta_i])
 
-    min_ = np.min(eta_sum)
-    max_ = np.max(eta_sum)
+    min_ = np.min(np.real(np.abs(eta_sum)))
+    max_ = np.max(np.real(np.abs(eta_sum)))
 
     eta_sum = np.real(np.abs(eta_sum))
 

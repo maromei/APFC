@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 base_path = "/home/max/projects/apfc/data/stencil"
 
-dims = (201, 201)
+dims = (501, 501)
 
 show_time = 1
 ignore_last = True
@@ -107,5 +107,8 @@ plt_surf_en = np.real(np.abs(surf_en[show_time,:])).astype(float)
 fig = plt.figure()
 ax = plt.subplot(111, projection="polar")
 ax.plot(thetas, plt_surf_en)
-plt.show()
 
+surf_en.tofile("/home/max/projects/apfc/data/stencil_surf_en.txt")
+thetas.tofile("/home/max/projects/apfc/data/stencil_surf_en_thetas.txt")
+
+plt.show()

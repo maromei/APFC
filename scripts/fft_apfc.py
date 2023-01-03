@@ -16,16 +16,18 @@ sns.set_theme()
 
 ## Sim Variables ##
 
-Bx = 100 #100# 0.001 #0.98
-n0 = 1.
+Bx = 0.98
+n0 = 0.
 v = 1./3.
 t = 1./2.
 
 dB0_fac = 10
 dB0 = 8. * t**2 / (135. * v) * dB0_fac
 
+dB0 = - 0.01
+
 t0 = 0.0001
-dt = 0.01
+dt = 0.5
 tmax = 0.01
 
 figsize=(15, 10)
@@ -40,9 +42,11 @@ G = np.array([
 ])
 
 init_type = "const" # random, gauss, wave, wave-gauss, const,  // seed_collection
-limit_radius = 1. # if > 0 -> caps initialization at this radius around 0
+limit_radius = 16. # if > 0 -> caps initialization at this radius around 0
 
-eta_const_val = 1.
+eta_const_val = (t + np.sqrt(t**2 - 15 * v * dB0)) / 15 * v
+
+print(eta_const_val)
 
 add_eta = 0.
 
@@ -72,12 +76,12 @@ gauss_im_offset = np.array([ # offset for im part of imaginary part in gauss/wav
 ])
 gauss_im_scal = 0. # scalar to multiply offset in imaginary part in gauss/wave-gauss
 
-eps = 0.1 # interface width if capped init.
+eps = 3. * np.pi # interface width if capped init.
 
 ## Coordinate Variables ##
 
-lim = 5 # x & y will go [-lim, lim]
-M = 100 # The number of values between the interval in x and y
+lim = 200 # x & y will go [-lim, lim]
+M = 501 # The number of values between the interval in x and y
 
 ## Plot settings ##
 
@@ -380,13 +384,17 @@ def plot_window_w_surface(frame):
 
     run_one_step(dt)
 
+    #eta_sum = np.zeros(etas[0].shape, dtype=complex)
+    #for eta_i in range(G.shape[0]):
+    #    gdotxy = G[eta_i][0] * xm + G[eta_i][1] * ym
+    #    eta_prod = etas[eta_i] * np.exp(complex(0, 1) * gdotxy)
+    #    eta_sum += eta_prod + np.conj(etas[eta_i]) * np.exp(complex(0, -1) * gdotxy)
+    #eta_sum = np.real(eta_sum * np.conj(eta_sum))
+
     eta_sum = np.zeros(etas[0].shape, dtype=complex)
     for eta_i in range(G.shape[0]):
-        gdotxy = G[eta_i][0] * xm + G[eta_i][1] * ym
-        eta_prod = etas[eta_i] * np.exp(complex(0, 1) * gdotxy)
-        eta_sum += eta_prod + np.conj(etas[eta_i]) * np.exp(complex(0, -1) * gdotxy)
-
-    eta_sum = np.real(eta_sum * np.conj(eta_sum))
+        eta_sum += etas[eta_i] * np.conj(etas[eta_i])
+    eta_sum = np.real(eta_sum).astype(float)
 
     """eta_sum = np.zeros(etas[0].shape, dtype=float)
     for eta_i in range(G.shape[0]):
@@ -394,13 +402,11 @@ def plot_window_w_surface(frame):
 
     thetas = np.linspace(0, 2 * np.pi, 200)
 
-
-
     surf_x = calc_surf_en(0, thetas)
-    surf_y = calc_surf_en(1, thetas)
+    #surf_y = calc_surf_en(1, thetas)
 
     stiff_x = get_stiffness(surf_x, thetas)
-    stiff_y = get_stiffness(surf_y, thetas)
+    #stiff_y = get_stiffness(surf_y, thetas)
 
     for fig_arr in axs:
         for fig_ in fig_arr:
@@ -414,24 +420,24 @@ def plot_window_w_surface(frame):
     axs[0][1].set_xticks([])
     axs[0][1].set_yticklabels([])
 
-    axs[1][1].plot(thetas, surf_y / np.max(surf_y))
-    axs[1][1].set_title("Surface Energy y-Axis")
-    axs[1][1].set_xticks([])
-    axs[1][1].set_yticklabels([])
+    #axs[1][1].plot(thetas, surf_y / np.max(surf_y))
+    #axs[1][1].set_title("Surface Energy y-Axis")
+    #axs[1][1].set_xticks([])
+    #axs[1][1].set_yticklabels([])
 
     axs[0][2].plot(thetas, stiff_x / np.max(stiff_x))
     axs[0][2].set_title("Stiffness x-Axis")
     axs[0][2].set_xticks([])
     axs[0][2].set_yticklabels([])
 
-    axs[1][2].plot(thetas, stiff_y / np.max(stiff_y))
-    axs[1][2].set_title("Stiffness y-Axis")
-    axs[1][2].set_xticks([])
-    axs[1][2].set_yticklabels([])
+    #axs[1][2].plot(thetas, stiff_y / np.max(stiff_y))
+    #axs[1][2].set_title("Stiffness y-Axis")
+    #axs[1][2].set_xticks([])
+    #axs[1][2].set_yticklabels([])
 
     cont = axs[0][0].contourf(xm, ym, eta_sum, conturf_cbar_N)
     axs[0][0].grid('on')
-    axs[0][0].set_title(f"{gen_title}\ntime = {time:.4f}, i = {frame_i}, dt={dt:.4f}\n$B^x={Bx:.4f}, \Delta B^0={dB0:.4f}, n_0={n0:.4f}, v={v:.4f}, t={t:.4f}$")
+    #axs[0][0].set_title(f"{gen_title}\ntime = {time:.4f}, i = {frame_i}, dt={dt:.4f}\n$B^x={Bx:.4f}, \Delta B^0={dB0:.4f}, n_0={n0:.4f}, v={v:.4f}, t={t:.4f}$")
     fig.colorbar(cont, cax=cax)
 
     cont_log = axs[1][0].contourf(
@@ -440,13 +446,15 @@ def plot_window_w_surface(frame):
         locator=matplotlib.ticker.LogLocator()
     )
     axs[1][0].grid('on')
-    axs[1][0].set_title(f"{gen_title_log}")
+    axs[1][0].set_title(f"time = {time:.4f}, i = {frame_i}, dt={dt:.4f}\n$B^x={Bx:.4f}, \Delta B^0={dB0:.4f}, n_0={n0:.4f}, v={v:.4f}, t={t:.4f}$")
     fig.colorbar(cont_log, cax=cax_log)
 
     #plt.tight_layout()
 
     time += dt
     frame_i += 1
+
+    plt.savefig("/home/max/projects/apfc/tmp/aaaa.png")
 
 def plot():
 
@@ -567,7 +575,7 @@ def calc_surf_en3(axis, thetas):
 
     return int_sum
 
-def calc_surf_en(axis, thetas):
+def calc_surf_en_old_used(axis, thetas):
 
     global xm, ym, etas, A, G
 
@@ -644,6 +652,49 @@ def calc_surf_en(axis, thetas):
 
     return get_surface_energy(thetas, int_p1, int_p2)
 
+def calc_surf_en(axis, thetas):
+
+    global etas, xm, ym, G, A
+
+    int_sum = np.zeros(thetas.shape)
+
+    h = np.diff(xm[0])[0]
+
+    for theta_i, theta in enumerate(thetas):
+
+        rot_xm = np.cos(theta) * xm - np.sin(theta) * ym
+        rot_ym = np.sin(theta) * xm + np.cos(theta) * ym
+
+        rel_fields = np.logical_and(
+            np.abs(rot_ym) < h,
+            rot_xm > 0
+        )
+
+        radii = np.sqrt(xm**2 + ym**2)
+
+        for eta_i in range(G.shape[0]):
+
+            xy = np.real(np.array([
+                radii[rel_fields],
+                etas[eta_i][rel_fields]
+            ]))
+
+            xy = xy[:,xy[0].argsort()]
+
+            deta = np.gradient(xy[1])
+            d2eta = np.gradient(deta)
+
+            curv = d2eta * (1. + deta**2)**(-1.5)
+
+            int_p1 = 8 * A * (G[eta_i, 0] * np.cos(theta) + G[eta_i, 1] * np.sin(theta))**2
+            int_p1 = np.trapz(int_p1 * deta**2, xy[0])
+
+            int_p2 = np.trapz(4 * A * curv**2 * deta**4)
+
+            int_sum[theta_i] += int_p1 + int_p2
+
+    return int_sum
+
 def get_surface_energy(thetas, int_p1, int_p2):
 
     global G, A
@@ -704,5 +755,5 @@ cax_log = div_log.append_axes("right", "5%", "5%")
 ani = FuncAnimation(plt.gcf(), plot_window_w_surface, interval=frame_time, frames=frames)
 plt.show()
 
-fig.savefig(f"data/{init_type}Bx{Bx:.4f}dB0{dB0:.4f}n0{n0:.4f}v{v:.4f}t{t:.4f}time{time:.4f}i{frame_i}.svg")
-fig.savefig(f"data/{init_type}Bx{Bx:.4f}dB0{dB0:.4f}n0{n0:.4f}v{v:.4f}t{t:.4f}time{time:.4f}i{frame_i}.png")
+#fig.savefig(f"data/{init_type}Bx{Bx:.4f}dB0{dB0:.4f}n0{n0:.4f}v{v:.4f}t{t:.4f}time{time:.4f}i{frame_i}.svg")
+#fig.savefig(f"data/{init_type}Bx{Bx:.4f}dB0{dB0:.4f}n0{n0:.4f}v{v:.4f}t{t:.4f}time{time:.4f}i{frame_i}.png")

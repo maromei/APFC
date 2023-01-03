@@ -24,10 +24,10 @@ t = 1./2.
 dB0_fac = 0.1
 dB0 = 8. * t**2 / (135. * v) * dB0_fac
 
-dB0 = 0.04
+dB0 = 0.03
 
 t0 = 0.0001
-dt = 0.2
+dt = 0.1
 tmax = 0.01
 
 figsize=(10, 5)
@@ -42,15 +42,15 @@ G = np.array([
 ])
 
 limit_radius = 10. # if > 0 -> caps initialization at this radius around 0
-eta_const_val = (t + np.sqrt(t**2 - 15 * v * dB0)) / 15 * v
-eta_const_val = 0.01608
+eta_const_val = (t - np.sqrt(t**2 - 15 * v * dB0)) / 15 * v
+#eta_const_val = 0.163
 add_eta = 0.
 eps = 3. * 3.14
 
 ## Coordinate Variables ##
 
 lim = 50 # x & y will go [-lim, lim]
-M = 100 # The number of values between the interval in x and y
+M = 200 # The number of values between the interval in x and y
 theta_N = 500
 
 ## Plot settings ##
@@ -133,7 +133,7 @@ def run_one_step(dt):
 
     etas = n_etas
 
-def get_surf_en(thetas):
+def get_surf_en2(thetas):
 
     global etas, xm, ym, G, A
 
@@ -164,6 +164,49 @@ def get_surf_en(thetas):
             xy = np.real(np.array([
                 radii[rel_angles],
                 etas[eta_i][rel_angles]
+            ]))
+
+            xy = xy[:,xy[0].argsort()]
+
+            deta = np.gradient(xy[1])
+            d2eta = np.gradient(deta)
+
+            curv = d2eta * (1. + deta**2)**(-1.5)
+
+            int_p1 = 8 * A * (G[eta_i, 0] * np.cos(theta) + G[eta_i, 1] * np.sin(theta))**2
+            int_p1 = np.trapz(int_p1 * deta**2, xy[0])
+
+            int_p2 = np.trapz(4 * A * curv**2 * deta**4)
+
+            int_sum[theta_i] += int_p1 + int_p2
+
+    return int_sum
+
+def get_surf_en(thetas):
+
+    global etas, xm, ym, G, A
+
+    int_sum = np.zeros(thetas.shape)
+
+    h = np.diff(xm[0])[0]
+
+    for theta_i, theta in enumerate(thetas):
+
+        rot_xm = np.cos(theta) * xm - np.sin(theta) * ym
+        rot_ym = np.sin(theta) * xm + np.cos(theta) * ym
+
+        rel_fields = np.logical_and(
+            np.abs(rot_ym) < h,
+            rot_xm > 0
+        )
+
+        radii = np.sqrt(xm**2 + ym**2)
+
+        for eta_i in range(G.shape[0]):
+
+            xy = np.real(np.array([
+                radii[rel_fields],
+                etas[eta_i][rel_fields]
             ]))
 
             xy = xy[:,xy[0].argsort()]

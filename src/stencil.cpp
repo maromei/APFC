@@ -448,29 +448,31 @@ void theta_run(double theta, std::string simDir) {
         /*t_              =*/ 1./2.,
         /*dB0_            =*/ 0.04,
         /*dt_             =*/ 0.01,
-        /*numT_           =*/ 1000,
+        /*numT_           =*/ 120,
         /*initRadius_     =*/ 10.,
         /*initEta_        =*/ 0.016,
         /*interfaceWidth_ =*/ 3. * 3.14,
         /*xlim_           =*/ 50.,
-        /*numPts_         =*/ 201,
+        /*numPts_         =*/ 501,
         /*G               =*/ G,
         /* theta          =*/ theta,
         /*simDir          =*/ simDir
     );
 
     auto sim = FFTSim(sett);
-    sim.run(simDir, 1);
+    sim.run(simDir, 5);
 }
 
 int main() {
+
+    double PI = 3.14;
 
     auto start = std::chrono::system_clock::now();
 
     auto end = std::chrono::system_clock::now();
 
-    int thetaSize = 100;
-    arr thetas = xt::linspace<double>(0., 3.14, thetaSize);
+    int thetaSize = 50;
+    arr thetas = xt::linspace<double>(PI/2. + PI/3., PI/2 + 2. * PI/3., thetaSize);
 
     std::string basePath = "/home/max/projects/apfc/data/stencil";
 
