@@ -7,20 +7,28 @@ from matplotlib.animation import FuncAnimation
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import sys
 import json
-from pympler.tracker import SummaryTracker
-from pympler import muppy
 
 import scipy
+
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "Helvetica"
+})
 
 sys.setrecursionlimit(5000)
 sns.set_theme()
 
-sim_path = "/home/max/projects/apfc/data/tmp2"
+sim_path = "/home/max/projects/apfc/data/sim"
+
+one_time_plot = True
+read_last_line = True
 
 with open(f"{sim_path}/config.json", "r") as f:
     config = json.load(f)
 
 def read_eta(eta_path, dim):
+
+    global read_last_line
 
     line = ""
     last_line = ""
@@ -41,11 +49,14 @@ def read_eta(eta_path, dim):
             last_index = i
             i += 1
 
-    splt = last_line.split(",")
+    if read_last_line:
+        splt = line.split(",")
+    else:
+        splt = last_line.split(",")
     eta = np.array([float(s) for s in splt[:-1]])
     eta = eta.reshape((dim, dim))
 
-    return eta, last_index
+    return eta, i if read_last_line else last_index
 
 def get_surf_en(thetas, etas, config):
 
@@ -109,7 +120,7 @@ def get_surf_en(thetas, etas, config):
             int_sum[theta_i] += int_p1
 
         perc = (theta_i + 1) / thetas.shape[0] * 100
-        sys.stdout.write(f"{perc:.4f}%\r")
+        sys.stdout.write(f"{perc:8.4f}%\r")
         sys.stdout.flush()
 
     return int_sum
@@ -121,7 +132,7 @@ def get_stiffness(surf_en, thetas):
 x = np.linspace(-config["xlim"], config["xlim"], config["numPts"])
 xm, ym = np.meshgrid(x, x)
 
-fig = plt.figure()
+fig = plt.figure(figsize=(10,8))
 
 axs = [
     [
@@ -137,10 +148,14 @@ for fig_arr in axs:
     for fig_ in fig_arr:
         fig_.set_aspect("equal")
 
+axs[0][0].set_title("a\nb\nc\n\\vspace{-0.5em}")
+
 div = make_axes_locatable(axs[0][0])
 cax = div.append_axes("right", "5%", "5%")
 
 first = True
+
+plt.tight_layout()
 
 def plot(frame):
 
@@ -148,6 +163,7 @@ def plot(frame):
     global sim_path, config
     global xm, ym
     global first
+    global one_time_plot
 
     etas = []
     index = 0
@@ -197,23 +213,63 @@ def plot(frame):
     if first:
         first = False
         cb = fig.colorbar(cont, cax=cax)
-        cb.set_ticks([])
+        if not one_time_plot:
+            cb.set_ticks([])
 
-    axs[0][0].set_title(f"Sum of Etas\n{index}\nmax: {max_:.2e}\nmin: {min_:.2e}")
+    step_index = config['writeEvery'] * index
+
+    txt = f"""\
+        \\begin{{center}}
+        sim iteration: {step_index} \\vspace{{0.5em}}
+        $B_x = {config['Bx']:.4f}, n_0 = {config['n0']:.4f}$
+        $v = {config['v']:.4f}, t = {config['t']:.4f}$
+        $\\Delta B_0 = {config['dB0']:.4f}$
+        $\\mathrm{{d}}t = {config['dt']:.4f}$ \\vspace{{0.5em}}
+        initial Radius: {config['initRadius']:.4f}
+        initial Eta in solid: {config['initEta']:.4f}
+        interface width: {config['interfaceWidth']:.4f}
+        domain: $[-{config['xlim']}, {config['xlim']}]^2$
+        points: {config['numPts']} x {config['numPts']}
+        \\end{{center}}
+    """
+
+    txt = "".join(map(str.lstrip, txt.splitlines(1)))
+
+    axs[1][0].cla()
+    axs[1][0].axis("off")
+    axs[1][0].text(
+        0.5, 0.5,
+        txt,
+        verticalalignment="center",
+        horizontalalignment="center"
+    )
+
+    txt = f"\\vspace{{-0.5em}}\\begin{{center}}$\\sum\\limits_m |\\eta_m|^2$\nmax: {max_:.2e} min: {min_:.2e}\\end{{center}}\\vspace{{-1em}}"
+
+    if one_time_plot:
+        txt = f"\\vspace{{-0.5em}}\\begin{{center}}$\\sum\\limits_m |\\eta_m|^2$\\end{{center}}\\vspace{{-1em}}"
+
+    axs[0][0].set_title(txt)
 
     axs[0][1].cla()
     axs[0][1].plot(thetas, surf_en)
-    axs[0][1].set_title(f"Surface Energy\n{index}")
+    axs[0][1].set_title(f"Surface Energy")
     axs[0][1].set_xticks([])
     axs[0][1].set_yticklabels([])
 
     axs[1][1].cla()
     axs[1][1].plot(thetas, stiff)
-    axs[1][1].set_title(f"Stiffness\n{index}")
+    axs[1][1].set_title(f"Stiffness")
     axs[1][1].set_xticks([])
     axs[1][1].set_yticklabels([])
 
-    plt.savefig("/home/max/projects/apfc/tmp/aaaa.png")
+    plt.savefig("/home/max/projects/apfc/tmp/aaaa.png", dpi=500)
 
-ani = FuncAnimation(plt.gcf(), plot, interval=1000, frames=100)
+if one_time_plot:
+
+    plot("")
+
+else:
+    ani = FuncAnimation(plt.gcf(), plot, interval=1000, frames=100)
+
 plt.show()

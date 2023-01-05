@@ -5,4 +5,5 @@
 :caption: 'Contents:'
 
 fourier
+finite_differences
 ```

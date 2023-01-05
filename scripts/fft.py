@@ -11,8 +11,8 @@ sns.set_theme()
 ## Settings ##
 ##############
 
-base_path = "/home/max/projects/apfc/data/tmp2"
-write_every_i = 100
+base_path = "/home/max/projects/apfc/data/sim"
+write_every_i = 500
 
 ## Sim Variables ##
 
@@ -21,14 +21,14 @@ n0 = 0.
 v = 1./3.
 t = 1./2.
 
-dB0_fac = 0.95
+dB0_fac = 0.97
 dB0 = 8. * t**2 / (135. * v) * dB0_fac
 
-dB0 = 0.01
+dB0 = -0.01
 
 t0 = 0.0001
 dt = 0.5
-numT = 7000
+numT = 10000
 
 ## Initialization settings ##
 
@@ -39,7 +39,7 @@ G = np.array([
     [np.sqrt(3.) / 2., -0.5]
 ])
 
-limit_radius = 16. # if > 0 -> caps initialization at this radius around 0
+limit_radius = 50. # if > 0 -> caps initialization at this radius around 0
 
 #eta_const_val = (t + np.sqrt(t**2 - 15 * v * dB0)) / 15 * v
 eta_const_val = 4. * t / (45. * v)
@@ -210,7 +210,8 @@ def write_config():
         "D": D,
         "G": [
             [i for i in e] for e in G
-        ]
+        ],
+        "writeEvery": write_every_i
     }
 
     with open(f"{base_path}/config.json", "w+") as f:
@@ -245,7 +246,7 @@ write_config()
 #write_etas()
 #write_etas()
 
-for i in range(numT):
+for i in range(numT + 1):
 
     run_one_step(dt)
 

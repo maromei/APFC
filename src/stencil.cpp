@@ -285,8 +285,8 @@ class FFTSim {
         for (int eta_i = 0; eta_i < etas.size(); eta_i++) {
 
             arrcplx out = getGOp(etas[eta_i], eta_i);
-            out *= sett->dt;
-            out += phis[eta_i];
+            //out *= sett->dt;
+            //out += phis[eta_i];
 
             nPhis.push_back(out);
         }
@@ -447,20 +447,20 @@ void theta_run(double theta, std::string simDir) {
         /*v_              =*/ 1./3.,
         /*t_              =*/ 1./2.,
         /*dB0_            =*/ 0.04,
-        /*dt_             =*/ 0.01,
+        /*dt_             =*/ 0.001,
         /*numT_           =*/ 120,
         /*initRadius_     =*/ 10.,
         /*initEta_        =*/ 0.016,
         /*interfaceWidth_ =*/ 3. * 3.14,
         /*xlim_           =*/ 50.,
-        /*numPts_         =*/ 501,
+        /*numPts_         =*/ 1001,
         /*G               =*/ G,
         /* theta          =*/ theta,
         /*simDir          =*/ simDir
     );
 
     auto sim = FFTSim(sett);
-    sim.run(simDir, 5);
+    sim.run(simDir, 1);
 }
 
 int main() {
@@ -471,8 +471,8 @@ int main() {
 
     auto end = std::chrono::system_clock::now();
 
-    int thetaSize = 50;
-    arr thetas = xt::linspace<double>(PI/2. + PI/3., PI/2 + 2. * PI/3., thetaSize);
+    int thetaSize = 10;
+    arr thetas = xt::linspace<double>(PI/2., PI/2 + PI/3., thetaSize);
 
     std::string basePath = "/home/max/projects/apfc/data/stencil";
 

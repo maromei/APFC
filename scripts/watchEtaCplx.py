@@ -11,7 +11,7 @@ import json
 sys.setrecursionlimit(5000)
 sns.set_theme()
 
-sim_path = "/home/max/projects/apfc/data/stencil/1.59"
+sim_path = "/home/max/projects/apfc/data/stencil/1.57"
 
 with open(f"{sim_path}/config.json", "r") as f:
     config = json.load(f)

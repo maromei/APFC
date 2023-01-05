@@ -1,10 +1,15 @@
 import numpy as np
 import os
 import json
+import scipy
+import sys
 
 import matplotlib.pyplot as plt
 
 base_path = "/home/max/projects/apfc/data/stencil"
+
+def get_stiffness(surf, dt):
+    return surf + np.gradient(np.gradient(surf, dt), dt)
 
 dims = (501, 501)
 
@@ -38,6 +43,14 @@ def read_eta(eta_path, dim1, dim2):
 
     return eta
 
+def write_res(path, arr):
+
+    with open(path, "w") as f:
+        for i in range(arr.shape[0]):
+
+            fstr = arr[i].astype(str).tolist()
+            f.write(",".join(fstr))
+
 all_files_and_folders = os.listdir(base_path)
 thetas_strs = [
     f for f in all_files_and_folders
@@ -57,6 +70,7 @@ if ignore_last:
 eta_test = read_eta(f"{base_path}/{thetas_strs[0]}/out_0.txt", dims[0], dims[1])
 
 surf_en = np.zeros((len(eta_test), thetas.shape[0]), dtype=complex)
+stiff = np.zeros((len(eta_test), thetas.shape[0]), dtype=complex)
 
 for theta_i, theta in enumerate(thetas):
 
@@ -77,6 +91,9 @@ for theta_i, theta in enumerate(thetas):
     x_ = np.linspace(-config["xlim"], config["xlim"], config["numPts"])
     xm, ym = np.meshgrid(x_, x_)
 
+    xvals = xm[0]
+    dx = np.diff(xvals)[0]
+
     G = np.array(config["G"])
 
     # iterate over time in etas
@@ -88,27 +105,44 @@ for theta_i, theta in enumerate(thetas):
 
             x = etas[eta_i][time_i][half_i,:]
 
-            deta = np.gradient(x)
-            d2eta = np.gradient(deta)
+            deta = np.gradient(x, dx)
+            d2eta = np.gradient(deta, dx)
 
             curv = d2eta * (1. + deta**2)**(-1.5)
 
             int_p1 = 8 * config["A"] * (G[eta_i, 0] * np.cos(theta) + G[eta_i, 1] * np.sin(theta))**2
-            int_p1 = np.trapz(int_p1 * deta**2)
+            int_p1 += scipy.integrate.simpson(int_p1 * deta**2, xvals)
 
-            int_p2 = np.trapz(4 * config["A"] * curv**2 * deta**4)
+            int_p2 = scipy.integrate.simpson(4 * config["A"] * curv**2 * deta**4, xvals)
 
             int_sum += int_p1 + int_p2
 
         surf_en[time_i,theta_i] = int_sum
 
+    perc = (theta_i + 1) / thetas.shape[0] * 100
+    sys.stdout.write(f"Progress: {perc:.4f}%\r")
+
+dtheta = np.diff(thetas)[0]
+for time_i in range(len(etas[0])):
+    stiff[time_i] = get_stiffness(surf_en[time_i], dtheta)
+
 plt_surf_en = np.real(np.abs(surf_en[show_time,:])).astype(float)
+plt_stiff = np.real(np.abs(surf_en[show_time,:])).astype(float)
 
-fig = plt.figure()
-ax = plt.subplot(111, projection="polar")
+fig = plt.figure(figsize=(12, 6))
+
+ax = plt.subplot(121, projection="polar")
+ax.set_aspect("equal")
 ax.plot(thetas, plt_surf_en)
+ax.set_title("Surface Energy")
 
-surf_en.tofile("/home/max/projects/apfc/data/stencil_surf_en.txt")
-thetas.tofile("/home/max/projects/apfc/data/stencil_surf_en_thetas.txt")
+ax = plt.subplot(122, projection="polar")
+ax.set_aspect("equal")
+ax.plot(thetas, plt_stiff)
+ax.set_title("Stiffness")
+
+np.save("/home/max/projects/apfc/data/stencil_surf_en.npy", surf_en)
+np.save("/home/max/projects/apfc/data/stencil_stiff.npy", stiff)
+np.save("/home/max/projects/apfc/data/stencil_surf_en_thetas.npy", thetas)
 
 plt.show()
