@@ -1,5 +1,7 @@
 import numpy as np
 
+from . import read_write as rw
+
 
 def tanhmin(radius: np.array, eps: float) -> np.array:
     return 0.5 * (1.0 + np.tanh(-3.0 * radius / eps))
@@ -14,4 +16,8 @@ def single_grain(xm: np.array, ym: np.array, config: dict, eta_i: int) -> np.arr
 
 
 def load_from_file(xm, ym, config, eta_i):
-    pass
+
+    out_path = f"{config['sim_path']}/out_{eta_i}.txt"
+    eta = rw.read_eta_cplx_last_file(out_path, xm.shape[0], xm.shape[1])
+
+    return eta
