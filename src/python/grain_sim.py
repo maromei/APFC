@@ -48,8 +48,8 @@ if args.calcdb0:
 
     db0_fac = config.get("dB0_fac", 1.0)
 
-    db0 = 8.0 * t**2 / (135.0 * v) * db0_fac
-    config["dB0"] = db0
+    dB0 = 8.0 * t**2 / (135.0 * v) * db0_fac
+    config["dB0"] = dB0
 
 if args.calcsimplevariables:
 
