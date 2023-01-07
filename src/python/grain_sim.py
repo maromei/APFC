@@ -19,6 +19,8 @@ parser.add_argument("-cie", "--calciniteta", action="store_true")
 parser.add_argument("-cie2m", "--calciniteta2m", action="store_true")
 parser.add_argument("-cie2p", "--calciniteta2p", action="store_true")
 parser.add_argument("-csimp", "--calcsimplevariables", action="store_true")
+parser.add_argument("-con", "--continuesim", action="store_true")
+
 
 args = parser.parse_args()
 
@@ -74,22 +76,24 @@ with open(config_path, "w") as f:
 ## RUN SIMULTAION ##
 ####################
 
-sim = fft_sim.FFTSim(config, eta_builder.single_grain)
+if args.continuesim:
+    sim = fft_sim.FFTSim(config, eta_builder.load_from_file)
+    ignore_first_write = False
+else:
+    sim = fft_sim.FFTSim(config, eta_builder.single_grain)
+    sim.reset_out_files(sim_path)
+    ignore_first_write = False
 
 step_count: int = config["numT"]
 write_every_i: int = config["writeEvery"]
 
-eta_out_path = config_path.split("/")
-eta_out_path: str = "/".join(eta_out_path[:-1])
-
-sim.reset_out_files(eta_out_path)
 for i in range(step_count + 1):  # +1 to get first and last write
 
     sim.run_one_step()
 
-    if i % write_every_i == 0:
+    if i % write_every_i == 0 and not (i == 0 and ignore_first_write):
 
-        sim.write(eta_out_path)
+        sim.write(sim_path)
 
         perc = i / step_count * 100
         sys.stdout.write(f"Progress: {perc:.4f}%\r")
