@@ -26,8 +26,8 @@ args = parser.parse_args()
 ## GET CONFIG ##
 ################
 
-config_path = utils.make_path_arg_absolute(args.sim_path)
-config_path = f"{config_path}/config.json"
+sim_path = utils.make_path_arg_absolute(args.sim_path)
+config_path = f"{sim_path}/config.json"
 
 with open(config_path, "r") as f:
     config = json.load(f)
@@ -65,7 +65,7 @@ if args.calciniteta2m:
 if args.calciniteta2p:
     config["initEta"] = (t + np.sqrt(t**2 - 15.0 * v * dB0)) / 15.0 * v
 
-config["sim_path"] = args.sim_path
+config["sim_path"] = sim_path
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=4)
