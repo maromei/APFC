@@ -65,6 +65,8 @@ if args.calciniteta2m:
 if args.calciniteta2p:
     config["initEta"] = (t + np.sqrt(t**2 - 15.0 * v * dB0)) / 15.0 * v
 
+config["sim_path"] = args.sim_path
+
 with open(config_path, "w") as f:
     json.dump(config, f, indent=4)
 
