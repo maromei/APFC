@@ -76,7 +76,7 @@ class FFTSim:
         )
 
         for eta_i in range(self.eta_count):
-            self.etas[eta_i:, :] += eta_builder(self.xm, self.ym, config, eta_i)
+            self.etas[eta_i,:, :] += eta_builder(self.xm, self.ym, config, eta_i)
 
     def build_gsq_hat(self):
         """
