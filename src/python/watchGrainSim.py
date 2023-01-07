@@ -34,6 +34,7 @@ parser.add_argument("sim_path")
 parser.add_argument("-th", "--thetacount", action="store")
 parser.add_argument("-otp", "--onetimeplot", action="store_true")
 parser.add_argument("-ft", "--frametime", action="store")
+parser.add_argument("-isc", "--ignoresurcalc", action="store_true")
 
 args = parser.parse_args()
 
@@ -87,6 +88,7 @@ def plot(frame):
     global xm, ym, thetas, thetas_calc
     global config
     global first
+    global args
 
     ###############
     ## READ ETAS ##
@@ -119,14 +121,18 @@ def plot(frame):
 
     step_index = config["writeEvery"] * index
 
-    surf_en = calc.calc_surf_en_2d(xm, ym, etas, thetas_calc, config)
-    stiff = calc.calc_stiffness(surf_en, thetas_calc)
+    if args.ignoresurcalc:
+        surf_en = np.zeros(thetas.shape)
+        stiff = np.zeros(thetas.shape)
+    else:
+        surf_en = calc.calc_surf_en_2d(xm, ym, etas, thetas_calc, config)
+        stiff = calc.calc_stiffness(surf_en, thetas_calc)
 
-    stiff = scipy.signal.savgol_filter(stiff, theta_count // 10, 3)
+        stiff = scipy.signal.savgol_filter(stiff, theta_count // 10, 3)
 
-    surf_en = surf_en[theta_count // 2 : theta_count + theta_count // 2]
-    stiff = stiff[theta_count // 2 : theta_count + theta_count // 2]
-    thetas = thetas_calc[theta_count // 2 : theta_count + theta_count // 2]
+        surf_en = surf_en[theta_count // 2 : theta_count + theta_count // 2]
+        stiff = stiff[theta_count // 2 : theta_count + theta_count // 2]
+        thetas = thetas_calc[theta_count // 2 : theta_count + theta_count // 2]
 
     ###########
     ## PLOTS ##
