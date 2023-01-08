@@ -21,3 +21,9 @@ def load_from_file(xm, ym, config, eta_i):
     eta, _ = rw.read_eta_cplx_last_file(out_path, xm.shape[0], xm.shape[1])
 
     return eta
+
+
+def center_line(xm, ym, config, eta_i):
+
+    eta = tanhmin(np.abs(xm) - config["initRadius"], config["interfaceWidth"])
+    return eta.astype(complex)
