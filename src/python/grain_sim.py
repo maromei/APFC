@@ -91,13 +91,17 @@ for i in range(step_count + 1):  # +1 to get first and last write
 
     sim.run_one_step()
 
-    if i % write_every_i == 0 and not (i == 0 and ignore_first_write):
+    should_write = i % write_every_i == 0
+    should_write = should_write and not (i == 0 and ignore_first_write)
 
-        sim.write(sim_path)
+    if not should_write:
+        continue
 
-        perc = i / step_count * 100
-        sys.stdout.write(f"Progress: {perc:.4f}%\r")
-        sys.stdout.flush()
+    sim.write(sim_path)
+
+    perc = i / step_count * 100
+    sys.stdout.write(f"Progress: {perc:.4f}%\r")
+    sys.stdout.flush()
 
 sys.stdout.write("\n")
 sys.stdout.flush()

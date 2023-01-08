@@ -129,20 +129,24 @@ for theta_i, theta in enumerate(thetas):
 
         sim.run_one_step()
 
-        if i % write_every_i == 0 and not (i == 0 and ignore_first_write):
+        should_write = i % write_every_i == 0
+        should_write = should_write and not (i == 0 and ignore_first_write)
 
-            sim.write(theta_path)
+        if not should_write:
+            continue
 
-            curr_comp = theta_i * (step_count + 1) + i + 1
-            perc = curr_comp / total_steps * 100
+        sim.write(theta_path)
 
-            progress_str = (
-                f"Working on Theta {theta:.4f} [{theta_i+1}/{thetas.shape[0]}]"
-                f"Overall Progress: {perc:.4f}%\r"
-            )
+        curr_comp = theta_i * (step_count + 1) + i + 1
+        perc = curr_comp / total_steps * 100
 
-            sys.stdout.write(progress_str)
-            sys.stdout.flush()
+        progress_str = (
+            f"Working on Theta {theta:.4f} [{theta_i+1}/{thetas.shape[0]}]"
+            f"Overall Progress: {perc:.4f}%\r"
+        )
+
+        sys.stdout.write(progress_str)
+        sys.stdout.flush()
 
 sys.stdout.write("\n")
 sys.stdout.flush()
