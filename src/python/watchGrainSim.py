@@ -99,7 +99,7 @@ def plot(frame):
     index = 0
     try:
         for eta_path in eta_paths:
-            eta_, index = rw.read_eta_cplx_last_file(
+            eta_, index = rw.read_eta_last_file(
                 eta_path, config["numPts"], config["numPts"]
             )
             etas.append(eta_)
