@@ -26,4 +26,4 @@ def load_from_file(xm, ym, config, eta_i):
 def center_line(xm, ym, config, eta_i):
 
     eta = tanhmin(np.abs(xm) - config["initRadius"], config["interfaceWidth"])
-    return eta.astype(complex)
+    return eta.astype(complex) * config["initEta"]
