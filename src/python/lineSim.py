@@ -117,6 +117,7 @@ for theta_i, theta in enumerate(thetas):
     config["G"] = G.tolist()
 
     if args.continuesim:
+        config["sim_path"] = theta_path
         sim = rfft_sim.FFTSim(config, eta_builder.load_from_file)
         ignore_first_write = True
     else:
