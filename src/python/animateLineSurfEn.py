@@ -5,6 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scipy
 import seaborn as sns
 from matplotlib.animation import FuncAnimation
 from sim import calculations as calc
@@ -25,12 +26,18 @@ parser = argparse.ArgumentParser(
 parser.add_argument("sim_path")
 parser.add_argument("-ft", "--frametime", action="store")
 parser.add_argument("-f", "--fill", action="store_true")
+parser.add_argument("-s", "--smooth", action="store_true")
+parser.add_argument("-sf", "--smoothingfactor", action="store")
 
 args = parser.parse_args()
 
 frame_time = args.frametime
 if frame_time is None:
     frame_time = 1000
+
+smoothing_fac = int(args.smoothingfactor)
+if smoothing_fac is None:
+    smoothing_fac = 2
 
 ################
 ## GET CONFIG ##
@@ -98,6 +105,7 @@ index = 0
 
 def plot(frame):
 
+    global smoothing_fac
     global args
     global thetas, config
     global ax_surf, ax_stiff
@@ -112,12 +120,27 @@ def plot(frame):
     surf = df.loc[index, :].to_numpy().copy()
     stiff = df_stiff.loc[index, :].to_numpy().copy()
 
+    if args.smooth:
+
+        o_stiff_len = stiff.shape[0]
+
+        stiff = np.hstack([stiff, stiff, stiff])
+
+        stiff = scipy.signal.savgol_filter(
+            stiff, np.max([o_stiff_len // smoothing_fac, 4]), 3
+        )
+
+        stiff = stiff[o_stiff_len : 2 * o_stiff_len]
+
     if args.fill:
         surf = fill(surf, config["theta_div"])
         stiff = fill(stiff, config["theta_div"])
 
-    ax_surf.scatter(thetas, surf)
-    ax_stiff.scatter(thetas, stiff)
+    ax_surf.plot(thetas, surf)
+    ax_stiff.plot(thetas, stiff)
+
+    ax_surf.set_ylim([np.min([0, np.min(surf)]), np.max(surf) + 0.5])
+    ax_stiff.set_ylim([np.min([0, np.min(stiff)]), np.max(stiff) + 0.5])
 
     ax_surf.set_xticks([])
     ax_surf.set_yticks([])
