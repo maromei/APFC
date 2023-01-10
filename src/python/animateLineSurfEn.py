@@ -7,9 +7,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib.animation import FuncAnimation
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 from sim import calculations as calc
-from sim import read_write as rw
 from sim import utils
 
 matplotlib.use("TkAgg")
