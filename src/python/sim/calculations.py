@@ -38,14 +38,14 @@ def calc_surf_en_2d(xm, ym, etas, thetas, config):
 
             dx = np.abs(np.abs(rad_lin[1] - np.abs(rad_lin[0])))
 
-            int_sum[theta_i] += calc_surf_en_1d(
+            int_sum[theta_i] += calc_single_surf_en_1d(
                 rad_lin, xy_interpol, dx, theta, G[eta_i], A
             )
 
     return int_sum
 
 
-def calc_surf_en_1d(x, y, dx, theta, G, A):
+def calc_single_surf_en_1d(x, y, dx, theta, G, A):
 
     deta = np.gradient(y, dx)
     d2eta = np.gradient(deta, dx)
@@ -55,6 +55,15 @@ def calc_surf_en_1d(x, y, dx, theta, G, A):
     integ = 8 * A * (G[0] * np.cos(theta) + G[1] * np.sin(theta)) ** 2
     integ += scipy.integrate.simpson(integ * deta**2, x)
     integ += scipy.integrate.simpson(4 * A * curv**2 * deta**4, x)
+
+    return integ
+
+
+def calc_surf_en_1d(xs, ys, dx, theta, G, A):
+
+    integ = 0.0
+    for eta_i in range(xs.shape[0]):
+        integ += calc_single_surf_en_1d(xs[eta_i], ys[eta_i], dx, theta, G[eta_i], A)
 
     return integ
 
