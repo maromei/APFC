@@ -4,7 +4,7 @@ import os
 import sys
 
 import numpy as np
-from sim import eta_builder, fft_sim, utils
+from sim import eta_builder, rfft_sim, utils
 
 #####################
 ## SETUP ARGUMENTS ##
@@ -77,13 +77,6 @@ with open(config_path, "w") as f:
 ## SIMULTAION VARS ##
 #####################
 
-if args.continuesim:
-    sim = fft_sim.FFTSim(config, eta_builder.load_from_file)
-    ignore_first_write = True
-else:
-    sim = fft_sim.FFTSim(config, eta_builder.single_grain)
-    ignore_first_write = False
-
 step_count: int = config["numT"]
 write_every_i: int = config["writeEvery"]
 
@@ -109,19 +102,27 @@ for theta_i, theta in enumerate(thetas):
     if not os.path.exists(theta_path):
         os.makedirs(theta_path)
 
-    ### reset files if not continue ###
-
-    if not args.continuesim:
-        sim.reset_out_files(theta_path)
-
     ### rotate G in config ###
 
-    rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+    # fmt: off
+    rot = np.array([
+        [np.cos(theta), -np.sin(theta)],
+        [np.sin(theta), np.cos(theta)]
+    ])
+    # fmt: on
 
     G = np.array(config["G"])
     for eta_i in range(G.shape[0]):
         G[eta_i] = rot.dot(G[eta_i])
     config["G"] = G.tolist()
+
+    if args.continuesim:
+        sim = rfft_sim.FFTSim(config, eta_builder.load_from_file)
+        ignore_first_write = True
+    else:
+        sim = rfft_sim.FFTSim(config, eta_builder.center_line)
+        sim.reset_out_files(theta_path)
+        ignore_first_write = False
 
     ### run sim ###
 
@@ -142,7 +143,7 @@ for theta_i, theta in enumerate(thetas):
 
         progress_str = (
             f"Working on Theta {theta:.4f} [{theta_i+1}/{thetas.shape[0]}]"
-            f"Overall Progress: {perc:.4f}%\r"
+            f" Overall Progress: {perc:.4f}%\r"
         )
 
         sys.stdout.write(progress_str)
