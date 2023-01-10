@@ -3,7 +3,7 @@ import json
 import sys
 
 import numpy as np
-from sim import eta_builder, fft_sim, utils
+from sim import eta_builder, rfft_sim, utils
 
 #####################
 ## SETUP ARGUMENTS ##
@@ -77,10 +77,10 @@ with open(config_path, "w") as f:
 ####################
 
 if args.continuesim:
-    sim = fft_sim.FFTSim(config, eta_builder.load_from_file)
+    sim = rfft_sim.FFTSim(config, eta_builder.load_from_file)
     ignore_first_write = True
 else:
-    sim = fft_sim.FFTSim(config, eta_builder.single_grain)
+    sim = rfft_sim.FFTSim(config, eta_builder.single_grain)
     sim.reset_out_files(sim_path)
     ignore_first_write = False
 
