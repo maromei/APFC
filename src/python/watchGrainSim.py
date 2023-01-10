@@ -100,7 +100,7 @@ def plot(frame):
     try:
         for eta_path in eta_paths:
             eta_, index = rw.read_eta_last_file(
-                eta_path, config["numPts"], config["numPts"]
+                eta_path, config["numPts"], config["numPts"], dtype=float
             )
             etas.append(eta_)
     except Exception as e:
