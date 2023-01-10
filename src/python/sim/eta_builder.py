@@ -18,7 +18,7 @@ def single_grain(xm: np.array, ym: np.array, config: dict, eta_i: int) -> np.arr
 def load_from_file(xm, ym, config, eta_i):
 
     out_path = f"{config['sim_path']}/out_{eta_i}.txt"
-    eta, _ = rw.read_eta_last_file(out_path, xm.shape[0], xm.shape[1])
+    eta, _ = rw.read_eta_last_file(out_path, xm.shape[0], xm.shape[1], dtype=float)
 
     return eta
 
