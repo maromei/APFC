@@ -23,13 +23,8 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument("sim_path")
-parser.add_argument("-pi", "--plotindex", action="store")
 
 args = parser.parse_args()
-
-plot_i = args.plotindex
-if plot_i is None:
-    plot_i = -1
 
 ################
 ## GET CONFIG ##
