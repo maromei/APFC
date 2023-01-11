@@ -35,9 +35,10 @@ frame_time = args.frametime
 if frame_time is None:
     frame_time = 1000
 
-smoothing_fac = int(args.smoothingfactor)
+smoothing_fac = args.smoothingfactor
 if smoothing_fac is None:
     smoothing_fac = 2
+smoothing_fac = int(smoothing_fac)
 
 ################
 ## GET CONFIG ##
