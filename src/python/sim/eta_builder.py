@@ -27,3 +27,9 @@ def center_line(xm, ym, config, eta_i):
 
     eta = tanhmin(np.abs(xm) - config["initRadius"], config["interfaceWidth"])
     return eta * config["initEta"]
+
+
+def left_line(xm, ym, config, eta_i):
+
+    eta = tanhmin(xm + config["initRadius"], config["interfaceWidth"])
+    return eta * config["initEta"]
