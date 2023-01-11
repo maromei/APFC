@@ -24,6 +24,8 @@ parser.add_argument("-cie2p", "--calciniteta2p", action="store_true")
 parser.add_argument("-csimp", "--calcsimplevariables", action="store_true")
 parser.add_argument("-con", "--continuesim", action="store_true")
 parser.add_argument("-tc", "--threadcount", action="store")
+parser.add_argument("-ull", "--useleftline", action="store_true")
+parser.add_argument("-ug", "--usegrain", action="store_true")
 
 args = parser.parse_args()
 
@@ -97,7 +99,7 @@ if not os.path.exists(eta_path):
 #########################
 
 
-def theta_thread(thetas, config, eta_path, continue_sim, index):
+def theta_thread(thetas, config, eta_path, continue_sim, index, args):
 
     step_count: int = config["numT"]
     write_every_i: int = config["writeEvery"]
@@ -131,7 +133,12 @@ def theta_thread(thetas, config, eta_path, continue_sim, index):
             sim = rfft_sim.FFTSim(config, eta_builder.load_from_file)
             ignore_first_write = True
         else:
-            sim = rfft_sim.FFTSim(config, eta_builder.center_line)
+            if args.useleftline:
+                sim = rfft_sim.FFTSim(config, eta_builder.left_line)
+            elif args.usegrain:
+                sim = rfft_sim.FFTSim(config, eta_builder.single_grain)
+            else:
+                sim = rfft_sim.FFTSim(config, eta_builder.center_line)
             sim.reset_out_files(theta_path)
             ignore_first_write = False
 
@@ -177,7 +184,14 @@ for i in range(thread_count):
     thread_lst.append(
         mp.Process(
             target=theta_thread,
-            args=(np.array(theta_lst[i]), config.copy(), eta_path, args.continuesim, i),
+            args=(
+                np.array(theta_lst[i]),
+                config.copy(),
+                eta_path,
+                args.continuesim,
+                i,
+                args,
+            ),
         )
     )
 
