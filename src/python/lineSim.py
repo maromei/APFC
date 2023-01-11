@@ -1,7 +1,9 @@
 import argparse
 import json
+import multiprocessing as mp
 import os
 import sys
+import time
 
 import numpy as np
 from sim import eta_builder, rfft_sim, utils
@@ -21,9 +23,14 @@ parser.add_argument("-cie2m", "--calciniteta2m", action="store_true")
 parser.add_argument("-cie2p", "--calciniteta2p", action="store_true")
 parser.add_argument("-csimp", "--calcsimplevariables", action="store_true")
 parser.add_argument("-con", "--continuesim", action="store_true")
-
+parser.add_argument("-tc", "--threadcount", action="store")
 
 args = parser.parse_args()
+
+thread_count = args.threadcount
+if thread_count is None:
+    thread_count = 1
+thread_count = int(thread_count)
 
 ################
 ## GET CONFIG ##
@@ -77,9 +84,6 @@ with open(config_path, "w") as f:
 ## SIMULTAION VARS ##
 #####################
 
-step_count: int = config["numT"]
-write_every_i: int = config["writeEvery"]
-
 thetas = np.linspace(
     0, 2.0 * np.pi / config["theta_div"], config["theta_count"], endpoint=True
 )
@@ -88,67 +92,129 @@ eta_path = f"{sim_path}/eta_files"
 if not os.path.exists(eta_path):
     os.makedirs(eta_path)
 
-####################
-## RUN SIMULTAION ##
-####################
+#########################
+## SIMULATION FUNCTION ##
+#########################
 
-total_steps = thetas.shape[0] * (step_count + 1)
+
+def theta_thread(thetas, config, eta_path, continue_sim, index):
+
+    step_count: int = config["numT"]
+    write_every_i: int = config["writeEvery"]
+
+    total_steps = thetas.shape[0] * step_count
+
+    for theta_i, theta in enumerate(thetas):
+
+        ### create direcotry if not exist ###
+
+        theta_path = f"{eta_path}/{theta:.4f}"
+        if not os.path.exists(theta_path):
+            os.makedirs(theta_path)
+
+        ### rotate G in config ###
+
+        # fmt: off
+        rot = np.array([
+            [np.cos(theta), -np.sin(theta)],
+            [np.sin(theta), np.cos(theta)]
+        ])
+        # fmt: on
+
+        G = np.array(config["G"])
+        for eta_i in range(G.shape[0]):
+            G[eta_i] = rot.dot(G[eta_i])
+        config["G"] = G.tolist()
+
+        if continue_sim:
+            config["sim_path"] = theta_path
+            sim = rfft_sim.FFTSim(config, eta_builder.load_from_file)
+            ignore_first_write = True
+        else:
+            sim = rfft_sim.FFTSim(config, eta_builder.center_line)
+            sim.reset_out_files(theta_path)
+            ignore_first_write = False
+
+        ### run sim ###
+
+        for i in range(step_count + 1):  # +1 to get first and last write
+
+            sim.run_one_step()
+
+            should_write = i % write_every_i == 0
+            should_write = should_write and not (i == 0 and ignore_first_write)
+
+            if not should_write:
+                continue
+
+            sim.write(theta_path)
+
+            curr_i = theta_i * (step_count + 1) + i + 1
+            perc = curr_i / total_steps * 100
+            progr_lst[index] = perc
+
+
+#####################
+## MULTI THREADING ##
+#####################
+
+# progress list
+progr_lst = [0.0 for _ in range(thread_count)]
+mp_manager = mp.Manager()
+progr_lst = mp_manager.list(progr_lst)
+
+# generate theta lists
+
+theta_lst = [[] for _ in range(thread_count)]
 
 for theta_i, theta in enumerate(thetas):
+    theta_lst[theta_i % thread_count].append(theta)
 
-    ### create direcotry if not exist ###
+# generate thread_list
 
-    theta_path = f"{eta_path}/{theta:.4f}"
-    if not os.path.exists(theta_path):
-        os.makedirs(theta_path)
-
-    ### rotate G in config ###
-
-    # fmt: off
-    rot = np.array([
-        [np.cos(theta), -np.sin(theta)],
-        [np.sin(theta), np.cos(theta)]
-    ])
-    # fmt: on
-
-    G = np.array(config["G"])
-    for eta_i in range(G.shape[0]):
-        G[eta_i] = rot.dot(G[eta_i])
-    config["G"] = G.tolist()
-
-    if args.continuesim:
-        config["sim_path"] = theta_path
-        sim = rfft_sim.FFTSim(config, eta_builder.load_from_file)
-        ignore_first_write = True
-    else:
-        sim = rfft_sim.FFTSim(config, eta_builder.center_line)
-        sim.reset_out_files(theta_path)
-        ignore_first_write = False
-
-    ### run sim ###
-
-    for i in range(step_count + 1):  # +1 to get first and last write
-
-        sim.run_one_step()
-
-        should_write = i % write_every_i == 0
-        should_write = should_write and not (i == 0 and ignore_first_write)
-
-        if not should_write:
-            continue
-
-        sim.write(theta_path)
-
-        curr_comp = theta_i * (step_count + 1) + i + 1
-        perc = curr_comp / total_steps * 100
-
-        progress_str = (
-            f"Working on Theta {theta:.4f} [{theta_i+1}/{thetas.shape[0]}]"
-            f" Overall Progress: {perc:.4f}%\r"
+thread_lst = []
+for i in range(thread_count):
+    thread_lst.append(
+        mp.Process(
+            target=theta_thread,
+            args=(np.array(theta_lst[i]), config.copy(), eta_path, args.continuesim, i),
         )
+    )
 
-        sys.stdout.write(progress_str)
-        sys.stdout.flush()
+start_time = time.time()
 
-sys.stdout.write("\n")
+for i in range(thread_count):
+    thread_lst[i].start()
+
+
+def are_mp_running(thread_lst):
+    for i in range(len(thread_lst)):
+        if thread_lst[i].is_alive():
+            return True
+
+    return False
+
+
+while are_mp_running(thread_lst):
+
+    prog_strs = [f"{n:5.1f}%" for n in progr_lst]
+    prog_strs = " ".join(prog_strs)
+    sys.stdout.write(f"{prog_strs}\r")
+    sys.stdout.flush()
+
+    time.sleep(5)
+
+sys.stdout.write(f"\n")
 sys.stdout.flush()
+
+for i in range(thread_count):
+    thread_lst[i].join()
+
+time_diff = int(time.time() - start_time)
+hours = time_diff // (60.0 * 60)
+time_diff -= hours * 60 * 60
+minutes = time_diff // 60
+time_diff -= minutes * 60
+seconds = time_diff
+
+print(f"Time: {int(hours)}:{int(minutes)}:{int(seconds)}")
