@@ -36,6 +36,11 @@ def read_eta_at_line(
     file_path: str, index: int, dim_x: int, dim_y: int, dtype=complex
 ) -> np.ndarray:
 
+    if index < 0:
+
+        line_count = count_lines(file_path)
+        index = line_count - np.abs(index)
+
     with open(file_path, "r") as f:
 
         for line_i, line in enumerate(f):
@@ -74,6 +79,15 @@ def read_all_etas_at_line(
         etas[eta_i, :, :] += eta
 
     return etas
+
+
+def count_lines(path):
+
+    with open(path, "r") as f:
+        for line_i, _ in enumerate(f):
+            pass
+
+    return line_i + 1
 
 
 class EtaIterator:
