@@ -24,6 +24,8 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument("sim_path")
 parser.add_argument("-avg", "--average", action="store_true")
+parser.add_argument("-i2d", "--integral2d", action="store_true")
+parser.add_argument("-un", "--usenegatives", action="store_true")
 
 args = parser.parse_args()
 
@@ -54,32 +56,13 @@ df_dic = {th_str: [] for th_str in thetas_str}
 G = np.array(config["G"])
 
 x = np.linspace(-config["xlim"], config["xlim"], config["numPts"])
-x_pos = x >= 0.0
-
-dx = np.diff(x)[0]
-
-y_middle = config["numPts"] // 2
-
-xs = np.vstack([x[x_pos] for _ in range(G.shape[0])])
+xm, ym = np.meshgrid(x, x)
 
 #################
 ## CALCULATION ##
 #################
 
 for theta_i, theta in enumerate(thetas):
-
-    ### rotate G ###
-
-    # fmt: off
-    rot = np.array([
-        [np.cos(theta), -np.sin(theta)],
-        [np.sin(theta), np.cos(theta)]
-    ])
-    # fmt: on
-
-    G = np.array(config["G"])
-    for eta_i in range(G.shape[0]):
-        G[eta_i] = rot.dot(G[eta_i])
 
     ### iteration ###
 
@@ -95,20 +78,18 @@ for theta_i, theta in enumerate(thetas):
 
     for eta_iter_i, etas in enumerate(eta_iter):
 
-        # fmt: off
-        if args.average:
-            ys = np.vstack([
-                np.average(etas[eta_i][:, x_pos], axis=0)
-                for eta_i in range(G.shape[0])
-            ])
-        else:
-            ys = np.vstack([
-                etas[eta_i, y_middle, x_pos]
-                for eta_i in range(G.shape[0])
-            ])
-        # fmt: on
+        surf_en = calc.calc_line_surf_en(
+            xm,
+            ym,
+            config,
+            etas,
+            theta,
+            rot_g=True,
+            average=args.average,
+            integ2d=args.integral2d,
+            use_pos=not args.usenegatives,
+        )
 
-        surf_en = calc.calc_surf_en_1d(xs, ys, dx, theta, G, config["A"])
         df_dic[thetas_str[theta_i]].append(surf_en)
 
         ### Progress bar ###
@@ -130,4 +111,14 @@ sys.stdout.flush()
 # create df with proper index
 
 df = pd.DataFrame(df_dic)
-df.to_csv(f"{sim_path}/surf_en.csv")
+
+suffix = ""
+if args.average:
+    suffix = "_avg"
+elif args.integral2d:
+    suffix = "_int2d"
+
+if args.usenegatives:
+    suffix += "_n"
+
+df.to_csv(f"{sim_path}/surf_en{suffix}.csv")
