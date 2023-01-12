@@ -118,10 +118,10 @@ def calc_line_surf_en(
 
     elif integ2d:
 
-        integ = np.zeros(xm.shape[1])
+        integ = np.zeros(xm.shape[0])
         y_col = ym[:, 0]
 
-        for i in integ.shape[0]:
+        for i in range(integ.shape[0]):
 
             ys = np.vstack([etas[eta_i][i, :] for eta_i in range(G.shape[0])])
 
