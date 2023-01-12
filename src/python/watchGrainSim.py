@@ -188,15 +188,17 @@ def plot(frame):
     ## SURFACE EN / STIFFNESS ##
     ############################
 
-    axs[0][1].plot(thetas, surf_en)
-    axs[0][1].set_title(f"Surface Energy")
-    axs[0][1].set_xticks([])
-    axs[0][1].set_yticklabels([])
+    if not args.ignoresurcalc:
 
-    axs[1][1].plot(thetas, stiff)
-    axs[1][1].set_title(f"Stiffness")
-    axs[1][1].set_xticks([])
-    axs[1][1].set_yticklabels([])
+        axs[0][1].plot(thetas, surf_en)
+        axs[0][1].set_title(f"Surface Energy")
+        axs[0][1].set_xticks([])
+        axs[0][1].set_yticklabels([])
+
+        axs[1][1].plot(thetas, stiff)
+        axs[1][1].set_title(f"Stiffness")
+        axs[1][1].set_xticks([])
+        axs[1][1].set_yticklabels([])
 
     #########################
     ## Deal with first use ##
@@ -214,15 +216,33 @@ def plot(frame):
 ## PLOT SETUP ##
 ################
 
-fig = plt.figure(figsize=(10, 8))
+# fmt: off
 
-axs = [
-    [
-        plt.subplot(221),
-        plt.subplot(222, projection="polar"),
-    ],
-    [plt.subplot(223), plt.subplot(224, projection="polar")],
-]
+if args.ignoresurcalc:
+
+    fig = plt.figure(figsize=(10, 5))
+
+    axs = [
+        [plt.subplot(121),],
+        [plt.subplot(122),]
+    ]
+
+else:
+
+    fig = plt.figure(figsize=(10, 8))
+
+    axs = [
+        [
+            plt.subplot(221),
+            plt.subplot(222, projection="polar"),
+        ],
+        [
+            plt.subplot(223),
+            plt.subplot(224, projection="polar")
+        ],
+    ]
+
+# fmt: on
 
 for fig_arr in axs:
     for fig_ in fig_arr:
