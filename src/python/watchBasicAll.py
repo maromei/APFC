@@ -25,6 +25,7 @@ parser.add_argument("-s", "--split", action="store")
 parser.add_argument("-f", "--frametime", action="store")
 parser.add_argument("-pi", "--plotindex", action="store")
 parser.add_argument("-a", "--animate", action="store_true")
+parser.add_argument("-i", "--info", action="store_true")
 
 args = parser.parse_args()
 
@@ -58,7 +59,7 @@ x = np.linspace(-config["xlim"], config["xlim"], config["numPts"])
 xm, ym = np.meshgrid(x, x)
 
 
-def plot_single(frame, xm, ym, eta_path, ax, config, plot_i, cax=None):
+def plot_single(frame, xm, ym, eta_path, axs, config, plot_i, args, cax=None):
 
     eta_count = np.array(config["G"]).shape[0]
 
@@ -71,8 +72,17 @@ def plot_single(frame, xm, ym, eta_path, ax, config, plot_i, cax=None):
         eta_sum += etas[eta_i] * np.conj(etas[eta_i])
     eta_sum = np.real(eta_sum).astype(float)
 
-    ax.cla()
-    cont = ax.contourf(xm, ym, eta_sum, 100)
+    for ax in axs:
+        ax.cla()
+
+    cont = axs[0].contourf(xm, ym, eta_sum, 100)
+
+    if args.info:
+        txt = utils.build_sim_info_str(config, plot_i * config["writeEvery"])
+        axs[1].axis("off")
+        axs[1].text(
+            0.5, 0.5, txt, verticalalignment="center", horizontalalignment="center"
+        )
 
     if cax is None:
         plt.colorbar(cont)
@@ -83,7 +93,7 @@ def plot_single(frame, xm, ym, eta_path, ax, config, plot_i, cax=None):
 index = 0
 
 
-def plot_animate(frame, xm, ym, eta_path, ax, config, cax):
+def plot_animate(frame, xm, ym, eta_path, axs, config, args, cax):
 
     global index
 
@@ -92,33 +102,51 @@ def plot_animate(frame, xm, ym, eta_path, ax, config, cax):
     if index == eta_count:
         index = 0
 
-    plot_single(frame, xm, ym, eta_path, ax, config, index, cax)
+    plot_single(frame, xm, ym, eta_path, axs, config, index, args, cax)
 
     index += 1
 
 
 ###############
 
-fig = plt.figure()
-ax = plt.subplot(111)
-ax.set_aspect("equal")
+if args.info:
+    fig = plt.figure(figsize=(10, 5))
+    axs = [plt.subplot(121), plt.subplot(122)]
+
+    axs[1].axis("off")
+    txt = utils.build_sim_info_str(config, 0)
+    axs[1].text(0.5, 0.5, txt, verticalalignment="center", horizontalalignment="center")
+
+else:
+    fig = plt.figure()
+    axs = [
+        plt.subplot(111),
+    ]
+
+for ax in axs:
+    ax.set_aspect("equal")
+
+plt.tight_layout()
 
 ###############
 
 if args.animate:
 
-    div = make_axes_locatable(ax)
+    div = make_axes_locatable(axs[0])
     cax = div.append_axes("right", "5%", "5%")
 
     ani = FuncAnimation(
         plt.gcf(),
         plot_animate,
         interval=frame_time,
-        fargs=(xm, ym, eta_path, ax, config, cax),
+        fargs=(xm, ym, eta_path, axs, config, args, cax),
     )
 
 else:
 
-    plot_single(None, xm, ym, eta_path, ax, config, plot_i)
+    if plot_i < 0:
+        eta_count = rw.count_lines(f"{eta_path}/out_0.txt")
+        plot_i = eta_count - np.abs(plot_i)
+    plot_single(None, xm, ym, eta_path, axs, config, plot_i, args)
 
 plt.show()
