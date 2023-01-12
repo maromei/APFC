@@ -4,6 +4,5 @@
 
 ## TODO:
 
-- watchGrain:
-  - when ignoreing surface en calc --> remove the plots
-- line sim
+- build calcGrainSurfEn script
+  - base functions should be in sim/calculations.py
