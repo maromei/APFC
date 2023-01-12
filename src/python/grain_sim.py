@@ -90,7 +90,7 @@ step_count: int = config["numT"]
 write_every_i: int = config["writeEvery"]
 
 if not ignore_first_write:
-    sim.write()
+    sim.write(sim_path)
 
 for i in range(step_count + 1):  # +1 to get first and last write
 
