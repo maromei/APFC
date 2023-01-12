@@ -68,6 +68,77 @@ def calc_surf_en_1d(xs, ys, dx, theta, G, A):
     return integ
 
 
+def calc_line_surf_en(
+    xm,
+    ym,
+    config,
+    etas,
+    theta=0.0,
+    rot_g=True,
+    average=False,
+    integ2d=False,
+    use_pos=True,
+):
+
+    G = np.array(config["G"])
+
+    if use_pos:
+
+        pos_con = xm[0, :] >= 0.0
+        xm = xm[:, pos_con]
+        ym = ym[:, pos_con]
+
+        etas_ = np.zeros((G.shape[0], xm.shape[0], xm.shape[1]))
+        for eta_i in range(G.shape[0]):
+            etas_[eta_i] = etas[eta_i][:, pos_con]
+        etas = etas_
+
+    x_row = xm[0, :]
+    dx = np.diff(np.abs(x_row))[0]
+    xs = np.vstack([x_row for _ in range(G.shape[0])])
+
+    if rot_g:
+
+        # fmt: off
+        rot = np.array([
+            [np.cos(theta), -np.sin(theta)],
+            [np.sin(theta), np.cos(theta)]
+        ])
+        # fmt: on
+
+        for eta_i in range(G.shape[0]):
+            G[eta_i] = rot.dot(G[eta_i])
+        config["G"] = G.tolist()
+
+    if average:
+
+        ys = np.vstack([np.average(etas[eta_i], axis=0) for eta_i in range(G.shape[0])])
+
+        surf_en = calc_surf_en_1d(xs, ys, dx, theta, G, config["A"])
+
+    elif integ2d:
+
+        integ = np.zeros(xm.shape[1])
+        y_col = ym[:, 0]
+
+        for i in integ.shape[0]:
+
+            ys = np.vstack([etas[eta_i][i, :] for eta_i in range(G.shape[0])])
+
+            integ[i] = calc_surf_en_1d(xs, ys, dx, theta, G, config["A"])
+
+        surf_en = scipy.integrate.simpson(integ, y_col)
+
+    else:
+
+        y_middle = config["numPts"] // 2
+        ys = np.vstack([etas[eta_i][y_middle, :] for eta_i in range(G.shape[0])])
+
+        surf_en = calc_surf_en_1d(xs, ys, dx, theta, G, config["A"])
+
+    return surf_en
+
+
 def calc_stiffness(surf_en, thetas):
     dx = np.diff(thetas)[0]
     return surf_en + np.gradient(np.gradient(surf_en, dx), dx)
