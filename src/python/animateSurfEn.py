@@ -28,6 +28,11 @@ parser.add_argument("-ft", "--frametime", action="store")
 parser.add_argument("-f", "--fill", action="store_true")
 parser.add_argument("-s", "--smooth", action="store_true")
 parser.add_argument("-sf", "--smoothingfactor", action="store")
+parser.add_argument("-avg", "--average", action="store_true")
+parser.add_argument("-i2d", "--integral2d", action="store_true")
+parser.add_argument("-un", "--usenegatives", action="store_true")
+parser.add_argument("-otp", "--onetimeplot", action="store_true")
+parser.add_argument("-pi", "--plotindex", action="store")
 
 args = parser.parse_args()
 
@@ -39,6 +44,11 @@ smoothing_fac = args.smoothingfactor
 if smoothing_fac is None:
     smoothing_fac = 2
 smoothing_fac = int(smoothing_fac)
+
+plot_i = args.plotindex
+if plot_i is None:
+    plot_i = -1
+plot_i = int(plot_i)
 
 ################
 ## GET CONFIG ##
@@ -54,7 +64,16 @@ with open(config_path, "r") as f:
 ## GET Surf EN ##
 #################
 
-df: pd.DataFrame = pd.read_csv(f"{sim_path}/surf_en.csv", index_col=0)
+suffix = ""
+if args.average:
+    suffix = "_avg"
+elif args.integral2d:
+    suffix = "_int2d"
+
+if args.usenegatives:
+    suffix += "_n"
+
+df: pd.DataFrame = pd.read_csv(f"{sim_path}/surf_en{suffix}.csv", index_col=0)
 df = df.apply(pd.to_numeric)
 
 thetas_str = df.columns.to_numpy()
@@ -65,9 +84,17 @@ thetas = thetas_str.astype(float)
 ## Calc Stiff ##
 ################
 
+o_thetas_len = thetas.shape[0]
+
 df_stiff = pd.DataFrame(columns=df.columns, index=df.index)
 for i, row in df.iterrows():
-    df_stiff.loc[i, :] = calc.calc_stiffness(row.to_numpy().copy(), thetas)
+
+    surf = row.to_numpy().copy()
+    surf = np.hstack([surf, surf, surf])
+
+    stiff = calc.calc_stiffness(surf, thetas)
+
+    df_stiff.loc[i, :] = stiff[o_thetas_len : 2 * o_thetas_len]
 
 ###########
 ## FILL ##
@@ -101,7 +128,9 @@ ax_stiff = plt.subplot(122, projection="polar")
 ax_surf.set_aspect("equal")
 ax_stiff.set_aspect("equal")
 
-index = 0
+index = plot_i
+if index < 0:
+    index = df.shape[0] - np.abs(index)
 
 
 def plot(frame):
@@ -155,6 +184,12 @@ def plot(frame):
     index += 1
 
 
-ani = FuncAnimation(plt.gcf(), plot, interval=frame_time)
+if args.onetimeplot:
+
+    plot("")
+
+else:
+
+    ani = FuncAnimation(plt.gcf(), plot, interval=frame_time)
 
 plt.show()
