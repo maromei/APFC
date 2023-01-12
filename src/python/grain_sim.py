@@ -103,7 +103,7 @@ for i in range(step_count + 1):  # +1 to get first and last write
     sim.write(sim_path)
 
     perc = i / step_count * 100
-    sys.stdout.write(f"Progress: {perc:.4f}%\r")
+    sys.stdout.write(f"Progress: {perc:5.1f}%\r")
     sys.stdout.flush()
 
 sys.stdout.write("\n")
