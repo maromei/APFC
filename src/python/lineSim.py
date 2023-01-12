@@ -48,6 +48,8 @@ with open(config_path, "r") as f:
 ## HANDLE ARGUMENTS ##
 ######################
 
+config["simType"] = "line"
+
 n0 = config["n0"]
 t = config["t"]
 v = config["v"]
