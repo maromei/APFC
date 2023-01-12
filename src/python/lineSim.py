@@ -153,13 +153,14 @@ def theta_thread(thetas, config, eta_path, continue_sim, index, args):
 
         ### run sim ###
 
+        if not ignore_first_write:
+            sim.write(theta_path)
+
         for i in range(step_count + 1):  # +1 to get first and last write
 
             sim.run_one_step()
 
-            should_write = i % write_every_i == 0
-            should_write = should_write and not (i == 0 and ignore_first_write)
-
+            should_write = i % write_every_i == 0 and i != 0
             if not should_write:
                 continue
 
