@@ -1,15 +1,10 @@
 import argparse
 import json
-
-import matplotlib
-import numpy as np
-import pandas as pd
-
-matplotlib.use("TkAgg")
-
 import pathlib
 import sys
 
+import numpy as np
+import pandas as pd
 from sim import calculations as calc
 from sim import read_write as rw
 from sim import utils
