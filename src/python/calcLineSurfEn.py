@@ -23,6 +23,7 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument("sim_path")
+parser.add_argument("-avg", "--average", action="store_true")
 
 args = parser.parse_args()
 
@@ -94,7 +95,18 @@ for theta_i, theta in enumerate(thetas):
 
     for eta_iter_i, etas in enumerate(eta_iter):
 
-        ys = np.vstack([etas[eta_i, y_middle, x_pos] for eta_i in range(G.shape[0])])
+        # fmt: off
+        if args.average:
+            ys = np.vstack([
+                np.average(etas[eta_i][:, x_pos], axis=0)
+                for eta_i in range(G.shape[0])
+            ])
+        else:
+            ys = np.vstack([
+                etas[eta_i, y_middle, x_pos]
+                for eta_i in range(G.shape[0])
+            ])
+        # fmt: on
 
         surf_en = calc.calc_surf_en_1d(xs, ys, dx, theta, G, config["A"])
         df_dic[thetas_str[theta_i]].append(surf_en)
