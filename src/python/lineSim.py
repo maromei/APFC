@@ -79,6 +79,13 @@ if args.calciniteta2p:
 
 config["sim_path"] = sim_path
 
+if args.useleftline:
+    config["initType"] = "leftLine"
+elif args.usegrain:
+    config["initType"] = "grain"
+else:
+    config["initType"] = "centerLine"
+
 with open(config_path, "w") as f:
     json.dump(config, f, indent=4)
 
