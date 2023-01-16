@@ -1,9 +1,9 @@
-# APFC Doc
+# Updates
 
 ```{toctree}
 :maxdepth: 2
 :caption: 'Contents:'
 
-background/index
-updates/index
+2023-01-04
+2023-01-16
 ```

@@ -93,22 +93,3 @@ Where $k_x$ and $k_y$ are the frequency variables.
 
 All other parts of equation {eq}`eqn:apfc_flow` are kept in the non linear part $N(\eta_m)$. In each timestep $N(\eta_m)$ is computed and
 then fourier transformed.
-
-## Results
-
-One step index corresponds to 100 simulation iterations.
-
-### Sim 1
-
-![](../figures/03_5000.png)
-
-### Sim 2
-
-![](../figures/01_2500.png)
-![](../figures/fft_02_db0m0.01.png)
-
-### Sim 3
-
-![](../figures/2_4500.png)
-![](../figures/fft_01_db00.01.png)
-![](../figures/2_10000.png)
