@@ -15,11 +15,16 @@ def make_path_arg_absolute(path: str):
     return "/".join([os.getcwd(), path])
 
 
-def build_sim_info_str(config, index):
+def build_sim_info_str(config, index, theta=None):
+
+    theta_str = ""
+    if theta is not None:
+        theta_str = f"\n$\\theta = {theta:.4f}$\n"
 
     txt = f"""\
         \\begin{{center}}
         sim iteration: {index} \\vspace{{0.5em}}
+        {theta_str}
         $B_x = {config['Bx']:.4f}, n_0 = {config['n0']:.4f}$
         $v = {config['v']:.4f}, t = {config['t']:.4f}$
         $\\Delta B_0 = {config['dB0']:.4f}$

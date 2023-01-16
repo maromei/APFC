@@ -86,7 +86,14 @@ def plot_single(frame, xm, ym, eta_path, axs, config, plot_i, args, cax=None):
     cont = axs[0].contourf(xm, ym, eta_sum, 100)
 
     if args.info:
-        txt = utils.build_sim_info_str(config, plot_i * config["writeEvery"])
+
+        theta = None
+        if args.split is not None:
+            theta = float(args.split)
+
+        txt = utils.build_sim_info_str(
+            config, plot_i * config["writeEvery"], theta=theta
+        )
         axs[1].axis("off")
         axs[1].text(
             0.5, 0.5, txt, verticalalignment="center", horizontalalignment="center"
