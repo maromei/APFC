@@ -34,6 +34,8 @@ parser.add_argument("-un", "--usenegatives", action="store_true")
 parser.add_argument("-otp", "--onetimeplot", action="store_true")
 parser.add_argument("-ig", "--isgrain", action="store_true")
 parser.add_argument("-pi", "--plotindex", action="store")
+parser.add_argument("-gif", "--save", action="store_true")
+parser.add_argument("-dpi", "--dpi", action="store")
 
 args = parser.parse_args()
 
@@ -50,6 +52,11 @@ plot_i = args.plotindex
 if plot_i is None:
     plot_i = -1
 plot_i = int(plot_i)
+
+dpi = args.dpi
+if dpi is None:
+    dpi = 300
+dpi = int(dpi)
 
 ################
 ## GET CONFIG ##
@@ -191,9 +198,15 @@ def plot(frame):
 if args.onetimeplot:
 
     plot("")
+    if args.save:
+        plt.savefig(f"{sim_path}/surf_en{suffix}_{plot_i}.png", dpi=dpi)
+    plt.show()
 
 else:
 
-    ani = FuncAnimation(plt.gcf(), plot, interval=frame_time)
+    if args.save:
+        ani = FuncAnimation(fig, plot, interval=frame_time, frames=df.shape[0])
+        ani.save(f"{sim_path}/surf_en{suffix}.gif", dpi=dpi)
 
-plt.show()
+    ani = FuncAnimation(plt.gcf(), plot, interval=frame_time)
+    plt.show()
