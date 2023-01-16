@@ -34,7 +34,7 @@ parser.add_argument("-un", "--usenegatives", action="store_true")
 parser.add_argument("-otp", "--onetimeplot", action="store_true")
 parser.add_argument("-ig", "--isgrain", action="store_true")
 parser.add_argument("-pi", "--plotindex", action="store")
-parser.add_argument("-gif", "--save", action="store_true")
+parser.add_argument("-save", "--save", action="store_true")
 parser.add_argument("-dpi", "--dpi", action="store")
 
 args = parser.parse_args()
