@@ -145,17 +145,17 @@ if args.animate:
     div = make_axes_locatable(axs[0])
     cax = div.append_axes("right", "5%", "5%")
 
+    frames = rw.count_lines(f"{eta_path}/out_0.txt")
+
+    ani = FuncAnimation(
+        fig,
+        plot_animate,
+        interval=frame_time,
+        fargs=(xm, ym, eta_path, axs, config, args, cax),
+        frames=frames,
+    )
+
     if args.save:
-
-        frames = rw.count_lines(f"{eta_path}/out_0.txt")
-
-        ani = FuncAnimation(
-            fig,
-            plot_animate,
-            interval=frame_time,
-            fargs=(xm, ym, eta_path, axs, config, args, cax),
-            frames=frames,
-        )
         ani.save(f"{sim_path}/watch.gif", dpi=dpi)
 
     plt.show()
