@@ -26,7 +26,7 @@ parser.add_argument("-f", "--frametime", action="store")
 parser.add_argument("-pi", "--plotindex", action="store")
 parser.add_argument("-a", "--animate", action="store_true")
 parser.add_argument("-i", "--info", action="store_true")
-parser.add_argument("-gif", "--savegif", action="store_true")
+parser.add_argument("-save", "--save", action="store_true")
 parser.add_argument("-dpi", "--dpi", action="store")
 
 args = parser.parse_args()
@@ -145,7 +145,7 @@ if args.animate:
     div = make_axes_locatable(axs[0])
     cax = div.append_axes("right", "5%", "5%")
 
-    if args.savegif:
+    if args.save:
 
         frames = rw.count_lines(f"{eta_path}/out_0.txt")
 
@@ -156,19 +156,8 @@ if args.animate:
             fargs=(xm, ym, eta_path, axs, config, args, cax),
             frames=frames,
         )
-
-        print("Saving GIF...")
-
         ani.save(f"{sim_path}/watch.gif", dpi=dpi)
 
-        print("Displaying Animation...")
-
-    ani = FuncAnimation(
-        plt.gcf(),
-        plot_animate,
-        interval=frame_time,
-        fargs=(xm, ym, eta_path, axs, config, args, cax),
-    )
     plt.show()
 
 else:
@@ -177,5 +166,8 @@ else:
         eta_count = rw.count_lines(f"{eta_path}/out_0.txt")
         plot_i = eta_count - np.abs(plot_i)
     plot_single(None, xm, ym, eta_path, axs, config, plot_i, args)
+
+    if args.save:
+        plt.savefig(f"{sim_path}/watch_{plot_i}.png", dpi=dpi)
 
     plt.show()
