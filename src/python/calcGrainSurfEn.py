@@ -37,7 +37,7 @@ with open(config_path, "r") as f:
 G = np.array(config["G"])
 
 theta_count = config["theta_count"]
-thetas = np.linsapce(0.0, 2.0 * np.pi, theta_count)
+thetas = np.linspace(0.0, 2.0 * np.pi, theta_count)
 
 x = np.linspace(-config["xlim"], config["xlim"], config["numPts"])
 xm, ym = np.meshgrid(x, x)
