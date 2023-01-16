@@ -26,6 +26,8 @@ parser.add_argument("-f", "--frametime", action="store")
 parser.add_argument("-pi", "--plotindex", action="store")
 parser.add_argument("-a", "--animate", action="store_true")
 parser.add_argument("-i", "--info", action="store_true")
+parser.add_argument("-gif", "--savegif", action="store_true")
+parser.add_argument("-dpi", "--dpi", action="store")
 
 args = parser.parse_args()
 
@@ -53,6 +55,11 @@ if frame_time is None:
     frame_time = 1000
 frame_time = int(frame_time)
 
+dpi = args.dpi
+if dpi is None:
+    dpi = 300
+dpi = int(dpi)
+
 ##############
 
 x = np.linspace(-config["xlim"], config["xlim"], config["numPts"])
@@ -75,6 +82,7 @@ def plot_single(frame, xm, ym, eta_path, axs, config, plot_i, args, cax=None):
     for ax in axs:
         ax.cla()
 
+    axs[0].set_title(r"$\sum |\eta_i|^2$\vspace{1em}")
     cont = axs[0].contourf(xm, ym, eta_sum, 100)
 
     if args.info:
@@ -126,6 +134,8 @@ else:
 for ax in axs:
     ax.set_aspect("equal")
 
+axs[0].set_title(r"$\sum |\eta_i|^2$\vspace{1em}")
+
 plt.tight_layout()
 
 ###############
@@ -135,12 +145,31 @@ if args.animate:
     div = make_axes_locatable(axs[0])
     cax = div.append_axes("right", "5%", "5%")
 
+    if args.savegif:
+
+        frames = rw.count_lines(f"{eta_path}/out_0.txt")
+
+        ani = FuncAnimation(
+            fig,
+            plot_animate,
+            interval=frame_time,
+            fargs=(xm, ym, eta_path, axs, config, args, cax),
+            frames=frames,
+        )
+
+        print("Saving GIF...")
+
+        ani.save(f"{sim_path}/watch.gif", dpi=dpi)
+
+        print("Displaying Animation...")
+
     ani = FuncAnimation(
         plt.gcf(),
         plot_animate,
         interval=frame_time,
         fargs=(xm, ym, eta_path, axs, config, args, cax),
     )
+    plt.show()
 
 else:
 
@@ -149,4 +178,4 @@ else:
         plot_i = eta_count - np.abs(plot_i)
     plot_single(None, xm, ym, eta_path, axs, config, plot_i, args)
 
-plt.show()
+    plt.show()
