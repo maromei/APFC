@@ -32,6 +32,7 @@ parser.add_argument("-avg", "--average", action="store_true")
 parser.add_argument("-i2d", "--integral2d", action="store_true")
 parser.add_argument("-un", "--usenegatives", action="store_true")
 parser.add_argument("-otp", "--onetimeplot", action="store_true")
+parser.add_argument("-ig", "--isgrain", action="store_true")
 parser.add_argument("-pi", "--plotindex", action="store")
 
 args = parser.parse_args()
@@ -72,6 +73,9 @@ elif args.integral2d:
 
 if args.usenegatives:
     suffix += "_n"
+
+if args.isgrain:
+    suffix = "_grain"
 
 df: pd.DataFrame = pd.read_csv(f"{sim_path}/surf_en{suffix}.csv", index_col=0)
 df = df.apply(pd.to_numeric)
