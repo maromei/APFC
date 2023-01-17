@@ -44,7 +44,7 @@ thetas = thetas.iterdir()
 thetas_str = [str(p).split("/")[-1] for p in thetas]
 thetas_str.sort()
 
-thetas = np.array(thetas_str, dtype=float)
+thetas = utils.get_thetas(config)
 
 df_dic = {th_str: [] for th_str in thetas_str}
 

@@ -89,7 +89,7 @@ df = df.apply(pd.to_numeric)
 
 thetas_str = df.columns.to_numpy()
 thetas_str = np.array(thetas_str)
-thetas = thetas_str.astype(float)
+thetas = utils.get_thetas(config)
 
 ################
 ## Calc Stiff ##

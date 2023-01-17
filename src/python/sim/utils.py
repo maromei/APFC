@@ -1,5 +1,7 @@
 import os
 
+import numpy as np
+
 
 def make_path_arg_absolute(path: str):
 
@@ -40,3 +42,16 @@ def build_sim_info_str(config, index, theta=None):
     txt = "".join(map(str.lstrip, txt.splitlines(1)))
 
     return txt
+
+
+def get_thetas(config, use_div=True, endpoint=True):
+
+    if use_div:
+        thetas = np.linspace(
+            0,
+            2.0 * np.pi / config["theta_div"],
+            config["theta_count"],
+            endpoint=endpoint,
+        )
+    else:
+        thetas = np.linspace(0, 2.0 * np.pi, config["theta_count"], endpoint=endpoint)

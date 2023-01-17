@@ -95,9 +95,7 @@ with open(config_path, "w") as f:
 ## SIMULTAION VARS ##
 #####################
 
-thetas = np.linspace(
-    0, 2.0 * np.pi / config["theta_div"], config["theta_count"], endpoint=True
-)
+thetas = utils.get_thetas(config)
 
 eta_path = f"{sim_path}/eta_files"
 if not os.path.exists(eta_path):
