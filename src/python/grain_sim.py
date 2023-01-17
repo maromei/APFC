@@ -1,6 +1,8 @@
 import argparse
 import json
 import sys
+import datetime
+import time
 
 import numpy as np
 from sim import eta_builder, rfft_sim, utils
@@ -78,6 +80,11 @@ with open(config_path, "w") as f:
 ## RUN SIMULTAION ##
 ####################
 
+start_time = time.time()
+
+curr_date_time = datetime.datetime.now()
+print(f"Starting Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")
+
 if args.continuesim:
     sim = rfft_sim.FFTSim(config, eta_builder.load_from_file)
     ignore_first_write = True
@@ -108,3 +115,15 @@ for i in range(step_count + 1):  # +1 to get first and last write
 
 sys.stdout.write("\n")
 sys.stdout.flush()
+
+time_diff = int(time.time() - start_time)
+hours = time_diff // (60.0 * 60)
+time_diff -= hours * 60 * 60
+minutes = time_diff // 60
+time_diff -= minutes * 60
+seconds = time_diff
+
+print(f"Time: {int(hours)}:{int(minutes)}:{int(seconds)}")
+
+curr_date_time = datetime.datetime.now()
+print(f"End Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")

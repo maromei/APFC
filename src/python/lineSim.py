@@ -5,6 +5,8 @@ import os
 import sys
 import time
 
+import datetime
+
 import numpy as np
 from sim import eta_builder, rfft_sim, utils
 
@@ -205,6 +207,9 @@ for i in range(thread_count):
 
 start_time = time.time()
 
+curr_date_time = datetime.datetime.now()
+print(f"Starting Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")
+
 for i in range(thread_count):
     thread_lst[i].start()
 
@@ -240,3 +245,7 @@ time_diff -= minutes * 60
 seconds = time_diff
 
 print(f"Time: {int(hours)}:{int(minutes)}:{int(seconds)}")
+
+
+curr_date_time = datetime.datetime.now()
+print(f"End Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")
