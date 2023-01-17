@@ -55,3 +55,5 @@ def get_thetas(config, use_div=True, endpoint=True):
         )
     else:
         thetas = np.linspace(0, 2.0 * np.pi, config["theta_count"], endpoint=endpoint)
+
+    return thetas
