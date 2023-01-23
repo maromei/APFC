@@ -26,8 +26,6 @@ parser.add_argument("-cie2p", "--calciniteta2p", action="store_true")
 parser.add_argument("-csimp", "--calcsimplevariables", action="store_true")
 parser.add_argument("-con", "--continuesim", action="store_true")
 parser.add_argument("-tc", "--threadcount", action="store")
-parser.add_argument("-ull", "--useleftline", action="store_true")
-parser.add_argument("-ug", "--usegrain", action="store_true")
 
 args = parser.parse_args()
 
@@ -83,12 +81,7 @@ if args.calciniteta2p:
 
 config["sim_path"] = sim_path
 
-if args.useleftline:
-    config["initType"] = "leftLine"
-elif args.usegrain:
-    config["initType"] = "grain"
-else:
-    config["initType"] = "centerLine"
+config["initType"] = "centerLine"
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=4)
@@ -142,12 +135,7 @@ def theta_thread(thetas, config, eta_path, continue_sim, index, args):
             sim = fft_sim_1d.FFTSim(config, eta_builder.load_from_file)
             ignore_first_write = True
         else:
-            if args.useleftline:
-                sim = fft_sim_1d.FFTSim(config, eta_builder.left_line)
-            elif args.usegrain:
-                sim = fft_sim_1d.FFTSim(config, eta_builder.single_grain)
-            else:
-                sim = fft_sim_1d.FFTSim(config, eta_builder.center_line)
+            sim = fft_sim_1d.FFTSim(config, eta_builder.center_line)
             sim.reset_out_files(theta_path)
             ignore_first_write = False
 
