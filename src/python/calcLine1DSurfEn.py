@@ -18,9 +18,6 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument("sim_path")
-parser.add_argument("-avg", "--average", action="store_true")
-parser.add_argument("-i2d", "--integral2d", action="store_true")
-parser.add_argument("-un", "--usenegatives", action="store_true")
 
 args = parser.parse_args()
 
@@ -113,13 +110,4 @@ sys.stdout.flush()
 
 df = pd.DataFrame(df_dic)
 
-suffix = ""
-if args.average:
-    suffix = "_avg"
-elif args.integral2d:
-    suffix = "_int2d"
-
-if args.usenegatives:
-    suffix += "_n"
-
-df.to_csv(f"{sim_path}/surf_en{suffix}.csv")
+df.to_csv(f"{sim_path}/surf_en.csv")
