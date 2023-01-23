@@ -173,7 +173,6 @@ def calc_stiffness(surf_en, thetas):
     return surf_en + np.gradient(np.gradient(surf_en, dx), dx)
 
 
-def calc_stiffness_fit(surf, thetas):
+def calc_stiffness_fit(surf, thetas, eps, gamma0):
 
-    eps, gamma0 = fit_surf_en(thetas, surf)
     return surf + theo_surf_en_sec_der(thetas, eps, gamma0)
