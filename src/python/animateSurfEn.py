@@ -36,6 +36,7 @@ parser.add_argument("-ig", "--isgrain", action="store_true")
 parser.add_argument("-pi", "--plotindex", action="store")
 parser.add_argument("-save", "--save", action="store_true")
 parser.add_argument("-dpi", "--dpi", action="store")
+parser.add_argument("-fit", "--fit", action="store_true")
 
 args = parser.parse_args()
 
@@ -125,7 +126,7 @@ def fill(arr, div, add=False):
     return arr
 
 
-if args.fill:
+if args.fill or args.fit:
     thetas = fill(thetas, config["theta_div"], True)
 
 ################
@@ -161,9 +162,6 @@ def plot(frame):
     surf = df.loc[index, :].to_numpy().copy()
     stiff = df_stiff.loc[index, :].to_numpy().copy()
 
-    # stiff = stiff / np.max(stiff)
-    # stiff[np.abs(stiff) > 0.5] = np.nan
-
     if args.smooth:
 
         o_stiff_len = stiff.shape[0]
@@ -176,9 +174,16 @@ def plot(frame):
 
         stiff = stiff[o_stiff_len : 2 * o_stiff_len]
 
-    if args.fill:
+    if args.fill or args.fit:
+
         surf = fill(surf, config["theta_div"])
         stiff = fill(stiff, config["theta_div"])
+
+    if args.fit:
+
+        eps, gamma = calc.fit_surf_en(thetas, surf)
+        surf = calc.theo_surf_en(thetas, eps, gamma)
+        stiff = calc.calc_stiffness_fit(surf, thetas, eps, gamma)
 
     ax_surf.set_ylim([np.min([0, np.min(surf)]), np.max(surf) + 0.5])
     ax_stiff.set_ylim([np.min([0, np.min(stiff)]), np.max(stiff) + 0.5])
