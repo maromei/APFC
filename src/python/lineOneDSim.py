@@ -108,6 +108,8 @@ def theta_thread(thetas, config, eta_path, continue_sim, index, args):
 
     total_steps = thetas.shape[0] * step_count
 
+    G_original = np.array(config["G"])
+
     for theta_i, theta in enumerate(thetas):
 
         ### create direcotry if not exist ###
@@ -125,7 +127,7 @@ def theta_thread(thetas, config, eta_path, continue_sim, index, args):
         ])
         # fmt: on
 
-        G = np.array(config["G"])
+        G = G_original.copy()
         for eta_i in range(G.shape[0]):
             G[eta_i] = rot.dot(G[eta_i])
         config["G"] = G.tolist()
