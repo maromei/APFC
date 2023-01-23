@@ -161,6 +161,9 @@ def plot(frame):
     surf = df.loc[index, :].to_numpy().copy()
     stiff = df_stiff.loc[index, :].to_numpy().copy()
 
+    # stiff = stiff / np.max(stiff)
+    # stiff[np.abs(stiff) > 0.5] = np.nan
+
     if args.smooth:
 
         o_stiff_len = stiff.shape[0]
@@ -177,11 +180,11 @@ def plot(frame):
         surf = fill(surf, config["theta_div"])
         stiff = fill(stiff, config["theta_div"])
 
-    ax_surf.plot(thetas, surf)
-    ax_stiff.plot(thetas, stiff)
-
     ax_surf.set_ylim([np.min([0, np.min(surf)]), np.max(surf) + 0.5])
     ax_stiff.set_ylim([np.min([0, np.min(stiff)]), np.max(stiff) + 0.5])
+
+    ax_surf.plot(thetas, surf)
+    ax_stiff.plot(thetas, stiff)
 
     ax_surf.set_xticks([])
     ax_surf.set_yticks([])

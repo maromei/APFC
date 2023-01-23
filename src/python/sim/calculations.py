@@ -139,6 +139,41 @@ def calc_line_surf_en(
     return surf_en
 
 
+def theo_surf_en(thetas, eps, gamma_0):
+    return gamma_0 * (1.0 + eps * np.cos(6.0 * thetas))
+
+
+def theo_surf_en_sec_der(thetas, eps, gamma_0):
+    return -gamma_0 * eps * 36.0 * np.cos(6.0 * thetas)
+
+
+def theo_surf_en_der(thetas, eps, gamma_0):
+    return -gamma_0 * eps * 6.0 * np.sin(6.0 * thetas)
+
+
+def wulf_shape(thetas, eps, gamma):
+
+    surf = theo_surf_en(thetas, eps, gamma)
+    surf_der = theo_surf_en_der(thetas, eps, gamma)
+
+    x = surf * np.cos(thetas) - surf_der * np.sin(thetas)
+    y = surf * np.sin(thetas) + surf_der * np.cos(thetas)
+
+    return x, y
+
+
+def fit_surf_en(thetas, line_en):
+
+    popt, pcov = scipy.optimize.curve_fit(theo_surf_en, thetas, line_en)
+    return popt
+
+
 def calc_stiffness(surf_en, thetas):
     dx = np.diff(thetas)[0]
     return surf_en + np.gradient(np.gradient(surf_en, dx), dx)
+
+
+def calc_stiffness_fit(surf, thetas):
+
+    eps, gamma0 = fit_surf_en(thetas, surf)
+    return surf + theo_surf_en_sec_der(thetas, eps, gamma0)
