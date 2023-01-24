@@ -180,11 +180,18 @@ def plot(frame):
         surf = fill(surf, config["theta_div"])
         stiff = fill(stiff, config["theta_div"])
 
+    stiff_title_suff = ""
+
     if args.fit:
 
         eps, gamma = calc.fit_surf_en(thetas, surf)
         surf = calc.theo_surf_en(thetas, eps, gamma)
         stiff = calc.calc_stiffness_fit(surf, thetas, eps, gamma)
+
+        eps_str = utils.create_float_scientific_string(eps)
+        gamma_str = utils.create_float_scientific_string(gamma)
+
+        stiff_title_suff = f"\n$\\gamma_0 = {gamma_str}, \\varepsilon = {eps_str}$"
 
     ax_surf.set_ylim([np.min([0, np.min(surf)]), np.max(surf) + 0.5])
     ax_stiff.set_ylim([np.min([0, np.min(stiff)]), np.max(stiff) + 0.5])
@@ -199,7 +206,9 @@ def plot(frame):
     ax_stiff.set_yticks([])
 
     ax_surf.set_title(f"Surface Energy\nIteration: {index * config['writeEvery']}")
-    ax_stiff.set_title("Stiffness")
+    ax_stiff.set_title(
+        f"\\begin{{center}}Stiffness{stiff_title_suff}\\end{{center}}\\vspace{{-1em}}"
+    )
 
     index += 1
 
