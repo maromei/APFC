@@ -108,7 +108,9 @@ if not os.path.exists(eta_path):
 #########################
 
 
-def theta_thread(thetas, config, eta_path, continue_sim, index, args):
+def theta_thread(thetas, config_, eta_path, continue_sim, index, args):
+
+    config = config_.copy()
 
     step_count: int = config["numT"]
     write_every_i: int = config["writeEvery"]

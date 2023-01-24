@@ -1,5 +1,6 @@
 import numpy as np
 import scipy
+import copy
 
 
 def calc_surf_en_2d(xm, ym, etas, thetas, config):
@@ -71,7 +72,7 @@ def calc_surf_en_1d(xs, ys, dx, theta, G, A):
 def calc_line_surf_en(
     xm,
     ym,
-    config,
+    config_,
     etas,
     theta=0.0,
     rot_g=True,
@@ -80,6 +81,7 @@ def calc_line_surf_en(
     use_pos=True,
 ):
 
+    config = copy.deepcopy(config_)
     G = np.array(config["G"])
 
     if use_pos:
