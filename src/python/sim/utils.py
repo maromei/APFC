@@ -57,3 +57,12 @@ def get_thetas(config, use_div=True, endpoint=True):
         thetas = np.linspace(0, 2.0 * np.pi, config["theta_count"], endpoint=endpoint)
 
     return thetas
+
+
+def create_float_scientific_string(val: float):
+
+    val_str = f"{val:.2e}"
+    val_str = val_str.split("e")
+    val_str = f"{val_str[0]} \\cdot 10^{{{val_str[1]}}}"
+
+    return val_str
