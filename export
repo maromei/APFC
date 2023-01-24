@@ -1,6 +1,7 @@
 #!/bin/bash
 
 alias animSurfEn='python src/python/animateSurfEn.py'
+alias animSurfEnWulf='python src/python/animateSurfEnWulf.py'
 alias calcLineSurfEn='python src/python/calcLineSurfEn.py'
 alias calcGrainSurfEn='python src/python/calcGrainSurfEn.py'
 alias calcLine1DSurfEn='python src/python/calcLine1DSurfEn.py'
