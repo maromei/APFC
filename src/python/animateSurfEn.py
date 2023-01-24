@@ -43,6 +43,7 @@ args = parser.parse_args()
 frame_time = args.frametime
 if frame_time is None:
     frame_time = 1000
+frame_time = int(frame_time)
 
 smoothing_fac = args.smoothingfactor
 if smoothing_fac is None:
