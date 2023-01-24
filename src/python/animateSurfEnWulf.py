@@ -35,6 +35,7 @@ parser.add_argument("-ig", "--isgrain", action="store_true")
 parser.add_argument("-pi", "--plotindex", action="store")
 parser.add_argument("-save", "--save", action="store_true")
 parser.add_argument("-dpi", "--dpi", action="store")
+parser.add_argument("-t", "--traces", action="store_true")
 
 args = parser.parse_args()
 
@@ -147,6 +148,43 @@ if index < 0:
     index = df.shape[0] - np.abs(index)
 
 
+def one_plot_iteration(
+    ax_surf, ax_stiff, ax_wulf, df, df_stiff, args, index, alpha=1.0
+):
+
+    surf = df.loc[index, :].to_numpy().copy()
+    stiff = df_stiff.loc[index, :].to_numpy().copy()
+
+    if args.smooth:
+
+        o_stiff_len = stiff.shape[0]
+
+        stiff = np.hstack([stiff, stiff, stiff])
+
+        stiff = scipy.signal.savgol_filter(
+            stiff, np.max([o_stiff_len // smoothing_fac, 4]), 3
+        )
+
+        stiff = stiff[o_stiff_len : 2 * o_stiff_len]
+
+    surf = fill(surf, config["theta_div"])
+    stiff = fill(stiff, config["theta_div"])
+
+    eps, gamma = calc.fit_surf_en(thetas, surf)
+    surf = calc.theo_surf_en(thetas, eps, gamma)
+    stiff = calc.calc_stiffness_fit(surf, thetas, eps, gamma)
+    wulf_x, wulf_y = calc.wulf_shape(thetas, eps, gamma)
+
+    ax_surf.set_ylim([np.min([0, np.min(surf)]), np.max(surf) + 0.5])
+    ax_stiff.set_ylim([np.min([0, np.min(stiff)]), np.max(stiff) + 0.5])
+
+    ax_surf.plot(thetas, surf, alpha=alpha)
+    ax_stiff.plot(thetas, stiff, alpha=alpha)
+    ax_wulf.plot(wulf_x, wulf_y, alpha=alpha)
+
+    return eps, gamma
+
+
 def plot(frame):
 
     global smoothing_fac
@@ -167,37 +205,21 @@ def plot(frame):
     ## GET VALUES ##
     ################
 
-    surf = df.loc[index, :].to_numpy().copy()
-    stiff = df_stiff.loc[index, :].to_numpy().copy()
+    if args.traces:
 
-    if args.smooth:
+        alphas = np.linspace(0.5, 1.0, df.shape[0], endpoint=True)
 
-        o_stiff_len = stiff.shape[0]
+        for i in range(df.shape[0]):
 
-        stiff = np.hstack([stiff, stiff, stiff])
+            _, _ = one_plot_iteration(
+                ax_surf, ax_stiff, ax_wulf, df, df_stiff, args, i, alpha=alphas[i]
+            )
 
-        stiff = scipy.signal.savgol_filter(
-            stiff, np.max([o_stiff_len // smoothing_fac, 4]), 3
+    else:
+
+        eps, gamma = one_plot_iteration(
+            ax_surf, ax_stiff, ax_wulf, df, df_stiff, args, index
         )
-
-        stiff = stiff[o_stiff_len : 2 * o_stiff_len]
-
-    surf = fill(surf, config["theta_div"])
-    stiff = fill(stiff, config["theta_div"])
-
-    stiff_title_suff = ""
-
-    eps, gamma = calc.fit_surf_en(thetas, surf)
-    surf = calc.theo_surf_en(thetas, eps, gamma)
-    stiff = calc.calc_stiffness_fit(surf, thetas, eps, gamma)
-    wulf_x, wulf_y = calc.wulf_shape(thetas, eps, gamma)
-
-    ax_surf.set_ylim([np.min([0, np.min(surf)]), np.max(surf) + 0.5])
-    ax_stiff.set_ylim([np.min([0, np.min(stiff)]), np.max(stiff) + 0.5])
-
-    ax_surf.plot(thetas, surf)
-    ax_stiff.plot(thetas, stiff)
-    ax_wulf.plot(wulf_x, wulf_y)
 
     ax_surf.axis("off")
     ax_stiff.axis("off")
@@ -208,12 +230,15 @@ def plot(frame):
     ax_stiff.set_title("Stiffness")
     ax_wulf.set_title("Wulff Shape")
 
-    eps_str = utils.create_float_scientific_string(eps)
-    gamma_str = utils.create_float_scientific_string(gamma)
-
     iteration = index * config["writeEvery"]
 
-    add_info = f"\n$\\gamma_0 = {gamma_str}, \\varepsilon = {eps_str}$"
+    if args.traces:
+        add_info = ""
+    else:
+        eps_str = utils.create_float_scientific_string(eps)
+        gamma_str = utils.create_float_scientific_string(gamma)
+        add_info = f"\n$\\gamma_0 = {gamma_str}, \\varepsilon = {eps_str}$"
+
     info_text = utils.build_sim_info_str(config, iteration, add_info=add_info)
     ax_info.text(
         0.5, 0.5, info_text, verticalalignment="center", horizontalalignment="center"
@@ -222,7 +247,7 @@ def plot(frame):
     index += 1
 
 
-if args.onetimeplot:
+if args.onetimeplot or args.traces:
 
     plot("")
     if args.save:
