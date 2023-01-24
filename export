@@ -1,0 +1,14 @@
+#!/bin/bash
+
+alias animSurfEn='python src/python/animateSurfEn.py'
+alias calcLineSurfEn='python src/python/calcLineSurfEn.py'
+alias calcGrainSurfEn='python src/python/calcGrainSurfEn.py'
+alias calcLine1DSurfEn='python src/python/calcLine1DSurfEn.py'
+alias compareLineSimPlots='python src/python/compareLineSimPlots.py'
+alias grainSim='python src/python/grainSim.py'
+alias lineOneDSim='python src/python/lineOneDSim.py'
+alias lineSim='python src/python/lineSim.py'
+alias plotLineSim='python src/python/plotLineSim.py'
+alias watch1D='python src/python/watch1D.py'
+alias watchBasicAll='python src/python/watchBasicAll.py'
+alias watchGrainSim='python src/python/watchGrainSim.py'

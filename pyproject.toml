@@ -10,7 +10,7 @@ requires-python = ">=3.7"
 license = "MIT"
 keywords = []
 authors = [
-  { name = "maromei", email = "void@some.where" },
+  { name = "maromei", email = "maxrob.meier@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -26,36 +26,43 @@ classifiers = [
 dependencies = []
 dynamic = ["version"]
 
+[tool.hatch.version]
+path = "src/python/__about__.py"
+
 [project.urls]
-Documentation = "https://github.com/maromei/apfc#readme"
+Documentation = "https://maromei.github.io/APFC"
 Issues = "https://github.com/maromei/apfc/issues"
 Source = "https://github.com/maromei/apfc"
 
-[tool.hatch.version]
-path = "apfc/__about__.py"
-
 [tool.hatch.envs.default]
 dependencies = [
-  "pytest",
-  "pytest-cov",
-]
-[tool.hatch.envs.default.scripts]
-cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=apfc --cov=tests {args}"
-no-cov = "cov --no-cov {args}"
-
-[[tool.hatch.envs.test.matrix]]
-python = ["37", "38", "39", "310", "311"]
-
-[tool.coverage.run]
-branch = true
-parallel = true
-omit = [
-  "apfc/__about__.py",
+  "seaborn",
+  "numpy",
+  "pandas",
+  "matplotlib",
+  "scipy"
 ]
 
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
+[tool.hatch.envs.doc]
+skip-install = true
+detached = true
+python = "3.10"
+dependencies = [
+  "sphinx",
+  "sphinx-autobuild",
+  "furo",
+  "myst-parser",
+  "breathe"
+]
+
+[tool.hatch.envs.doc.scripts]
+serve = "sphinx-autobuild docs/sphinx/source docs/sphinx/build/html"
+
+[tool.hatch.envs.styles]
+skip-install = true
+detached = true
+python = "3.10"
+dependencies = [
+  "pre-commit",
+  "black"
 ]
