@@ -17,7 +17,7 @@ def make_path_arg_absolute(path: str):
     return "/".join([os.getcwd(), path])
 
 
-def build_sim_info_str(config, index, theta=None, add_info=""):
+def build_sim_info_str(config, index, theta=None, add_info="", is_1d=False):
 
     theta_str = ""
     if theta is not None:
@@ -34,8 +34,8 @@ def build_sim_info_str(config, index, theta=None, add_info=""):
         initial Radius: {config['initRadius']:.4f}
         initial Eta in solid: {config['initEta']:.4f}
         interface width: {config['interfaceWidth']:.4f}
-        domain: $[-{config['xlim']}, {config['xlim']}]^2$
-        points: {config['numPts']} x {config['numPts']}
+        domain: $[-{config['xlim']}, {config['xlim']}]{'' if is_1d else '^2'}$
+        points: {config['numPts']} x {'1' if is_1d else config['numPts']}
         {add_info}
         \\end{{center}}
     """

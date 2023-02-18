@@ -73,6 +73,8 @@ def plot_single(frame, x, eta_path, axs, config, plot_i, args):
         eta_path, plot_i, config["numPts"], 1, eta_count, float
     )
 
+    n0 = rw.read_eta_at_line(f"{eta_path}/n0.txt", plot_i, config["numPts"], 1, float)
+
     eta_sum = np.zeros(config["numPts"], dtype=complex)
     for eta_i in range(eta_count):
         eta_sum += etas[eta_i].flatten() * np.conj(etas[eta_i].flatten())
@@ -84,6 +86,9 @@ def plot_single(frame, x, eta_path, axs, config, plot_i, args):
     axs[0].set_title(r"$\sum |\eta_i|^2$\vspace{1em}")
     axs[0].plot(x, eta_sum.flatten())
 
+    axs[1].set_title(r"$n_0$\vspace{1em}")
+    axs[1].plot(x, n0.flatten())
+
     if args.info:
 
         theta = None
@@ -93,8 +98,8 @@ def plot_single(frame, x, eta_path, axs, config, plot_i, args):
         txt = utils.build_sim_info_str(
             config, plot_i * config["writeEvery"], theta=theta, is_1d=True
         )
-        axs[1].axis("off")
-        axs[1].text(
+        axs[2].axis("off")
+        axs[2].text(
             0.5, 0.5, txt, verticalalignment="center", horizontalalignment="center"
         )
 
@@ -119,13 +124,13 @@ def plot_animate(frame, x, eta_path, axs, config, args):
 ###############
 
 if args.info:
-    fig = plt.figure(figsize=(10, 5))
-    axs = [plt.subplot(121), plt.subplot(122)]
+    fig = plt.figure(figsize=(10, 8))
+    axs = [plt.subplot(221), plt.subplot(222), plt.subplot(223)]
 
-    axs[1].axis("off")
+    axs[2].axis("off")
     txt = utils.build_sim_info_str(config, 0)
-    axs[1].text(0.5, 0.5, txt, verticalalignment="center", horizontalalignment="center")
-    axs[1].set_aspect("equal")
+    axs[2].text(0.5, 0.5, txt, verticalalignment="center", horizontalalignment="center")
+    axs[2].set_aspect("equal")
 
 else:
     fig = plt.figure()
@@ -134,6 +139,7 @@ else:
     ]
 
 axs[0].set_title(r"$\sum |\eta_i|^2$\vspace{1em}")
+axs[1].set_title(r"$n_0$\vspace{1em}")
 
 plt.tight_layout()
 

@@ -1,26 +1,41 @@
 # Fourier
 
-## Base equation
+## Energy Functional and Flow
 
-General Representation
+Energy Functional {cite:p}`2022Salvalaglio_apfc_overview`:
 
 $$
 \begin{equation}
-\frac{\partial \eta_m}{\partial t} \approx
+    F = \int_\Omega \mathrm{d} \boldsymbol{r} \left[
+        \frac{B}{2} \Phi + \frac{3D}{4} \Phi^2 +
+        \sum\limits_m \left(
+            A | \mathcal{G}_m \eta_m |^2 - \frac{3 D}{2} |\eta_m|^4
+        \right)
+        + f^s + E
+    \right]
+\end{equation}
+$$
+
+Gradient Flow {cite:p}`2022Salvalaglio_apfc_overview`:
+
+$$
+\begin{equation}
+\frac{\partial \eta_m}{\partial t} = \mathcal{L}_m \frac{\delta F}{\delta \eta_m^*} \approx
 - | \boldsymbol{G}_m |^2 \left[
     A \mathcal{G}_m^2 \eta_m + B \eta_m + 3 D (\Phi - |\eta_m|^2) \eta_m + \frac{\partial f^s}{\partial \eta_m^*}
 \right]
 \end{equation}
 $$ (eqn:apfc_flow)
 
-With
+With {cite:p}`2022Salvalaglio_apfc_overview` {cite:p}`2010Yeon_apfc_density`
 
 $$
 \begin{aligned}
 A &= B^x \\
 B &= \Delta B^0 - 2 t n_0 + 3 v n_0^2 \\
-C &= - (t + 3 n_0) \\
+C &= - t + 3 v n_0 \\
 D &= v \\
+E &= \Delta B^0 \frac{n_0^2}{2} - t \frac{n_0^3}{3} + v \frac{n_0^4}{4} \\
 \Phi &= 2 \sum\limits_m^M |\eta_m|^2 \\
 \mathcal{G}_m &= \nabla^2 + 2 \mathbb{i} \boldsymbol{G}_m \nabla
 \end{aligned}

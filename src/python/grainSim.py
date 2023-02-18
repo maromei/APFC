@@ -5,7 +5,7 @@ import datetime
 import time
 
 import numpy as np
-from sim import eta_builder, rfft_sim, utils
+from sim import eta_builder, rfft_sim, fft_n0, utils
 
 #####################
 ## SETUP ARGUMENTS ##
@@ -17,12 +17,8 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument("sim_path")
 parser.add_argument("-cdb0", "--calcdb0", action="store_true")
-parser.add_argument("-cie", "--calciniteta", action="store_true")
-parser.add_argument("-cie2m", "--calciniteta2m", action="store_true")
-parser.add_argument("-cie2p", "--calciniteta2p", action="store_true")
-parser.add_argument("-csimp", "--calcsimplevariables", action="store_true")
 parser.add_argument("-con", "--continuesim", action="store_true")
-
+parser.add_argument("-n0", "--n0", action="store_true")
 
 args = parser.parse_args()
 
@@ -55,21 +51,8 @@ if args.calcdb0:
     dB0 = 8.0 * t**2 / (135.0 * v) * db0_fac
     config["dB0"] = dB0
 
-if args.calcsimplevariables:
-
-    config["A"] = Bx
-    config["B"] = dB0 - 2.0 * t * n0 + 3.0 * v * n0**2
-    config["C"] = -t - 3.0 * n0
-    config["D"] = v
-
-if args.calciniteta:
-    config["initEta"] = 4.0 * t / (45.0 * v)
-
-if args.calciniteta2m:
-    config["initEta"] = (t - np.sqrt(t**2 - 15.0 * v * dB0)) / 15.0 * v
-
-if args.calciniteta2p:
-    config["initEta"] = (t + np.sqrt(t**2 - 15.0 * v * dB0)) / 15.0 * v
+eta_builder.init_config(config)
+eta_builder.init_eta_height(config)
 
 config["sim_path"] = sim_path
 
@@ -85,11 +68,16 @@ start_time = time.time()
 curr_date_time = datetime.datetime.now()
 print(f"Starting Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
+if args.n0:
+    SimClass = fft_n0.FFTSim
+else:
+    SimClass = rfft_sim.FFTSim
+
 if args.continuesim:
-    sim = rfft_sim.FFTSim(config, eta_builder.load_from_file)
+    sim = SimClass(config, eta_builder.load_from_file)
     ignore_first_write = True
 else:
-    sim = rfft_sim.FFTSim(config, eta_builder.single_grain)
+    sim = SimClass(config, eta_builder.single_grain)
     sim.reset_out_files(sim_path)
     ignore_first_write = False
 

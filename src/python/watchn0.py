@@ -63,26 +63,36 @@ dpi = int(dpi)
 ##############
 
 x = np.linspace(-config["xlim"], config["xlim"], config["numPts"])
+xm, ym = np.meshgrid(x, x)
 
 
-def plot_single(frame, x, eta_path, axs, config, plot_i, args):
+def plot_single(
+    frame, xm, ym, eta_path, axs, config, plot_i, args, cax=None, cax_n0=None
+):
 
     eta_count = np.array(config["G"]).shape[0]
 
     etas = rw.read_all_etas_at_line(
-        eta_path, plot_i, config["numPts"], 1, eta_count, float
+        eta_path, plot_i, config["numPts"], config["numPts"], eta_count, float
     )
 
-    eta_sum = np.zeros(config["numPts"], dtype=complex)
+    n0 = rw.read_eta_at_line(
+        f"{eta_path}/n0.txt", plot_i, config["numPts"], config["numPts"], float
+    )
+
+    eta_sum = np.zeros((config["numPts"], config["numPts"]), dtype=complex)
     for eta_i in range(eta_count):
-        eta_sum += etas[eta_i].flatten() * np.conj(etas[eta_i].flatten())
+        eta_sum += etas[eta_i] * np.conj(etas[eta_i])
     eta_sum = np.real(eta_sum).astype(float)
 
     for ax in axs:
         ax.cla()
 
     axs[0].set_title(r"$\sum |\eta_i|^2$\vspace{1em}")
-    axs[0].plot(x, eta_sum.flatten())
+    cont = axs[0].contourf(xm, ym, eta_sum, 100)
+
+    axs[1].set_title(r"$n_0$\vspace{1em}")
+    cont_n0 = axs[1].contourf(xm, ym, n0, 100)
 
     if args.info:
 
@@ -91,18 +101,26 @@ def plot_single(frame, x, eta_path, axs, config, plot_i, args):
             theta = float(args.split)
 
         txt = utils.build_sim_info_str(
-            config, plot_i * config["writeEvery"], theta=theta, is_1d=True
+            config, plot_i * config["writeEvery"], theta=theta
         )
-        axs[1].axis("off")
-        axs[1].text(
+        axs[2].axis("off")
+        axs[2].text(
             0.5, 0.5, txt, verticalalignment="center", horizontalalignment="center"
         )
+
+    if cax is None:
+        plt.colorbar(cont)
+        plt.colorbar(cont_n0)
+
+    else:
+        plt.colorbar(cont, cax=cax)
+        plt.colorbar(cont_n0, cax=cax_n0)
 
 
 index = 0
 
 
-def plot_animate(frame, x, eta_path, axs, config, args):
+def plot_animate(frame, xm, ym, eta_path, axs, config, args, cax, cax_n0):
 
     global index
 
@@ -111,7 +129,7 @@ def plot_animate(frame, x, eta_path, axs, config, args):
     if index == eta_count:
         index = 0
 
-    plot_single(frame, x, eta_path, axs, config, index, args)
+    plot_single(frame, xm, ym, eta_path, axs, config, index, args, cax, cax_n0)
 
     index += 1
 
@@ -119,21 +137,22 @@ def plot_animate(frame, x, eta_path, axs, config, args):
 ###############
 
 if args.info:
-    fig = plt.figure(figsize=(10, 5))
-    axs = [plt.subplot(121), plt.subplot(122)]
+    fig = plt.figure(figsize=(10, 8))
+    axs = [plt.subplot(221), plt.subplot(222), plt.subplot(223)]
 
-    axs[1].axis("off")
+    axs[2].axis("off")
     txt = utils.build_sim_info_str(config, 0)
-    axs[1].text(0.5, 0.5, txt, verticalalignment="center", horizontalalignment="center")
-    axs[1].set_aspect("equal")
+    axs[2].text(0.5, 0.5, txt, verticalalignment="center", horizontalalignment="center")
 
 else:
     fig = plt.figure()
-    axs = [
-        plt.subplot(111),
-    ]
+    axs = [plt.subplot(121), plt.subplot(122)]
+
+for ax in axs:
+    ax.set_aspect("equal")
 
 axs[0].set_title(r"$\sum |\eta_i|^2$\vspace{1em}")
+axs[1].set_title(r"$n_0$\vspace{1em}")
 
 plt.tight_layout()
 
@@ -141,13 +160,19 @@ plt.tight_layout()
 
 if args.animate:
 
+    div = make_axes_locatable(axs[0])
+    cax = div.append_axes("right", "5%", "5%")
+
+    div_n0 = make_axes_locatable(axs[1])
+    cax_n0 = div_n0.append_axes("right", "5%", "5%")
+
     frames = rw.count_lines(f"{eta_path}/out_0.txt")
 
     ani = FuncAnimation(
         fig,
         plot_animate,
         interval=frame_time,
-        fargs=(x, eta_path, axs, config, args),
+        fargs=(xm, ym, eta_path, axs, config, args, cax, cax_n0),
         frames=frames,
     )
 
@@ -161,7 +186,7 @@ else:
     if plot_i < 0:
         eta_count = rw.count_lines(f"{eta_path}/out_0.txt")
         plot_i = eta_count - np.abs(plot_i)
-    plot_single(None, x, eta_path, axs, config, plot_i, args)
+    plot_single(None, xm, ym, eta_path, axs, config, plot_i, args)
 
     if args.save:
         plt.savefig(f"{sim_path}/watch_{plot_i}.png", dpi=dpi)
