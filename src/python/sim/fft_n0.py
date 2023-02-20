@@ -51,7 +51,8 @@ class FFTSim:
         self.init_n0 = config.get("n0", self.init_n0)
 
         self.dB0 = config.get("dB0", self.dB0)
-        self.lbd = self.A + self.dB0
+        self.Bx = config.get("Bx")
+        self.lbd = self.Bx + self.dB0
 
         self.xlim = config.get("xlim", self.xlim)
         self.ylim = config.get("ylim")
@@ -222,12 +223,12 @@ class FFTSim:
 
         return 2.0 * eta_sum
 
-    def n0_routine_solve(self):
+    def n0_routine_solver(self):
 
         phi = self.get_phi()
         eta_prod = self.get_eta_prod()
 
-        lagr = phi * 3.0 * self.v + self.dB0
+        lagr = phi * 3.0 * self.v + self.lbd
 
         n = -phi * self.t
         n += 3.0 * self.v * eta_prod
@@ -259,7 +260,7 @@ class FFTSim:
         phi = self.get_phi()
         eta_prod = self.get_eta_prod()
 
-        lagr = phi * 3.0 * self.v + self.dB0
+        lagr = phi * 3.0 * self.v + self.lbd
 
         n = -phi * self.t
         n += 3.0 * self.v * eta_prod
