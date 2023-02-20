@@ -132,6 +132,18 @@ def theta_thread(thetas, config, eta_path, continue_sim, index, args):
 
         ### run sim ###
 
+        for _ in range(config.get("eqSteps", 0)):
+
+            sim.n0_old = sim.n0.copy()
+            sim.n0 = sim.n0_routine_cg()
+
+            n_etas = np.zeros(sim.etas.shape, dtype=float)
+
+            for eta_i in range(sim.eta_count):
+                n_etas[eta_i, :, :] = sim.eta_routine(eta_i)
+
+            sim.etas = n_etas
+
         if not ignore_first_write:
             sim.write(theta_path)
 

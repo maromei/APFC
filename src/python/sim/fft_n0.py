@@ -1,6 +1,7 @@
 from typing import Callable
 
 import numpy as np
+from scipy.sparse.linalg import cg
 
 
 class FFTSim:
@@ -60,6 +61,8 @@ class FFTSim:
 
         self.G = np.array(config["G"])
         self.eta_count = self.G.shape[0]
+
+        self.config = config
 
         ##############
         ## BUILDING ##
@@ -129,8 +132,8 @@ class FFTSim:
         self.build_grid()
         self.build_eta(eta_builder, config)
         self.build_gsq_hat()
-        self.build_n0()
         self.build_laplace_op()
+        self.build_n0()
 
     #########################
     ## SIM FUNCTIONS - ETA ##
@@ -191,7 +194,7 @@ class FFTSim:
     def B(self, n0):
 
         ret = self.dB0
-        ret += -2.0 * self.t * self.n0
+        ret -= 2.0 * self.t * self.n0
         ret += 3.0 * self.v * self.n0**2
 
         return ret
@@ -219,17 +222,47 @@ class FFTSim:
 
         return 2.0 * eta_sum
 
+    def n0_routine_solve(self):
+
+        phi = self.get_phi()
+        eta_prod = self.get_eta_prod()
+
+        lagr = phi * 3.0 * self.v + self.dB0
+
+        n = -phi * self.t
+        n += 3.0 * self.v * eta_prod
+        n -= self.t * self.n0**2
+        n += self.v * self.n0**3
+
+        n = np.fft.fft2(n)
+
+        n_n0 = np.zeros(n.shape, dtype=complex)
+
+        for i in range(n.shape[0]):
+            for j in range(n.shape[1]):
+
+                A = np.array(
+                    [[1.0 / self.dt, -self.laplace_op[i, j]], [-lagr[i, j], 1]]
+                )
+
+                b = np.array([self.n0[i, j] / self.dt, n[i, j]])
+
+                # out, _ = cg(A, b)
+                out = np.linalg.solve(A, b)
+
+                n_n0[i, j] = out[0]
+
+        return np.real(np.fft.ifft2(n_n0, s=self.etas[0].shape))
+
     def n0_routine(self):
 
         phi = self.get_phi()
         eta_prod = self.get_eta_prod()
 
         lagr = phi * 3.0 * self.v + self.dB0
-        # lagr = phi * 3. * self.v + self.lbd
 
-        n = -phi * self.t - 3.0 * self.v * eta_prod
-        # n = - phi * self.t + eta_prod * self.a
-
+        n = -phi * self.t
+        n += 3.0 * self.v * eta_prod
         n -= self.t * self.n0**2
         n += self.v * self.n0**3
 
@@ -249,6 +282,9 @@ class FFTSim:
 
         self.n0_old = self.n0.copy()
         self.n0 = self.n0_routine()
+
+        if self.config["keepEtaConst"]:
+            return
 
         n_etas = np.zeros(self.etas.shape, dtype=float)
 
