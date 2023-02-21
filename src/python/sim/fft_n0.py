@@ -166,14 +166,20 @@ class FFTSim:
         eta_conj1 = np.conj(self.etas[other_etas[0]])
         eta_conj2 = np.conj(self.etas[other_etas[1]])
 
-        n = 3.0 * self.D * self.amp_abs_sq_sum(eta_i) * self.etas[eta_i]
-        n += 2.0 * self.C(self.n0) * eta_conj1 * eta_conj2
+        n = 3.0 * self.D * self.amp_abs_sq_sum(eta_i)
+        n += 3.0 * self.v * self.n0_old**2
+        n -= 2.0 * self.t * self.n0_old
+        n *= self.etas[eta_i]
+
+        n += 2.0 * self.C(self.n0_old) * eta_conj1 * eta_conj2
+
         n = np.fft.fft2(n)
+
         return -1.0 * n * np.linalg.norm(self.G[eta_i]) ** 2
 
     def lagr_hat(self, eta_i: int):
 
-        lagr = self.A * self.g_sq_hat[eta_i] + self.B(self.n0)
+        lagr = self.A * self.g_sq_hat[eta_i] + self.dB0
         return -1.0 * lagr * np.linalg.norm(self.G[eta_i]) ** 2
 
     def eta_routine(self, eta_i: int) -> np.array:
@@ -181,10 +187,14 @@ class FFTSim:
         lagr = self.lagr_hat(eta_i)
         n = self.n_hat(eta_i)
 
-        exp_lagr = np.exp(lagr * self.dt)
+        denom = 1.0 - self.dt * lagr
+        n_eta = np.fft.fft2(self.etas[eta_i]) + self.dt * n
+        n_eta = n_eta / denom
+
+        """exp_lagr = np.exp(lagr * self.dt)
 
         n_eta = exp_lagr * np.fft.fft2(self.etas[eta_i])
-        n_eta += ((exp_lagr - 1.0) / lagr) * n
+        n_eta += ((exp_lagr - 1.0) / lagr) * n"""
 
         return np.real(np.fft.ifft2(n_eta, s=self.etas[0].shape))
 
@@ -260,12 +270,13 @@ class FFTSim:
         phi = self.get_phi()
         eta_prod = self.get_eta_prod()
 
-        lagr = phi * 3.0 * self.v + self.lbd
+        lagr = self.lbd
 
         n = -phi * self.t
         n += 3.0 * self.v * eta_prod
         n -= self.t * self.n0**2
         n += self.v * self.n0**3
+        n += phi * 3.0 * self.v * self.n0
 
         n = np.fft.fft2(n)
 
