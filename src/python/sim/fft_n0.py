@@ -70,7 +70,7 @@ class FFTSim:
         ## BUILDING ##
         ##############
 
-        self.build(config, con_sim)
+        self.build(con_sim, config)
 
     ########################
     ## BUILDING FUNCTIONS ##

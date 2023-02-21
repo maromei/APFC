@@ -93,6 +93,7 @@ def theta_thread(thetas, config, eta_path, continue_sim, index, args):
     total_steps = thetas.shape[0] * step_count
 
     G_original = np.array(config["G"])
+    config_original = config.copy()
 
     for theta_i, theta in enumerate(thetas):
 
@@ -101,6 +102,9 @@ def theta_thread(thetas, config, eta_path, continue_sim, index, args):
         theta_path = f"{eta_path}/{theta:.4f}"
         if not os.path.exists(theta_path):
             os.makedirs(theta_path)
+
+        config = config_original.copy()
+        config["sim_path"] = theta_path
 
         ### rotate G in config ###
 
