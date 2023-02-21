@@ -5,7 +5,6 @@
 :caption: 'Contents:'
 
 fourier
-finite_differences
 other
 bibliography
 ```
