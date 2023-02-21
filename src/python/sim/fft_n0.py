@@ -200,11 +200,6 @@ class FFTSim:
         n_eta = np.fft.fft2(self.etas[eta_i]) + self.dt * n
         n_eta = n_eta / denom
 
-        """exp_lagr = np.exp(lagr * self.dt)
-
-        n_eta = exp_lagr * np.fft.fft2(self.etas[eta_i])
-        n_eta += ((exp_lagr - 1.0) / lagr) * n"""
-
         return np.real(np.fft.ifft2(n_eta, s=self.etas[0].shape))
 
     ########################
