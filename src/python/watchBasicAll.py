@@ -28,6 +28,7 @@ parser.add_argument("-a", "--animate", action="store_true")
 parser.add_argument("-i", "--info", action="store_true")
 parser.add_argument("-save", "--save", action="store_true")
 parser.add_argument("-dpi", "--dpi", action="store")
+parser.add_argument("-pe", "--plot-every", action="store", default=1, type=int)
 
 args = parser.parse_args()
 
@@ -114,7 +115,10 @@ def plot_animate(frame, xm, ym, eta_path, axs, config, args, cax):
 
     eta_count = rw.count_lines(f"{eta_path}/out_0.txt")
 
-    if index == eta_count:
+    while index % args.plot_every != 0:
+        index += 1
+
+    if index >= eta_count:
         index = 0
 
     plot_single(frame, xm, ym, eta_path, axs, config, index, args, cax)
