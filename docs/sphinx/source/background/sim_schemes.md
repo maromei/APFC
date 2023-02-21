@@ -3,7 +3,7 @@
 ## Just the amplitudes
 
 We use the gradient flow for the amplitudes (eq. {eq}`eqn:apfc_flow`) and
-the [Fourier ETD scheme](ch:fourier_etd). The linear and non linear part
+[this](ch:fourier_etd) fourier scheme. The linear and non linear part
 are chosen as follows:
 
 $$
@@ -28,10 +28,11 @@ $$ (eqn:g_sq_op_fourier)
 
 Where $k_x$ and $k_y$ are the frequency variables.
 
+(ch:scheme_ampl_n0)=
 ## Amplitudes and average density
 
-For both the amplitudes and the densities the
-[Fourier IMEX scheme](ch:fourier_imex) scheme is used.
+For both the amplitudes and the densities
+[this](ch:fourier_imex) scheme is used.
 
 For the amplitudes the linear and non-linear part can not be chosen in the
 same way as in eq. {eq}`eqn:linnonlinjustamplitudes`, since $B$ contains
@@ -50,7 +51,7 @@ N = - |\boldsymbol{G}_m|^2 \left[
 $$ (eqn:linnonlinn0amplitudes)
 
 For the average density (eq. {eq}`eqn:apfc_n0_flow`)
-only $\Delta B^0 n_0$ can be used as the linear part.
+only $(\Delta B^0 + B^x) n_0$ can be used as the linear part.
 
 $$
 \begin{gathered}
