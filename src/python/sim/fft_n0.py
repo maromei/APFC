@@ -2,6 +2,7 @@ from typing import Callable
 
 import numpy as np
 from scipy.sparse.linalg import cg
+from . import eta_builder
 
 
 class FFTSim:
@@ -38,7 +39,7 @@ class FFTSim:
 
     eta_count: int = 0
 
-    def __init__(self, config: dict, eta_builder: Callable):
+    def __init__(self, config: dict, con_sim: bool = False):
 
         #########################
         ## VARIABLE ASSIGNMENT ##
@@ -69,7 +70,7 @@ class FFTSim:
         ## BUILDING ##
         ##############
 
-        self.build(eta_builder, config)
+        self.build(config, con_sim)
 
     ########################
     ## BUILDING FUNCTIONS ##
@@ -116,10 +117,14 @@ class FFTSim:
         for eta_i in range(self.eta_count):
             self.g_sq_hat[eta_i, :, :] = self.g_sq_hat_fnc(eta_i)
 
-    def build_n0(self):
+    def build_n0(self, con_sim, config):
 
-        self.n0 = np.ones(self.xm.shape, dtype=float) * self.init_n0
-        self.n0_old = np.ones(self.xm.shape, dtype=float) * self.init_n0
+        if con_sim:
+            self.n0 = eta_builder.load_n0_from_file(self.xm, config)
+        else:
+            self.n0 = np.ones(self.xm.shape, dtype=float) * self.init_n0
+
+        self.n0_old = self.n0.copy()
 
     def build_laplace_op(self):
         """
@@ -128,13 +133,17 @@ class FFTSim:
 
         self.laplace_op = -(self.kxm**2 + self.kym**2)
 
-    def build(self, eta_builder: Callable, config: dict):
+    def build(self, con_sim: bool, config: dict):
 
         self.build_grid()
-        self.build_eta(eta_builder, config)
+        if con_sim:
+            self.build_eta(eta_builder.load_from_file, config)
+        else:
+            self.build_eta(eta_builder.center_line, config)
+
         self.build_gsq_hat()
         self.build_laplace_op()
-        self.build_n0()
+        self.build_n0(con_sim, config)
 
     #########################
     ## SIM FUNCTIONS - ETA ##

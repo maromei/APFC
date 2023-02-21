@@ -121,14 +121,11 @@ def theta_thread(thetas, config, eta_path, continue_sim, index, args):
         else:
             SimClass = fft_sim_1d.FFTSim
 
-        if continue_sim:
-            config["sim_path"] = theta_path
-            sim = SimClass(config, eta_builder.load_from_file)
-            ignore_first_write = True
-        else:
-            sim = SimClass(config, eta_builder.center_line)
+        sim = SimClass(config, continue_sim)
+        ignore_first_write = continue_sim
+
+        if not continue_sim:
             sim.reset_out_files(theta_path)
-            ignore_first_write = False
 
         ### run sim ###
 

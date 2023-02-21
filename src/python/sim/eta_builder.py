@@ -23,6 +23,12 @@ def load_from_file(xm, ym, config, eta_i):
     return eta
 
 
+def load_n0_from_file(xm, config):
+    out_path = f"{config['sim_path']}/n0.txt"
+    n0, _ = rw.read_eta_last_file(out_path, xm.shape[0], xm.shape[1], dtype=float)
+    return n0
+
+
 def center_line(xm, ym, config, eta_i):
 
     eta = tanhmin(np.abs(xm) - config["initRadius"], config["interfaceWidth"])

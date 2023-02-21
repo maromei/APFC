@@ -1,6 +1,7 @@
 from typing import Callable
 
 import numpy as np
+from . import eta_builder
 
 
 def fft2(arr):
@@ -50,7 +51,7 @@ class FFTSim:
 
     pts_is_odd = False
 
-    def __init__(self, config: dict, eta_builder: Callable):
+    def __init__(self, config: dict, con_sim: bool):
 
         #########################
         ## VARIABLE ASSIGNMENT ##
@@ -74,7 +75,7 @@ class FFTSim:
         ## BUILDING ##
         ##############
 
-        self.build(eta_builder, config)
+        self.build(con_sim, config)
 
     ########################
     ## BUILDING FUNCTIONS ##
@@ -117,10 +118,15 @@ class FFTSim:
         for eta_i in range(self.eta_count):
             self.g_sq_hat[eta_i, :, :] = self.g_sq_hat_fnc(eta_i)
 
-    def build(self, eta_builder: Callable, config: dict):
+    def build(self, con_sim: bool, config: dict):
 
         self.build_grid()
-        self.build_eta(eta_builder, config)
+
+        if con_sim:
+            self.build_eta(eta_builder.load_from_file, config)
+        else:
+            self.build_eta(eta_builder.center_line, config)
+
         self.build_gsq_hat()
 
     ###################
