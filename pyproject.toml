@@ -58,6 +58,7 @@ dependencies = [
 
 [tool.hatch.envs.doc.scripts]
 serve = "sphinx-autobuild docs/sphinx/source docs/sphinx/build/html"
+clean = "cd docs/sphinx && make clean"
 
 [tool.hatch.envs.styles]
 skip-install = true
