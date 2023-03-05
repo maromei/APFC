@@ -6,11 +6,19 @@
 
 $$
 \begin{equation}
-    \phi_{\pm} = \frac{t \pm \sqrt{t^2 - 15 v \left( \Delta B_0 + (\beta^2 - 1)^2\right)}}{15 v}
+    \phi_{\pm} = \frac{-C \pm \sqrt{C^2 - 15 v B}}{15 v}
 \end{equation}
 $$
 
-The source talks about (A)PFC with the $\beta$ parameter to controll corner rounding. $\beta$ can be set to 1.
+Obtained by minimizing energy functional.
+
+$$
+\begin{gathered}
+F = \int_\Omega \mathrm{d}r f \\
+\partial_eta f = 0
+\end{gathered}
+$$
+
 Take $\phi_-$ if $n_0 > t$ and $\phi_+$ otherwise [SOURCE TODO].
 
 ```{eval-rst}
