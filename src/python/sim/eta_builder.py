@@ -55,21 +55,23 @@ def init_config(config):
     config["D"] = v
 
 
-def init_eta_height(config, use_pm=False):
+def init_eta_height(config, use_pm=False, use_n0=False):
 
     t = config["t"]
     v = config["v"]
-    n0 = config["n0"]
+    n0 = config["n0"] if use_n0 else 0.0
     dB0 = config["dB0"]
 
     if not use_pm:
         config["initEta"] = 4.0 * t / (45.0 * v)
         return
 
-    if n0 > t:
-        config["initEta"] = (t - np.sqrt(t**2 - 15.0 * v * dB0)) / 15.0 * v
-    else:
-        config["initEta"] = (t + np.sqrt(t**2 - 15.0 * v * dB0)) / 15.0 * v
+    B = dB0 - 2 * t * n0 + 3 * v * n0**2
+    C = -t + 3 * v * n0
+
+    sign = -1 if n0 > t else 1
+
+    config["initEta"] = (-C + sign * np.sqrt(C**2 - 15 * v * B)) / 15 * v
 
 
 def init_n0_height(
