@@ -76,4 +76,4 @@ $$
 \text{with} \quad
 \widehat{\nabla^2} = -(k_x^2 + k_y^2)
 \end{gathered}
-$$ (eqn:imex_scheme)
+$$ (eqn:n0sim_imex_scheme)
