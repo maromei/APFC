@@ -25,6 +25,7 @@ parser.add_argument("-tc", "--threadcount", action="store")
 parser.add_argument("-n0", "--n0", action="store_true")
 parser.add_argument("-nce", "--nocalceta", action="store_true")
 parser.add_argument("-ceqn0", "--calceqn0", action="store_true")
+parser.add_argument("-in0", "--ignoren0", action="store_true")
 
 args = parser.parse_args()
 
@@ -65,7 +66,7 @@ if args.calcdb0:
 eta_builder.init_config(config)
 
 if not args.nocalceta:
-    use_n0 = not args.calceqn0 and args.n0
+    use_n0 = not args.calceqn0 and args.n0 and not args.ignoren0
     eta_builder.init_eta_height(config, use_pm=True, use_n0=use_n0)
 
 if args.calceqn0:
