@@ -70,3 +70,49 @@ def init_eta_height(config, use_pm=False):
         config["initEta"] = (t - np.sqrt(t**2 - 15.0 * v * dB0)) / 15.0 * v
     else:
         config["initEta"] = (t + np.sqrt(t**2 - 15.0 * v * dB0)) / 15.0 * v
+
+
+def init_n0_height(
+    config: dict,
+    x0: float = 0.0,
+    ATOL: float = 1e-5,
+    RTOL: float = 1e-5,
+    MAXITER: int = 1000000,
+):
+    """
+    uses initEta in config to set equilibrium n0
+
+    uses newton method
+    """
+
+    phi = 6 * config["initEta"] ** 2
+    p = 4 * config["initEta"] ** 3
+
+    a = config["dB0"] + config["Bx"] + 3 * config["v"] * phi
+    c = phi * config["t"]
+    d = 3 * config["v"] * p
+
+    def f(n0, a, v, t, c, d):
+        return a * n0 - t * n0**2 + v * n0**3 + d - c
+
+    def df(n0, a, v, t):
+        return a - 2 * t * n0 + 3 * v * n0**2
+
+    xold = x0 + 100.0
+    xnew = x0
+
+    k = 0
+    while np.abs(xnew - xold) > np.abs(xnew) * RTOL + ATOL:
+
+        xold = xnew
+        fval = f(xold, a, config["v"], config["t"], c, d)
+        dfval = df(xold, a, config["v"], config["t"])
+
+        xnew = xold - fval / dfval
+        k += 1
+
+        if k > MAXITER:
+            print("REACHED MAX ITER ON n0 CALCULATION!")
+            break
+
+    config["n0"] = -0.5 * xnew
