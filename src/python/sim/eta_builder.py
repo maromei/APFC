@@ -71,7 +71,7 @@ def init_eta_height(config, use_pm=False, use_n0=False):
 
     sign = -1 if n0 > t else 1
 
-    config["initEta"] = (-C + sign * np.sqrt(C**2 - 15 * v * B)) / 15 * v
+    config["initEta"] = (-C + sign * np.sqrt(C**2 - 15 * v * B)) / (15 * v)
 
 
 def init_n0_height(
