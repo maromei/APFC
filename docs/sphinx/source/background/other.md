@@ -15,7 +15,7 @@ Obtained by minimizing energy functional.
 $$
 \begin{gathered}
 F = \int_\Omega \mathrm{d}r f \\
-\partial_eta f = 0
+\partial_\eta f = 0
 \end{gathered}
 $$
 
