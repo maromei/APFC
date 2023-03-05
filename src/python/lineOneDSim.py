@@ -24,6 +24,7 @@ parser.add_argument("-con", "--continuesim", action="store_true")
 parser.add_argument("-tc", "--threadcount", action="store")
 parser.add_argument("-n0", "--n0", action="store_true")
 parser.add_argument("-nce", "--nocalceta", action="store_true")
+parser.add_argument("-ceqn0", "--calceqn0", action="store_true")
 
 args = parser.parse_args()
 
@@ -65,6 +66,9 @@ eta_builder.init_config(config)
 
 if not args.nocalceta:
     eta_builder.init_eta_height(config)
+
+if args.calceqn0:
+    eta_builder.init_n0_height(config)
 
 config["sim_path"] = sim_path
 
