@@ -65,7 +65,8 @@ if args.calcdb0:
 eta_builder.init_config(config)
 
 if not args.nocalceta:
-    eta_builder.init_eta_height(config, use_pm=True, use_n0=True)
+    use_n0 = not args.calceqn0 and args.n0
+    eta_builder.init_eta_height(config, use_pm=True, use_n0=use_n0)
 
 if args.calceqn0:
     eta_builder.init_n0_height(config)
