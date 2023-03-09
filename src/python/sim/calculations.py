@@ -51,11 +51,41 @@ def calc_single_surf_en_1d(x, y, dx, theta, G, A):
     deta = np.gradient(y, dx)
     d2eta = np.gradient(deta, dx)
 
+    """gsq = (G[0] * np.cos(theta) + G[1] * np.sin(theta))**2
+
+    integ = deta * d2eta
+    integ -= 4 * gsq * deta**2
+    integ += 2 * d2eta**2
+
+    return 2 *A * scipy.integrate.simpson(integ, x)"""
+
+    """gsq = (G[0] * np.cos(theta) + G[1] * np.sin(theta))**2
     curv = d2eta * (1.0 + deta**2) ** (-1.5)
+
+    integ = 8 * A * gsq * deta**2
+    integ += 4 * A * curv**2 * deta**4
+
+    integ = scipy.integrate.simpson(integ, x)"""
+
+    """curv = d2eta * (1.0 + deta**2) ** (-1.5)
 
     integ = 8 * A * (G[0] * np.cos(theta) + G[1] * np.sin(theta)) ** 2
     integ += scipy.integrate.simpson(integ * deta**2, x)
-    integ += scipy.integrate.simpson(4 * A * curv**2 * deta**4, x)
+    integ += scipy.integrate.simpson(4 * A * curv**2 * deta**4, x)"""
+
+    """gsq = (G[0] * np.cos(theta) + G[1] * np.sin(theta))**2
+    integ = 8 * gsq * deta**2
+    integ += deta * d2eta
+    integ += 4 * d2eta**2
+    integ = A * scipy.integrate.simpson(integ, x)"""
+
+    d3eta = np.gradient(d2eta, dx)
+    gsq = (G[0] * np.cos(theta) + G[1] * np.sin(theta)) ** 2
+
+    integ = 8 * gsq * deta**2
+    integ += 4 * d2eta**2
+    integ -= 2 * deta * d3eta
+    integ = A * scipy.integrate.simpson(integ, x)
 
     return integ
 
