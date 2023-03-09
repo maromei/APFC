@@ -15,7 +15,6 @@ author = "maromei"
 
 extensions = [
     "myst_parser",  # use markdown
-    "breathe",  # for doxygen doc
     "sphinx.ext.mathjax",  # display math in docstrings
     "sphinx.ext.napoleon",  # Numpy docstrings
     "sphinxcontrib.bibtex",  # Bibliography
@@ -31,9 +30,6 @@ bibtex_reference_style = "super"
 
 templates_path = ["_templates"]
 exclude_patterns = []
-
-breathe_projects = {"apfc": "../../doxygen/xml/"}
-breathe_default_project = "apfc"
 
 myst_enable_extensions = ["dollarmath", "amsmath"]
 
