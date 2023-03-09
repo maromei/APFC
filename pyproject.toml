@@ -52,13 +52,12 @@ dependencies = [
   "sphinx-autobuild",
   "furo",
   "myst-parser",
-  "breathe",
   "sphinxcontrib-bibtex"
 ]
 
 [tool.hatch.envs.doc.scripts]
-serve = "sphinx-autobuild docs/sphinx/source docs/sphinx/build/html"
-clean = "cd docs/sphinx && make clean"
+serve = "sphinx-autobuild docs/source docs/build/html"
+clean = "cd docs/ && make clean"
 
 [tool.hatch.envs.styles]
 skip-install = true
