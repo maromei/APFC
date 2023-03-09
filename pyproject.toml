@@ -27,7 +27,7 @@ dependencies = []
 dynamic = ["version"]
 
 [tool.hatch.version]
-path = "src/python/__about__.py"
+path = "src/__about__.py"
 
 [project.urls]
 Documentation = "https://maromei.github.io/APFC"
