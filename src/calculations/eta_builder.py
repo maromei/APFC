@@ -1,9 +1,19 @@
 import numpy as np
 
-from . import read_write as rw
+from manage import read_write as rw
 
 
 def tanhmin(radius: np.array, eps: float) -> np.array:
+    """
+    Applies the tanh minimization function for initialization.
+
+    Args:
+        radius (np.array): _description_
+        eps (float): _description_
+
+    Returns:
+        np.array: _description_
+    """
     return 0.5 * (1.0 + np.tanh(-3.0 * radius / eps))
 
 
