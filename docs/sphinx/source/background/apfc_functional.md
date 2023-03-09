@@ -12,7 +12,7 @@ $$
         + f^s + E
     \right]
 \end{equation}
-$$
+$$ (eqn:apfc_energy_functional)
 
 With {cite:p}`2022Salvalaglio_apfc_overview` {cite:p}`2010Yeon_apfc_density`
 
