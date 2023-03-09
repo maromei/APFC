@@ -23,7 +23,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = ["numpy"]
 dynamic = ["version"]
 
 [tool.hatch.version]
@@ -44,8 +44,6 @@ dependencies = [
 ]
 
 [tool.hatch.envs.doc]
-skip-install = true
-detached = true
 python = "3.10"
 dependencies = [
   "sphinx",
