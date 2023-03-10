@@ -1,6 +1,6 @@
-# Other
+# Initialization
 
-## Initializing real amplitudes
+## Real amplitudes
 
 {cite:t}`2022Salvalaglio_apfc_elastic_inclusion`:
 

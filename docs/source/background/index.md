@@ -8,6 +8,6 @@ apfc_functional
 fourier
 sim_schemes
 surf_en_stiff_wulf
-other
+init
 bibliography
 ```
