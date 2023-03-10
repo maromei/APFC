@@ -8,7 +8,7 @@ $$
 \begin{equation}
     \phi_{\pm} = \frac{-C \pm \sqrt{C^2 - 15 v B}}{15 v}
 \end{equation}
-$$
+$$ (eqn:n0_init_eta)
 
 Obtained by minimizing energy functional.
 
