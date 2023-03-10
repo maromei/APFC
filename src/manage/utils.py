@@ -3,7 +3,17 @@ import os
 import numpy as np
 
 
-def make_path_arg_absolute(path: str):
+def make_path_arg_absolute(path: str) -> str:
+    """
+    Takes in a path and transforms it into an absolute one based
+    on the current working directory.
+
+    Args:
+        path (str): path
+
+    Returns:
+        str: absolute path
+    """
 
     if path[0] == "/":  # is already absolute
         return path
@@ -17,25 +27,43 @@ def make_path_arg_absolute(path: str):
     return "/".join([os.getcwd(), path])
 
 
-def build_sim_info_str(config, index, theta=None, add_info="", is_1d=False):
+def build_sim_info_str(
+    config: dict, index: int, theta: float | None = None, add_info: str = ""
+) -> str:
+    """
+    Builds a latex string with additional information.
+    The purpose is to include this string into plots to give context.
+
+    Args:
+        config (dict): The config dictionary
+        index (int): Which index of the simulation is displayed
+        theta (float | None, optional): Angle. Defaults to None.
+        add_info (str, optional): additional info to dislay.
+            It will be appended at the end. Defaults to "".
+
+    Returns:
+        str: formatted latex string
+    """
 
     theta_str = ""
     if theta is not None:
         theta_str = f"\n$\\theta = {theta:.4f}$\n"
 
+    is_1d = config["numPts_y"] == 1
+
     txt = f"""\
         \\begin{{center}}
         sim iteration: {index} \\vspace{{0.5em}}
         {theta_str}
-        $B_x = {config['Bx']:.4f}, n_0 = {config['n0']:.4f}$
+        $B^x = {config['Bx']:.4f}, n_0 = {config['n0']:.4f}$
         $v = {config['v']:.4f}, t = {config['t']:.4f}$
-        $\\Delta B_0 = {config['dB0']:.4f}$
+        $\\Delta B^0 = {config['dB0']:.4f}$
         $\\mathrm{{d}}t = {config['dt']:.4f}$ \\vspace{{0.5em}}
         initial Radius: {config['initRadius']:.4f}
         initial Eta in solid: {config['initEta']:.4f}
         interface width: {config['interfaceWidth']:.4f}
         domain: $[-{config['xlim']}, {config['xlim']}]{'' if is_1d else '^2'}$
-        points: {config['numPts']} x {'1' if is_1d else config['numPts']}
+        points: {config['numPtsX']} x {config['numPtsY']}
         {add_info}
         \\end{{center}}
     """
@@ -45,22 +73,48 @@ def build_sim_info_str(config, index, theta=None, add_info="", is_1d=False):
     return txt
 
 
-def get_thetas(config, use_div=True, endpoint=True):
+def get_thetas(config: dict, use_div: bool = True, endpoint: bool = True) -> np.array:
+    """
+    Creates an array of thetas based on the config.
+    This function is supposed to supply a consistent way to get the same
+    angles.
+
+    Args:
+        config (dict): config object. Explicitely used keys are:
+            `thetaCount` and `thetaDiv` (if `use_div=True`).
+        use_div (bool, optional): Whether to divide the interval
+            into `thetaDiv` parts. Where `thetaDiv`. Defaults to True.
+        endpoint (bool, optional): Whether to include the last
+            value in the range. Defaults to True.
+
+    Returns:
+        np.array: The equaly spaced thetas
+    """
 
     if use_div:
         thetas = np.linspace(
             0,
-            2.0 * np.pi / config["theta_div"],
-            config["theta_count"],
+            2.0 * np.pi / config["thetaDiv"],
+            config["thetaCount"],
             endpoint=endpoint,
         )
     else:
-        thetas = np.linspace(0, 2.0 * np.pi, config["theta_count"], endpoint=endpoint)
+        thetas = np.linspace(0, 2.0 * np.pi, config["thetaCount"], endpoint=endpoint)
 
     return thetas
 
 
-def create_float_scientific_string(val: float):
+def create_float_scientific_string(val: float) -> str:
+    """
+    Takes in a value and generates a scientific notation for it.
+    2 digits infront of the decimal place will be shown.
+
+    Args:
+        val (float): input value
+
+    Returns:
+        str: formatted string
+    """
 
     val_str = f"{val:.2e}"
     val_str = val_str.split("e")

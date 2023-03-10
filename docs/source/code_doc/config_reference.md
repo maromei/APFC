@@ -15,3 +15,9 @@
 | `B` | float | |
 | `C` | float | |
 | `D` | float | |
+| `dt` | float | |
+| `thetaDiv` | int | |
+| `thetaCount` | int | |
+| `numPtsX` | int | |
+| `numPtsY` | int | |
+| `xlim` | float | |
