@@ -43,3 +43,10 @@ $$
 \phi_- = \frac{2 t}{45 v}
 \end{gathered}
 $$
+
+(ch:init_n0)=
+## Densities
+
+```{eval-rst}
+.. todo:: init density newton explainer
+```

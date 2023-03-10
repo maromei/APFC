@@ -7,17 +7,40 @@ def tanhmin(radius: np.array, eps: float) -> np.array:
     """
     Applies the tanh minimization function for initialization.
 
+    .. math::
+
+        \\frac{1}{2} \\left[
+            1 + \\text{tanh} \\left(- \\frac{3r}{\\varepsilon} \\right)
+        \\right]
+
     Args:
-        radius (np.array): _description_
-        eps (float): _description_
+        radius (np.array): :math:`r` radius
+        eps (float): :math:`\\varepsilon` a measure for the intreface width
 
     Returns:
-        np.array: _description_
+        np.array: resulting tanhmin
     """
     return 0.5 * (1.0 + np.tanh(-3.0 * radius / eps))
 
 
-def single_grain(xm: np.array, ym: np.array, config: dict, eta_i: int) -> np.array:
+def single_grain(xm: np.array, ym: np.array, config: dict) -> np.array:
+    """
+    Creates a 2d array with a circular grain in the middle.
+    The grain will be generated using the
+    :py:meth:`calculations.initialize.tanhmin` function.
+    The radius, interface width and height are read from the config.
+
+    .. image:: ../../figures/code_doc/calculations/initialize/single_grain_example.png
+
+    Args:
+        xm (np.array): x-meshgrid
+        ym (np.array): y-meshgrid
+        config (dict): config object. Explicitely used entries are:
+            `initRadius`, `interfaceWidth`, `initEta`
+
+    Returns:
+        np.array: grain mesh
+    """
 
     radius: np.array = np.sqrt(xm**2 + ym**2) - config["initRadius"]
     radius = tanhmin(radius, config["interfaceWidth"])
@@ -25,33 +48,97 @@ def single_grain(xm: np.array, ym: np.array, config: dict, eta_i: int) -> np.arr
     return radius * config["initEta"]
 
 
-def load_from_file(xm, ym, config, eta_i):
+def center_line(xm: np.array, config: dict) -> np.array:
+    """
+    Uses the :py:meth:`calculations.initialize.tanhmin` function to
+    initialize a vertical line in the middle of the domain.
+    The radius, interface width and initial height are read from the config.
 
-    out_path = f"{config['sim_path']}/out_{eta_i}.txt"
-    eta, _ = rw.read_eta_last_file(out_path, xm.shape[0], xm.shape[1], dtype=float)
+    .. image:: ../../figures/code_doc/calculations/initialize/center_line_example.png
 
-    return eta
+    Args:
+        xm (np.array): x-meshgrid
+        config (dict): config; Explicitely used entries are:
+            `initRadius`, `interfaceWidth`, `initEta`
 
-
-def load_n0_from_file(xm, config):
-    out_path = f"{config['sim_path']}/n0.txt"
-    n0, _ = rw.read_eta_last_file(out_path, xm.shape[0], xm.shape[1], dtype=float)
-    return n0
-
-
-def center_line(xm, ym, config, eta_i):
+    Returns:
+        np.array: center line meshgrid
+    """
 
     eta = tanhmin(np.abs(xm) - config["initRadius"], config["interfaceWidth"])
     return eta * config["initEta"]
 
 
-def left_line(xm, ym, config, eta_i):
+def load_eta_from_file(shape: tuple[int], config: dict, eta_i: int) -> np.array:
+    """
+    Searches the `sim_path` in the config file for the
+    `"out_{eta_i}.txt"` file, and loads its last entry into an
+    array.
 
-    eta = tanhmin(xm + config["initRadius"], config["interfaceWidth"])
-    return eta * config["initEta"]
+    Args:
+        shape (tuple[int]): The shape of the resulting array.
+        config (dict): config object. Explicitely used entries are:
+            `simPath`
+        eta_i (int): the index of which eta should be read.
+
+    Returns:
+        np.array: resulting array
+    """
+
+    return load_from_file(config, f"out_{eta_i}.txt", shape)
 
 
-def init_config(config):
+def load_n0_from_file(shape: tuple[int], config: dict) -> np.array:
+    """
+    Searches the `simPath` in the config file for the `"n0.txt"` file,
+    to load its last entry.
+
+    Args:
+        shape (tuple[int]): The shape of the resulting array.
+        config (dict): The config object. Explicitly used keys are:
+            `simPath`
+
+    Returns:
+        np.array: resulting n0 array.
+    """
+
+    return load_from_file(config, "n0.txt", shape)
+
+
+def load_from_file(config: dict, file_name: str, shape: tuple[int]) -> np.array:
+    """
+    Searches the `sim_path` in the config file for the
+    `file_name` file, and loads its last entry into an
+    array.
+
+    Args:
+        shape (tuple[int]): The shape of the resulting array.
+        config (dict): config object. Explicitely used entries are:
+            `simPath`
+        eta_i (int): the index of which eta should be read.
+
+    Returns:
+        np.array: resulting array
+    """
+
+    out_path = f"{config['simPath']}/{file_name}"
+    arr, _ = rw.read_last_line_to_array(out_path, shape[0], shape[1])
+
+    return arr
+
+
+def init_config(config: dict):
+    """
+    Sets the `A`, `B`, `C`, `D` values based on the
+    `n0`, `t`, `v`, `Bx` and `dB0` values in the config.
+    These are calculated according to:
+    :eq:`eqn:apfc_flow_constants`
+
+    The values are modified in place.
+
+    Args:
+        config (dict): config dictionary
+    """
 
     n0 = config["n0"]
     t = config["t"]
@@ -65,7 +152,21 @@ def init_config(config):
     config["D"] = v
 
 
-def init_eta_height(config, use_pm=False, use_n0=False):
+def init_eta_height(config: dict, use_pm: bool = False, use_n0: bool = False):
+    """
+    Sets the `initEta` key in the config based on the
+    `t`, `v`, `n0` and `dB0` values.
+
+    Args:
+        config (dict): config dictionary
+        use_pm (bool, optional): If True the
+            :eq:`eqn:n0_init_eta` equation is used to calculate
+            the height. The positive variateion is used if
+            :math:`t > n_0`. Otherwise the negative version is used.
+            If it is false, it is calculated via
+            :math:`\\frac{4 t}{45 v}`. Defaults to False.
+        use_n0 (bool, optional): If False, n0 will be set to 0. Defaults to False.
+    """
 
     t = config["t"]
     v = config["v"]
@@ -92,9 +193,23 @@ def init_n0_height(
     MAXITER: int = 1000000,
 ):
     """
-    uses initEta in config to set equilibrium n0
+    Initializes the n0 height using the newton method.
+    For more information on how this is done, see the
+    :ref:`ch:init_n0` section.
 
-    uses newton method
+    Sets the `n0` parameter in the config, using the
+    `initEta`, `dB0`, `Bx`, `t` and `v` values.
+
+    Args:
+        config (dict): config dictionary
+        x0 (float, optional): The first guess. Defaults to 0.0.
+        ATOL (float, optional): Absolute tolerance for stopping criteria
+            Defaults to 1e-5.
+        RTOL (float, optional): Relative tolerance for stopping criteria.
+            Defaults to 1e-5.
+        MAXITER (float, optional): Maximum number of iterations. A warning
+            will be printed if it is reached.
+            Defaults to 1000000.
     """
 
     phi = 6 * config["initEta"] ** 2

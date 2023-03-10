@@ -5,6 +5,7 @@
 :caption: 'Contents:'
 
 background/index
+code_doc/index
 updates/index
 ```
 
