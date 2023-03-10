@@ -209,8 +209,8 @@ class EtaIterator:
             StopIteration: If no new eta or n0 can be read.
 
         Returns:
-            tuple[np.ndarray] | np.ndarray: An
-                array with shape (eta_count, dim_x, dim_y).
+            tuple[np.ndarray] | np.ndarray:
+                An array with shape (eta_count, dim_x, dim_y).
                 If `include_n0=True` a tuple will be returned where the
                 second entry is the n0 array with shape (dim_x, dim_y).
         """

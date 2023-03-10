@@ -5,5 +5,6 @@
 :caption: 'Contents:'
 
 calculations/index
+manage/index
 config_reference
 ```
