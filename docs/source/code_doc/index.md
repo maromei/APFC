@@ -6,5 +6,6 @@
 
 calculations/index
 manage/index
+sim/index
 config_reference
 ```

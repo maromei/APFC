@@ -1,5 +1,6 @@
 # Simulation Schemes
 
+(ch:scheme_ampl)=
 ## Just the amplitudes
 
 We use the gradient flow for the amplitudes (eq. {eq}`eqn:apfc_flow`) and
