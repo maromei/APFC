@@ -23,7 +23,13 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["numpy"]
+dependencies = [
+  "seaborn",
+  "numpy",
+  "pandas",
+  "matplotlib",
+  "scipy"
+]
 dynamic = ["version"]
 
 [tool.hatch.version]
@@ -35,13 +41,6 @@ Issues = "https://github.com/maromei/apfc/issues"
 Source = "https://github.com/maromei/apfc"
 
 [tool.hatch.envs.default]
-dependencies = [
-  "seaborn",
-  "numpy",
-  "pandas",
-  "matplotlib",
-  "scipy"
-]
 
 [tool.hatch.envs.doc]
 python = "3.10"
