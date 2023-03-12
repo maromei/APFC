@@ -21,3 +21,4 @@
 | `numPtsX` | int | |
 | `numPtsY` | int | |
 | `xlim` | float | |
+| `keepEtaConst` | boolean | |
