@@ -32,7 +32,7 @@ $$
 \begin{equation}
 \Gamma(\theta) = \gamma(\theta) + \gamma^{\prime\prime}(\theta)
 \end{equation}
-$$ (eqn:sitffness)
+$$ (eqn:stiffness)
 
 ## Wulff Shape
 

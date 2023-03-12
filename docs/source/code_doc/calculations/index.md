@@ -5,4 +5,6 @@
 :caption: 'Contents:'
 
 initialize
+observables
+triangular
 ```
