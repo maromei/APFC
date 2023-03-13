@@ -80,6 +80,8 @@ def initialize_sim_threads(
     ## GET CONFIG ##
     ################
 
+    sim_path_ = utils.make_path_arg_absolute(sim_path)
+    config_path = f"{sim_path_}/config.json"
     config = utils.get_config(sim_path)
 
     ######################
