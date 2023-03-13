@@ -25,3 +25,4 @@
 | `writeEvery` | int | |
 | `eqSteps` | int | |
 | `simPath` | string | |
+| `simType` | str | |
