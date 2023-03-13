@@ -17,6 +17,7 @@
 | `numPtsY` | int | Number of points in y-direction. If set $\le 1$ a 1-dimensional simulation will be done.|
 | `xlim` | float | The domain bounds will be set to $[-\text{xlim}, \text{xlim}]^2$ |
 | `keepEtaConst` | boolean | If `True` only the average density will be computed, while the amplitudes are kepts Constant. Only applies to `simType=n0` |
+| `G` | array[][2] | The reciprical vectors. |
 | `numT` | int | How many timesteps should bed done. |
 | `writeEvery` | int | After how many timesteps should an output be created. |
 | `eqSteps` | int | Does this number of steps before creating output. These steps do not count towards `numT`. |
