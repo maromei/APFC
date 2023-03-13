@@ -103,8 +103,8 @@ args = parser.parse_args()
 
 config = utils.get_config(args.sim_path)
 
-sim_path = utils.make_path_arg_absolute(args.sim_path)
-sim_path = f"{sim_path}/eta_files/{args.theta}"
+out_dir = utils.make_path_arg_absolute(args.sim_path)
+sim_path = f"{out_dir}/eta_files/{args.theta}"
 
 eta_count = len(config["G"])
 
@@ -179,6 +179,8 @@ def plot(
     index: list[int],
     max_index: int,
     ax_n0: Union[plt.Axes, None] = None,
+    cbar_cax_eta=None,
+    cbar_cax_n0=None,
 ):
 
     if index[0] > max_index:
@@ -196,11 +198,11 @@ def plot(
         n0 = None
 
     ax_eta.cla()
-    field_plots.plot_eta(etas, config, ax_eta)
+    field_plots.plot_eta(etas, config, ax_eta, cbar_cax_eta)
 
     if n0 is not None and ax_n0 is not None:
         ax_n0.cla()
-        field_plots.plot_n0(n0, config, ax_n0)
+        field_plots.plot_n0(n0, config, ax_n0, cbar_cax_n0)
 
     ax_info.cla()
     plot_info(config, index[0] * config["writeEvery"], ax_info, float(theta))
@@ -208,18 +210,28 @@ def plot(
     index[0] += 1
 
 
-plot_fargs = (config, ax_eta, ax_info, args.theta, index, line_count - 1, ax_n0)
+plot_fargs = (
+    config,
+    ax_eta,
+    ax_info,
+    args.theta,
+    index,
+    line_count - 1,
+    ax_n0,
+    cbar_cax_eta,
+    cbar_cax_n0,
+)
 
 if args.singleplot:
 
     plot(None, *plot_fargs)
     if args.save is not None:
-        plt.savefig(f"{sim_path}/{args.save}.png", dpi=args.dpi)
+        plt.savefig(f"{out_dir}/{args.save}.png", dpi=args.dpi)
 
 else:
 
     animation = FuncAnimation(fig, plot, interval=args.frametime, fargs=plot_fargs)
     if args.save is not None:
-        animation.save(f"{sim_path}/{args.save}.gif", dpi=args.dpi)
+        animation.save(f"{out_dir}/{args.save}.gif", dpi=args.dpi)
 
 plt.show()
