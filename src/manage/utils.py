@@ -1,4 +1,5 @@
 import os
+import json
 
 import numpy as np
 
@@ -49,7 +50,7 @@ def build_sim_info_str(
     if theta is not None:
         theta_str = f"\n$\\theta = {theta:.4f}$\n"
 
-    is_1d = config["numPts_y"] == 1
+    is_1d = config["numPtsY"] <= 1
 
     txt = f"""\
         \\begin{{center}}
@@ -121,3 +122,23 @@ def create_float_scientific_string(val: float) -> str:
     val_str = f"{val_str[0]} \\cdot 10^{{{val_str[1]}}}"
 
     return val_str
+
+
+def get_config(sim_path: str) -> dict:
+    """
+    Reads the config from the sim_path.
+
+    Args:
+        sim_path (str): directory where the :code:`config.json` is stored.
+
+    Returns:
+        dict: config
+    """
+
+    sim_path = make_path_arg_absolute(sim_path)
+    config_path = f"{sim_path}/config.json"
+
+    with open(config_path, "r") as f:
+        config = json.load(f)
+
+    return config
