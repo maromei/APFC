@@ -39,15 +39,15 @@ def calc_single_surf_en_1d(
 
 
 def calc_surf_en_1d(
-    xs: np.array, etas: np.array, theta: float, G: np.array, A: float
+    x: np.array, etas: np.array, theta: float, G: np.array, A: float
 ) -> float:
     """
     Calculates the 1d surface energy according to equation
     :eq:`eqn:surf_en_calc_1d`.
 
     Args:
-        xs (np.array): x-values with shape
-            :code:`(eta_count, n)`.
+        x (np.array): x-values with shape
+            :code:`(n,)`.
         etas (np.array): Ampltiudes with shape :code:`(eta_count, n)`
         theta (float): The rotation of the reciprical vectors
         G (np.array): The unrotated resiprical vectors with shape
@@ -59,8 +59,8 @@ def calc_surf_en_1d(
     """
 
     integ = 0.0
-    for eta_i in range(xs.shape[0]):
-        integ += calc_single_surf_en_1d(xs[eta_i], etas[eta_i], theta, G[eta_i], A)
+    for eta_i in range(etas.shape[0]):
+        integ += calc_single_surf_en_1d(x, etas[eta_i], theta, G[eta_i], A)
 
     return integ
 
