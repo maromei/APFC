@@ -94,8 +94,6 @@ def initialize_sim_threads(
         dB0 = 8.0 * config["t"] ** 2 / (135.0 * config["v"])
         config["dB0"] = dB0
 
-    initialize.init_config(config)
-
     if calc_init_eta:
         initialize.init_eta_height(config, use_pm=True, use_n0=False)
 
