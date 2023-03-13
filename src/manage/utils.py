@@ -146,7 +146,10 @@ def get_config(sim_path: str) -> dict:
 
 def fill(arr: np.array, div: int, add=False) -> np.array:
     """
-    Duplicates and stacks an array :code:`div` times.
+    Duplicates and stacks an array :code:`div` times. It is assumed that the
+    array is cylcic and has both endpoints in there. This function is usefull
+    if f.e. you have angle values in the range :math:`[0, 2 \\pi]`. This function
+    will not duplicate the endpoints.
 
     Args:
         arr (np.array): Array to duplicate
