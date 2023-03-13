@@ -12,4 +12,6 @@
 .. autofunction:: create_float_scientific_string
 
 .. autofunction:: get_config
+
+.. autofunction:: fill
 ```

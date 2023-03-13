@@ -142,3 +142,28 @@ def get_config(sim_path: str) -> dict:
         config = json.load(f)
 
     return config
+
+
+def fill(arr: np.array, div: int, add=False) -> np.array:
+    """
+    Duplicates and stacks an array :code:`div` times.
+
+    Args:
+        arr (np.array): Array to duplicate
+        div (int): How often it should be duplicated
+        add (bool, optional): Whether the duplicated arrays
+            should add :code:`i * max(arr)` to its value. Defaults to False.
+
+    Returns:
+        np.array: The filled array
+    """
+
+    o_arr = arr.copy()
+    do_add_int = int(add)
+    max_ = np.max(o_arr)
+
+    for i in range(1, div):
+        add_arr = do_add_int * i * max_
+        arr = np.hstack([arr, o_arr + add_arr])
+
+    return arr
