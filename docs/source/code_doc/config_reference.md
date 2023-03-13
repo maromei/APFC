@@ -5,7 +5,6 @@
 | `initRadius` | float | |
 | `interfaceWidth` | float | |
 | `initEta` | float | |
-| `simPath` | string | |
 | `n0` | float | |
 | `t` | float | |
 | `v` | float | |
@@ -22,3 +21,7 @@
 | `numPtsY` | int | |
 | `xlim` | float | |
 | `keepEtaConst` | boolean | |
+| `numT` | int | |
+| `writeEvery` | int | |
+| `eqSteps` | int | |
+| `simPath` | string | |
