@@ -33,7 +33,7 @@ def plot_eta(etas: np.array, config: dict, axis: plt.Axes, cbar_cax=None):
 
     if is_1d:
 
-        plot_1d(x, eta_sum.flatten(), title)
+        plot_1d(x, eta_sum.flatten(), title, axis)
 
     else:
 

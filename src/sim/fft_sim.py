@@ -150,7 +150,10 @@ def create_thread_list(
     ## Setup progress list ##
     #########################
 
+    global progress_list
+
     mp_manager = mp.Manager()
+    progress_list = [0.0 for _ in range(thread_count)]
     progress_list = mp_manager.list(progress_list)
 
     ##################################
@@ -167,16 +170,15 @@ def create_thread_list(
     #################
 
     thread_lst = []
-    process_args = (
-        np.array(theta_lst[i]),
-        config.copy(),
-        eta_path,
-        continue_sim,
-        sim_type,
-        i,
-    )
-
     for i in range(thread_count):
+        process_args = (
+            np.array(theta_lst[i]),
+            config.copy(),
+            eta_path,
+            continue_sim,
+            sim_type,
+            i,
+        )
         new_process = mp.Process(target=theta_thread, args=process_args)
         thread_lst.append(new_process)
 
