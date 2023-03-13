@@ -7,5 +7,6 @@
 calculations/index
 manage/index
 sim/index
+plots/index
 config_reference
 ```
