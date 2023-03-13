@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_eta(etas: np.array, config: dict, axis: plt.Axes):
+def plot_eta(etas: np.array, config: dict, axis: plt.Axes, cbar_cax=None):
     """
     Plots
 
@@ -16,6 +16,8 @@ def plot_eta(etas: np.array, config: dict, axis: plt.Axes):
             :code:`(eta_count, *(domain_shape))`
         config (dict): config object
         axis (plt.Axes): axis to plot it on
+        cbar_cax: Either None or the colorbar axis. If None no colorbar will be
+            generated. Only applies to 2D inputs.
     """
 
     is_1d = config["numPtsY"] <= 1
@@ -37,7 +39,7 @@ def plot_eta(etas: np.array, config: dict, axis: plt.Axes):
 
         y = np.linspace(-config["xlim"], config["xlim"], config["numPtsY"], axis)
         xm, ym = np.meshgrid(x, y)
-        plot_2d(xm, ym, eta_sum, title, axis)
+        plot_2d(xm, ym, eta_sum, title, axis, cbar_cax)
 
 
 def plot_n0(n0: np.array, config: dict, axis: plt.Axes):
@@ -82,7 +84,9 @@ def plot_1d(x: np.array, y: np.array, title: str, axis: plt.Axes):
     axis.set_title(title)
 
 
-def plot_2d(xm: np.array, ym: np.array, zm: np.array, title: str, axis: plt.Axes):
+def plot_2d(
+    xm: np.array, ym: np.array, zm: np.array, title: str, axis: plt.Axes, cbar_cax=None
+):
     """
     Plots the input as a contourf with 100 colors.
 
@@ -92,7 +96,12 @@ def plot_2d(xm: np.array, ym: np.array, zm: np.array, title: str, axis: plt.Axes
         zm (np.array):
         title (str):
         axis (plt.Axes): axis to plot on
+        cbar_cax: Either None or the colorbar axis. If None no colorbar will be
+            generated.
     """
 
-    axis.contourf(xm, ym, zm, 100)
+    cont = axis.contourf(xm, ym, zm, 100)
     axis.title(title)
+
+    if cbar_cax is not None:
+        plt.colorbar(cont, cax=cbar_cax)
