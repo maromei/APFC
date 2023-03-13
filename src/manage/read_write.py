@@ -233,7 +233,7 @@ class EtaIterator:
                 self.dtype,
             )
 
-        if etas is None or n0 is None:
+        if etas is None:
             raise StopIteration
 
         self.current_index += 1
