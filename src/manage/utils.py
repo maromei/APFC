@@ -2,6 +2,7 @@ import os
 import json
 
 import numpy as np
+import pandas as pd
 
 
 def make_path_arg_absolute(path: str) -> str:
@@ -170,3 +171,26 @@ def fill(arr: np.array, div: int, add=False) -> np.array:
         arr = np.hstack([arr, o_arr + add_arr])
 
     return arr
+
+
+def fill_df(
+    df: pd.DataFrame, new_columns: list[str], div: int, add=False
+) -> pd.DataFrame:
+    """
+    Similar to :py:func:`manage.utils.fill`. Just that it is applied to
+    every row in the dataframe.
+
+    Args:
+        df (pd.DataFrame): original dataframe
+        new_columns (list[str]): new columns
+        div (int): How often it should be duplicated
+        add (bool, optional): Whether the duplicated arrays
+            should add :code:`i * max(arr)` to its value. Defaults to False.
+
+    Returns:
+        pd.DataFrame: filled df
+    """
+
+    new_df = df.apply(fill, axis=1, result_type="expand", args=(div, add))
+    new_df.columns = new_columns
+    return new_df

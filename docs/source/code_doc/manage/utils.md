@@ -14,4 +14,6 @@
 .. autofunction:: get_config
 
 .. autofunction:: fill
+
+.. autofunction:: fill_df
 ```
