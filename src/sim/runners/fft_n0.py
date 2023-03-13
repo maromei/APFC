@@ -1,5 +1,5 @@
 import numpy as np
-from calculations import initialize
+from calculations import initialize, params
 
 
 class FFTN0Sim:
@@ -70,8 +70,8 @@ class FFTN0Sim:
         ## VARIABLE ASSIGNMENT ##
         #########################
 
-        self.A = config.get("A", self.A)
-        self.D = config.get("D", self.D)
+        self.A = params.A(config)
+        self.D = params.D(config)
         self.t = config.get("t", self.t)
         self.v = config.get("v", self.v)
         self.init_n0 = config.get("n0", self.init_n0)

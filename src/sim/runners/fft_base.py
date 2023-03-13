@@ -1,5 +1,5 @@
 import numpy as np
-from calculations import initialize
+from calculations import initialize, params
 
 
 class FFTBaseSim:
@@ -57,10 +57,10 @@ class FFTBaseSim:
         ## VARIABLE ASSIGNMENT ##
         #########################
 
-        self.A = config.get("A", self.A)
-        self.B = config.get("B", self.B)
-        self.C = config.get("C", self.C)
-        self.D = config.get("D", self.D)
+        self.A = params.A(config)
+        self.B = params.B(config)
+        self.C = params.C(config)
+        self.D = params.D(config)
 
         self.xlim = config.get("xlim", self.xlim)
         self.pt_count_x = config.get("numPtsX", self.pt_count_x)

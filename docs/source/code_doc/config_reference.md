@@ -10,10 +10,6 @@
 | `v` | float | |
 | `Bx` | float | |
 | `dB0` | float | |
-| `A` | float | |
-| `B` | float | |
-| `C` | float | |
-| `D` | float | |
 | `dt` | float | |
 | `thetaDiv` | int | |
 | `thetaCount` | int | |

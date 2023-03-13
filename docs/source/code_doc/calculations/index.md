@@ -6,5 +6,6 @@
 
 initialize
 observables
+params
 triangular
 ```
