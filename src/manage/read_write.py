@@ -18,6 +18,9 @@ def str_to_arr(eta_str: str, dim_x: int, dim_y: int, dtype=float) -> np.array:
     eta = np.array(eta_str.split(","), dtype=dtype)
     eta = eta.reshape((dim_x, dim_y))
 
+    if dim_y <= 1:
+        eta = eta.flatten()
+
     return eta
 
 
@@ -118,7 +121,10 @@ def read_all_etas_at_line(
             the first index identifies which eta was read.
     """
 
-    etas = np.zeros((eta_count, dim_x, dim_y), dtype=dtype)
+    if dim_y <= 1:
+        etas = np.zeros((eta_count, dim_x), dtype=dtype)
+    else:
+        etas = np.zeros((eta_count, dim_x, dim_y), dtype=dtype)
 
     for eta_i in range(eta_count):
 
@@ -131,7 +137,7 @@ def read_all_etas_at_line(
         if eta is None:
             return None
 
-        etas[eta_i, :, :] += eta
+        etas[eta_i] += eta
 
     return etas
 
