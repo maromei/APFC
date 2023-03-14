@@ -1,6 +1,8 @@
 import numpy as np
 import scipy
 
+from .initialize import tanhmin
+
 
 def calc_single_surf_en_1d(
     x: np.array, eta: np.array, theta: float, G: np.array, A: float
@@ -80,3 +82,20 @@ def calc_stiffness(surf_en: np.array, thetas: np.array) -> np.array:
 
     dx = np.diff(thetas)[0]
     return surf_en + np.gradient(np.gradient(surf_en, dx), dx)
+
+
+def get_phase_eq_values(arr: np.array) -> tuple[float, float]:
+
+    pass
+
+
+def get_interface_width(x: np.array, y: np.array) -> float:
+
+    tanhfit = lambda x, r, eps: tanhmin(x - r, eps)
+    popt, pcov = scipy.optimize.curve_fit(tanhfit, x, y / np.max(y))
+
+    if np.any(pcov > 1e-1):
+        print("WARNING:")
+        print("Fitting interface width resulted in large variance!", pcov)
+
+    return popt
