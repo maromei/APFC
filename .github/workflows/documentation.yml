@@ -8,7 +8,7 @@ jobs:
       - uses: actions/setup-python@v2
       - name: Install dependencies
         run: |
-          pip install sphinx furo myst_parser sphinxcontrib-bibtex numpy pandas matplotlib
+          pip install sphinx furo myst_parser sphinxcontrib-bibtex numpy pandas matplotlib scipy
       - name: Sphinx build
         run: |
           sphinx-build docs/source build
