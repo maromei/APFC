@@ -30,3 +30,28 @@ Content is:
 | 6     | 0.01200|0.98800|-0.00000|
 +-------+--------+-------+--------+
 """
+
+#: A default config
+DEFAULT_CONFIG = {
+    "Bx": 0.988,
+    "dB0": 0.012,
+    "n0": -0.03,
+    "t": 0.5,
+    "v": 0.3333333333333333,
+    "dt": 0.75,
+    "initRadius": 50,
+    "interfaceWidth": 9.42477796076938,
+    "initEta": 0.18717797887081347,
+    "thetaDiv": 6,
+    "thetaCount": 50,
+    "numPtsX": 800,
+    "numPtsY": 1,
+    "xlim": 200,
+    "keepEtaConst": False,
+    "G": [[-0.8660254037844386, -0.5], [0.0, 1.0], [0.8660254037844386, -0.5]],
+    "numT": 6000,
+    "writeEvery": 200,
+    "eqSteps": 0,
+    "simPath": "",
+    "simType": "base",
+}
