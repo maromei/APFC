@@ -57,6 +57,14 @@ parser.add_argument(
     help="Should this simulation continue by reading the last out-files.",
 )
 
+parser.add_argument(
+    "-aps",
+    "--applyparamset",
+    action="store",
+    type=int,
+    help="Applies values from the parameterset with the given index.",
+)
+
 args = parser.parse_args()
 
 ###############

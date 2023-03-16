@@ -9,6 +9,8 @@ from calculations import initialize
 from .runners.fft_base import FFTBaseSim
 from .runners.fft_n0 import FFTN0Sim
 
+from .parameter_sets import PARAM_SETS
+
 
 #: Saves the precentages of progress
 #: each thread is at. Will be set by
@@ -53,6 +55,7 @@ def initialize_sim_threads(
     calc_init_n0: bool,
     thread_count: int,
     continue_sim: bool,
+    param_set: int | None,
 ) -> list[mp.Process]:
     """
     Initializes a simulation with its threads
@@ -83,6 +86,14 @@ def initialize_sim_threads(
     sim_path_ = utils.make_path_arg_absolute(sim_path)
     config_path = f"{sim_path_}/config.json"
     config = utils.get_config(sim_path)
+
+    ###############
+    ## PARAM SET ##
+    ###############
+
+    if param_set is not None:
+        for key in PARAM_SETS[param_set]:
+            config[key] = PARAM_SETS[param_set][key]
 
     ######################
     ## HANDLE ARGUMENTS ##
