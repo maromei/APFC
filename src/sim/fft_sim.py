@@ -74,6 +74,10 @@ def initialize_sim_threads(
         thread_count (int): How many threads should be created.
         continue_sim (bool): Whether the last values should be read from a
             file.
+        paramet_set (int | None): If it is not None, the
+            :py:data:`sim/parameter_sets.PARAM_SETS`
+            with the corresponding index will be applied to the
+            config.
 
     Returns:
         list[mp.Process]: The list of processes.

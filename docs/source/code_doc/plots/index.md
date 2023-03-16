@@ -1,4 +1,4 @@
-# Code Doc
+# Plots
 
 ```{toctree}
 :maxdepth: 2
