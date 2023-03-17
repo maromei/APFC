@@ -245,7 +245,7 @@ def theta_thread(
             os.makedirs(theta_path)
 
         config = config_original.copy()
-        config["sim_path"] = theta_path
+        config["simPath"] = theta_path
 
         ##########################
         ### rotate G in config ###
