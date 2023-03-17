@@ -1,5 +1,6 @@
 from typing import Union
 import numpy as np
+import scipy
 
 
 def A(config: dict) -> float:

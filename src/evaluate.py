@@ -56,7 +56,7 @@ thetas_str = [f"{theta:.4f}" for theta in thetas]
 df_surf_en = pd.DataFrame(columns=thetas_str, index=range(line_count))
 
 eval_columns = ["eqEtaSolid", "eqEtaLiquid", "eqN0Solid", "eqN0Liquid"]
-eval_all = np.zeros((line_count, thetas, 6))
+eval_all = np.zeros((line_count, thetas.shape[0], 6))
 
 for theta_i, theta in enumerate(thetas):
 
@@ -77,6 +77,7 @@ for theta_i, theta in enumerate(thetas):
             etas, n0 = entry
         else:
             etas = entry
+            n0 = config["n0"]
 
         # if it is 2d then we can only evaluate the center line
         if not is_1d:
@@ -91,19 +92,17 @@ for theta_i, theta in enumerate(thetas):
         ## Surface Energy ##
         ####################
 
-        surf_en = observables.calc_surf_en_1d(
-            x, etas, theta, config["G"], params.A(config)
-        )
+        surf_en = observables.calc_surf_en_1d(etas, n0, config, theta)
         df_surf_en.iloc[entry_i, theta_i] = surf_en
 
 ##########################
 ## Widen Surface Energy ##
 ##########################
 
-thetas = utils.fill(thetas, config["thetaDiv"], True)
-thetas_str = [f"{theta:.4f}" for theta in thetas]
-
-df_surf_en = utils.fill_df(df_surf_en, thetas_str, config["thetaDiv"])
+# thetas = utils.fill(thetas, config["thetaDiv"], True)
+# thetas_str = [f"{theta:.4f}" for theta in thetas]
+#
+# df_surf_en = utils.fill_df(df_surf_en, thetas_str, config["thetaDiv"])
 
 #######################
 ## Stiffness and Fits##

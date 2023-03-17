@@ -78,6 +78,7 @@ thread_list = fft_sim.initialize_sim_threads(
     args.calcn0,
     args.threadcount,
     args.continuesim,
+    args.applyparamset,
 )
 
 start_time = time.time()
