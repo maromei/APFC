@@ -212,7 +212,7 @@ class FFTBaseSim:
 
         for eta_i in range(self.eta_count):
             self.etas[eta_i, :, :] += initialize.load_eta_from_file(
-                shape, config, eta_i
+                self.xm.shape, config, eta_i
             )
 
     ###################
