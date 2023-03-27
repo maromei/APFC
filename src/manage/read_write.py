@@ -137,7 +137,7 @@ def read_all_etas_at_line(
         if eta is None:
             return None
 
-        etas[eta_i] += eta
+        etas[eta_i] = eta
 
     return etas
 

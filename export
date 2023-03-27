@@ -1,17 +1,6 @@
 #!/bin/bash
 
-alias animSurfEn='python src/animateSurfEn.py'
-alias animSurfEnWulf='python src/animateSurfEnWulf.py'
-alias calcLineSurfEn='python src/calcLineSurfEn.py'
-alias calcGrainSurfEn='python src/calcGrainSurfEn.py'
-alias calcLine1DSurfEn='python src/calcLine1DSurfEn.py'
-alias compareLineSimPlots='python src/compareLineSimPlots.py'
-alias grainSim='python src/grainSim.py'
-alias lineOneDSim='python src/lineOneDSim.py'
-alias lineSim='python src/lineSim.py'
-alias plotLineSim='python src/plotLineSim.py'
-alias watch1D='python src/watch1D.py'
-alias watchBasicAll='python src/watchBasicAll.py'
-alias watchn0='python src/watchn0.py'
-alias watchn01d='python src/watchn01d.py'
-alias watchGrainSim='python src/watchGrainSim.py'
+alias apfc-watch='python src/watch.py'
+alias apfc-eval='python src/evaluate.py'
+alias apfc-run='python src/run_fft_sim.py'
+alias apfc-generate-ps="python src/generate_param_set.py"

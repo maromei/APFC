@@ -1,6 +1,8 @@
 import numpy as np
 import scipy
 
+from manage import utils
+
 from .initialize import tanhmin
 
 from . import params
@@ -32,15 +34,13 @@ def calc_single_surf_en_1d(
         [np.sin(theta), np.cos(theta)]
     ])
     # fmt: on
-    G = rot.dot(G)
+    G_rot = rot.dot(G.copy())
 
-    dx = np.abs(x[0] - x[1])
+    deta = np.gradient(eta, x)
+    d2eta = np.gradient(deta, x)
+    d3eta = np.gradient(d2eta, x)
 
-    deta = np.gradient(eta, dx)
-    d2eta = np.gradient(deta, dx)
-    d3eta = np.gradient(d2eta, dx)
-
-    gsq = (G[0] * np.cos(theta) + G[1] * np.sin(theta)) ** 2
+    gsq = (G_rot[0] * np.cos(theta) + G_rot[1] * np.sin(theta)) ** 2
 
     integ = 8 * gsq * deta**2
     integ += 4 * d2eta**2
@@ -71,12 +71,16 @@ def calc_surf_en_1d(etas: np.array, n0, config, theta: float) -> float:
     config = config.copy()
 
     x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
+    is_gte_0_i = (x >= 0).nonzero()
+    x = x[is_gte_0_i]
+
     G = np.array(config["G"])
     A = config["Bx"]
 
     integ = 0.0
-    for eta_i in range(etas.shape[0]):
-        integ += calc_single_surf_en_1d(x, etas[eta_i], theta, G[eta_i], A)
+    for eta_i in range(G.shape[0]):
+        eta = etas[eta_i][is_gte_0_i]
+        integ += calc_single_surf_en_1d(x, eta, theta, G[eta_i], A)
 
     return integ
 
@@ -85,31 +89,24 @@ def calc_surf_en_1d2(etas: np.array, n0, config_, theta: float) -> float:
 
     config = config_.copy()
 
-    G = np.array(config["G"])
-    # fmt: off
-    rot = np.array([
-        [np.cos(theta), -np.sin(theta)],
-        [np.sin(theta), np.cos(theta)]
-    ])
-    # fmt: on
-    for eta_i in range(G.shape[0]):
-        G[eta_i] = rot.dot(G[eta_i])
-    config["G"] = G.tolist()
-
-    x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
+    x_all = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
+    x, etas = utils.get_positive_range(x_all, etas, True)
     dx = np.abs(np.diff(x)[0])
 
-    i_eta = etas[0][int(etas[0].shape[0] / 2) :]
-    i_x = x[int(etas[0].shape[0] / 2) :]
-    interface_width = get_interface_width(i_x, i_eta.flatten())
+    try:
+        _, n0 = utils.get_positive_range(x_all, n0)
+    except TypeError:  # is nuemrical value
+        pass
 
-    F = energy_functional_1d(etas, n0, config, theta)
+    interface_width = get_interface_width(x, etas[0].flatten())
+
+    F = energy_functional_1d(etas, n0, x, config, theta)
     chem_pot = get_chemical_potential(etas, n0, config)
 
     _, Vl = get_phase_volumes(etas[0], dx)
 
     if config["simType"] == "n0":
-        _, nl = get_phase_volumes(n0, dx)
+        _, nl = get_phase_eq_values(n0)
     else:
         nl = n0
 
@@ -119,12 +116,46 @@ def calc_surf_en_1d2(etas: np.array, n0, config_, theta: float) -> float:
         liq_etas.append(liq)
     liq_etas = np.array(liq_etas)
 
-    ret = F - scipy.integrate.simpson(chem_pot, x)
-    fl = sub_energy_functional_1d(etas, n0, config, theta)[0]
+    fl = sub_energy_functional_1d(etas, n0, x, config, theta)[-1]
     mul = get_chemical_potential(liq_etas, nl, config)
-    ret -= Vl * (fl - mul * nl)
 
-    return ret / interface_width
+    ret = F - scipy.integrate.simpson(chem_pot * n0, x)
+    # ret -= Vl * (fl - mul * nl)
+
+    # print(ret, Vl)
+
+    if np.any(ret.shape == 1):
+        ret = ret[0]
+
+    return ret  # / interface_width
+
+
+def calc_surf_en_1d3(etas: np.array, n0, config_, theta: float) -> float:
+
+    config = config_.copy()
+
+    x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
+    is_gte_0_i = (x >= 0).nonzero()
+    x = x[is_gte_0_i]
+    dx = np.abs(np.diff(x)[0])
+
+    etas = etas[:, is_gte_0_i]
+    try:
+        n0 = n0[is_gte_0_i]
+    except TypeError:  # is nuemrical value
+        pass
+
+    ns, nl = get_phase_eq_values(n0)
+    f = sub_energy_functional_1d(etas, n0, x, config, theta)
+    fl = f[-1]
+    fs = f[0]
+
+    nret = (n0 - nl) / (ns - nl)
+
+    ret = f - fs * nret + fl * nret
+    ret = scipy.integrate.simpson(ret)
+
+    return ret
 
 
 def get_chemical_potential(etas, n0, config):
@@ -160,17 +191,15 @@ def triangular_one_mode_func(etas, n0, config):
     return 2 * c * ret
 
 
-def energy_functional_1d(etas, n0, config, theta):
+def energy_functional_1d(etas, n0, x, config, theta):
 
-    x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
-
-    sub_fun = sub_energy_functional_1d(etas, n0, config, theta)
+    sub_fun = sub_energy_functional_1d(etas, n0, x, config, theta)
     ret = scipy.integrate.simpson(sub_fun, x)
 
     return ret
 
 
-def sub_energy_functional_1d(etas, n0, config, theta):
+def sub_energy_functional_1d(etas, n0, x, config, theta):
 
     # fmt: off
     rot = np.array([
@@ -179,7 +208,6 @@ def sub_energy_functional_1d(etas, n0, config, theta):
     ])
     # fmt: on
 
-    x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
     G = np.array(config["G"])
     for eta_i in range(G.shape[0]):
         G[eta_i] = rot.dot(G[eta_i])
@@ -198,13 +226,19 @@ def sub_energy_functional_1d(etas, n0, config, theta):
         deta = np.gradient(etas[eta_i].flatten(), x)
         d2eta = np.gradient(deta, x)
 
-        op = d2eta**2 + 4 * G[eta_i].dot(G[eta_i])
+        G_elem = 1
+
+        op = d2eta + 2 * complex(0, 1) * G_elem * deta
+        op = np.real(op * np.conj(op))
 
         sum_ += a * op - 3 * d / 2 * etas[eta_i] ** 4
 
     ret = b / 2 * phi_
     ret += 3 * d / 4 * phi_**2
     ret += op + tri_f + e
+
+    if np.any(ret.shape == 1):
+        ret = ret.flatten()
 
     return ret
 
@@ -237,7 +271,10 @@ def get_phase_eq_values(arr: np.array) -> tuple[float, float]:
 def get_phase_volumes(arr: np.array, dx=float, dy: float = 1.0) -> tuple[float, float]:
 
     max_val = np.max(arr)
-    is_liq = arr < max_val / 2
+    min_val = np.min(arr)
+    threshhold = (max_val - min_val) / 2
+
+    is_liq = arr < threshhold
 
     step_area = dx * dy
     total_area = arr.flatten().shape[0] * step_area
@@ -251,7 +288,11 @@ def get_phase_volumes(arr: np.array, dx=float, dy: float = 1.0) -> tuple[float, 
 def get_interface_width(x: np.array, y: np.array) -> float:
 
     tanhfit = lambda x, r, eps: tanhmin(x - r, eps)
-    popt, pcov = scipy.optimize.curve_fit(tanhfit, x, y / np.max(y))
+
+    y_fit = y - np.min(y)
+    y_fit = y_fit / np.max(y)
+
+    popt, pcov = scipy.optimize.curve_fit(tanhfit, x, y_fit)
 
     if np.any(pcov > 1e-1):
         print("WARNING:")

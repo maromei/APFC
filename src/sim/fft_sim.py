@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import shutil
 import numpy as np
 import multiprocessing as mp
 
@@ -123,8 +124,9 @@ def initialize_sim_threads(
     thetas = utils.get_thetas(config)
 
     eta_path = f"{sim_path}/eta_files"
-    if not os.path.exists(eta_path):
-        os.makedirs(eta_path)
+    if os.path.exists(eta_path):
+        shutil.rmtree(eta_path)
+    os.makedirs(eta_path)
 
     return create_thread_list(
         config, thetas, thread_count, eta_path, continue_sim, config["simType"]

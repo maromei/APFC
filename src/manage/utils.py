@@ -194,3 +194,22 @@ def fill_df(
     new_df = df.apply(fill, axis=1, result_type="expand", args=(div, add))
     new_df.columns = new_columns
     return new_df
+
+
+def get_positive_range(x, arrs, do_second_entry=False):
+
+    # [0] because one array for each dimension is returned
+    is_gte_0_i = (x >= 0).nonzero()[0]
+    new_x = x[is_gte_0_i]
+
+    if do_second_entry:
+
+        new_arr = np.zeros((arrs.shape[0], is_gte_0_i.shape[0]))
+        for arr_i in range(arrs.shape[0]):
+            new_arr[arr_i] = arrs[arr_i][is_gte_0_i]
+
+    else:
+
+        new_arr = arrs[is_gte_0_i]
+
+    return new_x, new_arr

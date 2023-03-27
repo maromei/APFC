@@ -493,7 +493,7 @@ class FFTN0Sim:
         for eta_i in range(self.eta_count):
             n_etas[eta_i, :, :] = self.eta_routine(eta_i)
 
-        self.etas = n_etas
+        self.etas = n_etas.copy()
 
     ##################
     ## IO FUNCTIONS ##

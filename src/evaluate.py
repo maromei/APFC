@@ -3,11 +3,12 @@ import argparse
 
 import numpy as np
 import pandas as pd
+import scipy
 
 from manage import utils
 from manage import read_write as rw
 
-from calculations import observables, params, triangular
+from calculations import observables, triangular
 
 #####################
 ## SETUP ARGUMENTS ##
@@ -92,17 +93,53 @@ for theta_i, theta in enumerate(thetas):
         ## Surface Energy ##
         ####################
 
-        surf_en = observables.calc_surf_en_1d(etas, n0, config, theta)
+        """e = np.hstack([etas[0], etas[1], etas[2]])
+        x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
+        x = np.hstack([x, x, x])
+        G = np.array(config["G"])
+        A = config["Bx"]
+
+        surf_en = observables.calc_single_surf_en_1d(x, e, theta, G[2], A)"""
+
+        """G = np.array(config["G"])
+        rot = np.array([
+            [np.cos(theta), -np.sin(theta)],
+            [np.sin(theta), np.cos(theta)]
+        ])
+
+        x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
+        dx = np.abs(x[0] - x[1])
+
+        integ = np.zeros(etas[0].shape)
+
+        A = config["Bx"]
+
+        for eta_i in range(etas.shape[0]):
+            G_rot = rot.dot(G[eta_i])
+
+            deta = np.gradient(etas[eta_i], dx)
+            d2eta = np.gradient(deta, dx)
+            d3eta = np.gradient(d2eta, dx)
+
+            gsq = (G_rot[0] * np.cos(theta) + G_rot[1] * np.sin(theta)) ** 2
+
+            integ += 8 * gsq * deta**2
+            integ += 4 * d2eta**2
+            integ -= 2 * deta * d3eta
+
+        surf_en = A * scipy.integrate.simpson(integ, x)"""
+
+        surf_en = observables.calc_surf_en_1d2(etas, n0, config, theta)
         df_surf_en.iloc[entry_i, theta_i] = surf_en
 
 ##########################
 ## Widen Surface Energy ##
 ##########################
 
-# thetas = utils.fill(thetas, config["thetaDiv"], True)
-# thetas_str = [f"{theta:.4f}" for theta in thetas]
-#
-# df_surf_en = utils.fill_df(df_surf_en, thetas_str, config["thetaDiv"])
+thetas = utils.fill(thetas, config["thetaDiv"], True)
+thetas_str = [f"{theta:.4f}" for theta in thetas]
+
+df_surf_en = utils.fill_df(df_surf_en, thetas_str, config["thetaDiv"])
 
 #######################
 ## Stiffness and Fits##
@@ -113,7 +150,13 @@ df_fits = pd.DataFrame(columns=["eps", "gamma0"], index=range(line_count))
 
 for i in range(df_surf_en.shape[0]):
     df_stiff.iloc[i, :] = observables.calc_stiffness(df_surf_en.iloc[i, :], thetas)
-    df_fits.iloc[i, :] = triangular.fit_surf_en(thetas, df_surf_en.iloc[i, :])
+
+    try:
+        df_fits.iloc[i, :] = triangular.fit_surf_en(thetas, df_surf_en.iloc[i, :])
+    except ValueError as e:
+        print("Could not calculate the fits because of the Error:")
+        print(e)
+        print("Skipping...")
 
 ##########
 ## Save ##

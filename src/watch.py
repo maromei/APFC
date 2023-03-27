@@ -63,7 +63,6 @@ parser.add_argument(
     "--plotindex",
     action="store",
     type=int,
-    default=0,
     help=(
         "Plots only a single frame with this index."
         " Can be negative for default python indexing."
@@ -121,7 +120,9 @@ line_count = eta_it.count_lines()
 
 eta_it = iter(eta_it)
 
-plot_i = args.plotindex
+is_single_plot = args.plotindex is not None
+plot_i = args.plotindex if is_single_plot else 0
+
 if plot_i < 0:
     plot_i = line_count - np.abs(plot_i)
 
@@ -181,6 +182,7 @@ def plot(
     ax_n0: Union[plt.Axes, None] = None,
     cbar_cax_eta=None,
     cbar_cax_n0=None,
+    plot_every=1,
 ):
 
     if index[0] > max_index:
@@ -207,7 +209,7 @@ def plot(
     ax_info.cla()
     plot_info(config, index[0] * config["writeEvery"], ax_info, float(theta))
 
-    index[0] += 1
+    index[0] += plot_every
 
 
 plot_fargs = (
@@ -220,9 +222,10 @@ plot_fargs = (
     ax_n0,
     cbar_cax_eta,
     cbar_cax_n0,
+    args.plotevery,
 )
 
-if args.singleplot:
+if is_single_plot:
 
     plot(None, *plot_fargs)
     if args.save is not None:
