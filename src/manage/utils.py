@@ -168,7 +168,7 @@ def fill(arr: np.array, div: int, add=False) -> np.array:
 
     for i in range(1, div):
         add_arr = do_add_int * i * max_
-        arr = np.hstack([arr, o_arr + add_arr])
+        arr = np.hstack([arr, o_arr[1:] + add_arr])
 
     return arr
 

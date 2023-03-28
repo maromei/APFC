@@ -40,7 +40,7 @@ def calc_single_surf_en_1d(
     d2eta = np.gradient(deta, x)
     d3eta = np.gradient(d2eta, x)
 
-    gsq = (G_rot[0] * np.cos(theta) + G_rot[1] * np.sin(theta)) ** 2
+    gsq = G_rot[0] ** 2 + G_rot[1] ** 2
 
     integ = 8 * gsq * deta**2
     integ += 4 * d2eta**2
@@ -50,7 +50,7 @@ def calc_single_surf_en_1d(
     return integ
 
 
-def calc_surf_en_1d(etas: np.array, n0, config, theta: float) -> float:
+def calc_surf_en_1d2(etas: np.array, n0, config, theta: float) -> float:
     """
     Calculates the 1d surface energy according to equation
     :eq:`eqn:surf_en_calc_1d`.
@@ -85,75 +85,75 @@ def calc_surf_en_1d(etas: np.array, n0, config, theta: float) -> float:
     return integ
 
 
-def calc_surf_en_1d2(etas: np.array, n0, config_, theta: float) -> float:
+def calc_surf_en_1d(etas, n0, config, theta, div_interface_width=True):
 
-    config = config_.copy()
+    config = config.copy()
+    eta_count = etas.shape[0]
 
-    x_all = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
-    x, etas = utils.get_positive_range(x_all, etas, True)
-    dx = np.abs(np.diff(x)[0])
+    is_n0_sim = config["simType"] == "n0"
 
-    try:
-        _, n0 = utils.get_positive_range(x_all, n0)
-    except TypeError:  # is nuemrical value
-        pass
+    ##########################
+    ### get positive range ###
+    ##########################
 
-    interface_width = get_interface_width(x, etas[0].flatten())
+    x_full = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
+    x, etas = utils.get_positive_range(x_full, etas, True)
 
-    F = energy_functional_1d(etas, n0, x, config, theta)
-    chem_pot = get_chemical_potential(etas, n0, config)
+    dx = np.abs(x_full[1] - x_full[0])
 
-    _, Vl = get_phase_volumes(etas[0], dx)
+    if is_n0_sim:
+        _, n0 = utils.get_positive_range(x_full, n0)
 
-    if config["simType"] == "n0":
-        _, nl = get_phase_eq_values(n0)
-    else:
-        nl = n0
+    ################
+    ### rotate G ###
+    ################
 
-    liq_etas = []
-    for eta_i in range(etas.shape[0]):
-        _, liq = get_phase_eq_values(etas[eta_i])
-        liq_etas.append(liq)
-    liq_etas = np.array(liq_etas)
+    G = np.array(config["G"])
+    G_rot = G.copy()
 
-    fl = sub_energy_functional_1d(etas, n0, x, config, theta)[-1]
-    mul = get_chemical_potential(liq_etas, nl, config)
+    rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
 
-    ret = F - scipy.integrate.simpson(chem_pot * n0, x)
-    # ret -= Vl * (fl - mul * nl)
+    for eta_i in range(eta_count):
+        G_rot[eta_i] = rot.dot(G[eta_i])
 
-    # print(ret, Vl)
+    ###############
+    ### eta sum ###
+    ###############
 
-    if np.any(ret.shape == 1):
-        ret = ret[0]
+    eta_sum = np.zeros(etas[0].shape)
+    for eta_i in range(eta_count):
+        eta_sum += etas[eta_i] * np.conj(etas[eta_i])
 
-    return ret  # / interface_width
+    interface_width = 1
+    if div_interface_width:
+        interface_width = get_interface_width(x, eta_sum)
 
+    ########################
+    ### integrand values ###
+    ########################
 
-def calc_surf_en_1d3(etas: np.array, n0, config_, theta: float) -> float:
+    _, n0_liq = get_phase_eq_values(n0)
 
-    config = config_.copy()
+    f = sub_energy_functional_1d(etas, n0, dx, config, G_rot)
+    mu = get_chemical_potential(etas, n0, config)
 
-    x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
-    is_gte_0_i = (x >= 0).nonzero()
-    x = x[is_gte_0_i]
-    dx = np.abs(np.diff(x)[0])
+    # this array is needed because the sub_energy_functional calculates
+    # gradients. It is a waste of space, but bettern than rewriting the
+    # fucntion. It is in the shape of all etas, so the output of the
+    # subenergy functional fits to the f shape and the `ret` calculation
+    # below works seemlessly.
+    full_etas_liq = np.zeros(etas.shape)
+    f_liq = sub_energy_functional_1d(full_etas_liq, n0_liq, dx, config, G_rot)
 
-    etas = etas[:, is_gte_0_i]
-    try:
-        n0 = n0[is_gte_0_i]
-    except TypeError:  # is nuemrical value
-        pass
+    #################
+    ### integrate ###
+    #################
 
-    ns, nl = get_phase_eq_values(n0)
-    f = sub_energy_functional_1d(etas, n0, x, config, theta)
-    fl = f[-1]
-    fs = f[0]
+    ret = f - mu * n0 - f_liq + mu * n0_liq
+    ret = scipy.integrate.simpson(ret, x)
 
-    nret = (n0 - nl) / (ns - nl)
-
-    ret = f - fs * nret + fl * nret
-    ret = scipy.integrate.simpson(ret)
+    if div_interface_width:
+        ret = ret / interface_width
 
     return ret
 
@@ -199,18 +199,7 @@ def energy_functional_1d(etas, n0, x, config, theta):
     return ret
 
 
-def sub_energy_functional_1d(etas, n0, x, config, theta):
-
-    # fmt: off
-    rot = np.array([
-        [np.cos(theta), -np.sin(theta)],
-        [np.sin(theta), np.cos(theta)]
-    ])
-    # fmt: on
-
-    G = np.array(config["G"])
-    for eta_i in range(G.shape[0]):
-        G[eta_i] = rot.dot(G[eta_i])
+def sub_energy_functional_1d(etas, n0, dx, config, G):
 
     a = params.A(config)
     b = params.B(config, n0)
@@ -223,22 +212,18 @@ def sub_energy_functional_1d(etas, n0, x, config, theta):
     sum_ = np.zeros(etas[0].shape)
     for eta_i in range(etas.shape[0]):
 
-        deta = np.gradient(etas[eta_i].flatten(), x)
-        d2eta = np.gradient(deta, x)
+        deta = np.gradient(etas[eta_i].flatten(), dx)
+        d2eta = np.gradient(deta, dx)
 
-        G_elem = 1
+        G_elem = G[eta_i, 0] ** 2 + G[eta_i, 1] ** 2
 
-        op = d2eta + 2 * complex(0, 1) * G_elem * deta
-        op = np.real(op * np.conj(op))
+        op = d2eta**2 + G_elem * deta**2
 
         sum_ += a * op - 3 * d / 2 * etas[eta_i] ** 4
 
     ret = b / 2 * phi_
     ret += 3 * d / 4 * phi_**2
-    ret += op + tri_f + e
-
-    if np.any(ret.shape == 1):
-        ret = ret.flatten()
+    ret += sum_ + tri_f + e
 
     return ret
 
@@ -256,8 +241,15 @@ def calc_stiffness(surf_en: np.array, thetas: np.array) -> np.array:
         np.array: stiffness per angle
     """
 
+    o_len = surf_en.shape[0]
+    en = utils.fill(surf_en, 3, False)
     dx = np.diff(thetas)[0]
-    return surf_en + np.gradient(np.gradient(surf_en, dx), dx)
+
+    stiff = en + np.gradient(np.gradient(en, dx), dx)
+
+    stiff = stiff[o_len - 1 : 2 * o_len - 1]
+
+    return stiff
 
 
 def get_phase_eq_values(arr: np.array) -> tuple[float, float]:

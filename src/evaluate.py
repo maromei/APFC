@@ -93,43 +93,7 @@ for theta_i, theta in enumerate(thetas):
         ## Surface Energy ##
         ####################
 
-        """e = np.hstack([etas[0], etas[1], etas[2]])
-        x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
-        x = np.hstack([x, x, x])
-        G = np.array(config["G"])
-        A = config["Bx"]
-
-        surf_en = observables.calc_single_surf_en_1d(x, e, theta, G[2], A)"""
-
-        """G = np.array(config["G"])
-        rot = np.array([
-            [np.cos(theta), -np.sin(theta)],
-            [np.sin(theta), np.cos(theta)]
-        ])
-
-        x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
-        dx = np.abs(x[0] - x[1])
-
-        integ = np.zeros(etas[0].shape)
-
-        A = config["Bx"]
-
-        for eta_i in range(etas.shape[0]):
-            G_rot = rot.dot(G[eta_i])
-
-            deta = np.gradient(etas[eta_i], dx)
-            d2eta = np.gradient(deta, dx)
-            d3eta = np.gradient(d2eta, dx)
-
-            gsq = (G_rot[0] * np.cos(theta) + G_rot[1] * np.sin(theta)) ** 2
-
-            integ += 8 * gsq * deta**2
-            integ += 4 * d2eta**2
-            integ -= 2 * deta * d3eta
-
-        surf_en = A * scipy.integrate.simpson(integ, x)"""
-
-        surf_en = observables.calc_surf_en_1d2(etas, n0, config, theta)
+        surf_en = observables.calc_surf_en_1d(etas, n0, config, theta)
         df_surf_en.iloc[entry_i, theta_i] = surf_en
 
 ##########################
@@ -153,8 +117,10 @@ for i in range(df_surf_en.shape[0]):
 
     try:
         df_fits.iloc[i, :] = triangular.fit_surf_en(thetas, df_surf_en.iloc[i, :])
-    except ValueError as e:
-        print("Could not calculate the fits because of the Error:")
+    except Exception as e:
+        print(
+            f"Could not calculate the fits for index {i}/{line_count} because of the Error:"
+        )
         print(e)
         print("Skipping...")
 
