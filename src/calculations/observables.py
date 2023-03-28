@@ -279,10 +279,10 @@ def get_phase_volumes(arr: np.array, dx=float, dy: float = 1.0) -> tuple[float, 
 
 def get_interface_width(x: np.array, y: np.array) -> float:
 
-    return fit_to_pos_tanhmin[1]
+    return fit_to_tanhmin[1]
 
 
-def fit_to_pos_tanhmin(x: np.array, y: np.array) -> float:
+def fit_to_tanhmin(x: np.array, y: np.array) -> float:
 
     tanhfit = lambda x, r, eps: tanhmin(x - r, eps)
 
