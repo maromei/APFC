@@ -213,3 +213,7 @@ def get_positive_range(x, arrs, do_second_entry=False):
         new_arr = arrs[is_gte_0_i]
 
     return new_x, new_arr
+
+
+def get_vary_val_dir_name(vary_val: float) -> str:
+    return f"{vary_val:.6f}"
