@@ -126,7 +126,7 @@ def calc_surf_en_1d(etas, n0, config, theta, div_interface_width=True):
 
     interface_width = 1
     if div_interface_width:
-        interface_width = get_interface_width(x, eta_sum)
+        interface_width = get_interface_width(x, eta_sum, config["interfaceWidth"])
 
     ########################
     ### integrand values ###
@@ -277,21 +277,25 @@ def get_phase_volumes(arr: np.array, dx=float, dy: float = 1.0) -> tuple[float, 
     return sol_area, liq_area
 
 
-def get_interface_width(x: np.array, y: np.array) -> float:
+def get_interface_width(x: np.array, y: np.array, initIntWidth: float = 5.0) -> float:
 
-    return fit_to_tanhmin[1]
+    return fit_to_tanhmin(x, y, initIntWidth)[1]
 
 
-def fit_to_tanhmin(x: np.array, y: np.array) -> float:
+def fit_to_tanhmin(x: np.array, y: np.array, initIntWidth: float = 5.0) -> float:
 
     tanhfit = lambda x, r, eps: tanhmin(x - r, eps)
 
     y_fit = y - np.min(y)
     y_fit = y_fit / np.max(y)
 
-    popt, pcov = scipy.optimize.curve_fit(tanhfit, x, y_fit)
+    dx = np.abs(x[0] - x[1])
 
-    if np.any(pcov > 1e-1):
+    sol_area, _ = get_phase_volumes(y, dx)
+
+    popt, pcov = scipy.optimize.curve_fit(tanhfit, x, y_fit, [sol_area, initIntWidth])
+
+    if np.any(pcov > 1e-1) or np.any(np.isnan(pcov)):
         print("WARNING:")
         print("Fitting interface width resulted in large variance!", pcov)
 
