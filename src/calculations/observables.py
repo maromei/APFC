@@ -279,6 +279,11 @@ def get_phase_volumes(arr: np.array, dx=float, dy: float = 1.0) -> tuple[float, 
 
 def get_interface_width(x: np.array, y: np.array) -> float:
 
+    return fit_to_pos_tanhmin[1]
+
+
+def fit_to_pos_tanhmin(x: np.array, y: np.array) -> float:
+
     tanhfit = lambda x, r, eps: tanhmin(x - r, eps)
 
     y_fit = y - np.min(y)
@@ -290,7 +295,7 @@ def get_interface_width(x: np.array, y: np.array) -> float:
         print("WARNING:")
         print("Fitting interface width resulted in large variance!", pcov)
 
-    return popt[1]
+    return popt
 
 
 def phi(etas):
