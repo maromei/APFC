@@ -47,9 +47,9 @@ line_count = rw.count_lines(f"{sim_path}/eta_files/0.0000/out_0.txt")
 
 x = np.linspace(-config["xlim"], config["xlim"], config["numPtsX"])
 
-###########
-## EVALS ##
-###########
+############################
+## BUILD EMPTY DATAFRAMES ##
+############################
 
 thetas = utils.get_thetas(config)
 thetas_str = [f"{theta:.4f}" for theta in thetas]
@@ -67,6 +67,10 @@ eval_columns = [
 eval_index = pd.MultiIndex.from_product([[i for i in range(line_count)], eval_columns])
 df_eval = pd.DataFrame(colums=thetas_str, index=eval_index)
 
+#####################
+## THETA ITERATION ##
+#####################
+
 for theta_i, theta in enumerate(thetas):
 
     theta_dir = f"{sim_path}/eta_files/{theta:.4f}"
@@ -81,6 +85,10 @@ for theta_i, theta in enumerate(thetas):
     )
 
     theta_col_name = thetas_str[theta_i]
+
+    #####################
+    ## ENTRY ITERATION ##
+    #####################
 
     for entry_i, entry in enumerate(eta_it):
 
