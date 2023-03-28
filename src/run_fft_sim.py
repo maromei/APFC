@@ -1,9 +1,15 @@
+import os
+import shutil
 import sys
 import time
 import datetime
 import argparse
+import json
 
-from sim import fft_sim
+import numpy as np
+
+from sim import fft_sim, parameter_sets
+from manage import utils
 
 ####################
 ## SETUP ARGPARSE ##
@@ -67,53 +73,176 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-###############
-## SETUP SIM ##
-###############
+######################
+## RUN SIM FUNCTION ##
+######################
 
-thread_list = fft_sim.initialize_sim_threads(
-    args.sim_path,
-    args.calcdb0,
-    not args.skipetacalc,
-    args.calcn0,
-    args.threadcount,
-    args.continuesim,
-    args.applyparamset,
-)
 
-start_time = time.time()
-curr_date_time = datetime.datetime.now()
-print(f"Starting Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")
+def run_sim(
+    sim_path: str,
+    calcdb0: bool,
+    skipetacalc: bool,
+    calcn0: bool,
+    threadcount: int,
+    continuesim: bool,
+    applyparamset: bool,
+):
 
-#############
-## RUN SIM ##
-#############
+    thread_list = fft_sim.initialize_sim_threads(
+        sim_path,
+        calcdb0,
+        not skipetacalc,
+        calcn0,
+        threadcount,
+        continuesim,
+        applyparamset,
+    )
 
-for i in range(len(thread_list)):
-    thread_list[i].start()
+    start_time = time.time()
+    curr_date_time = datetime.datetime.now()
+    print(f"Starting Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-while fft_sim.are_processes_running(thread_list):
-    fft_sim.print_progress_string()
-    time.sleep(5)
+    #############
+    ## RUN SIM ##
+    #############
 
-sys.stdout.write(f"\n")
-sys.stdout.flush()
+    for i in range(len(thread_list)):
+        thread_list[i].start()
 
-for i in range(len(thread_list)):
-    thread_list[i].join()
+    while fft_sim.are_processes_running(thread_list):
+        fft_sim.print_progress_string()
+        time.sleep(5)
+
+    sys.stdout.write(f"\n")
+    sys.stdout.flush()
+
+    for i in range(len(thread_list)):
+        thread_list[i].join()
+
+    ################
+    ## FINISH SIM ##
+    ################
+
+    time_diff = int(time.time() - start_time)
+    hours = time_diff // (60.0 * 60)
+    time_diff -= hours * 60 * 60
+    minutes = time_diff // 60
+    time_diff -= minutes * 60
+    seconds = time_diff
+
+    print(f"Time: {int(hours)}:{int(minutes)}:{int(seconds)}")
+
+    curr_date_time = datetime.datetime.now()
+    print(f"End Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")
+
 
 ################
-## FINISH SIM ##
+## GET CONFIG ##
 ################
 
-time_diff = int(time.time() - start_time)
-hours = time_diff // (60.0 * 60)
-time_diff -= hours * 60 * 60
-minutes = time_diff // 60
-time_diff -= minutes * 60
-seconds = time_diff
+sim_path = utils.make_path_arg_absolute(args.sim_path)
+config = utils.get_config(sim_path)
 
-print(f"Time: {int(hours)}:{int(minutes)}:{int(seconds)}")
+#################
+## HANDLE VARY ##
+#################
 
-curr_date_time = datetime.datetime.now()
-print(f"End Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")
+if config.get("vary", False):
+
+    ### Get relevant values ###
+
+    vary_values = np.linspace(
+        config["varyStart"], config["varyEnd"], config["varyAmount"]
+    )
+
+    vary_path = f"{sim_path}/{config['varyParam']}"
+
+    ### Remove Dir incase it exists ###
+
+    if os.path.exists(vary_path):
+        shutil.rmtree(vary_path)
+    os.makedirs(vary_path)
+
+    ### Time ###
+
+    start_time = time.time()
+    curr_date_time = datetime.datetime.now()
+    print(
+        "########\n"
+        f"Starting Time with varying {config['varyParam']}: "
+        f"{curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+        "########\n"
+    )
+
+    for vary_i, vary_val in enumerate(vary_values):
+
+        ### build new config ###
+
+        new_sim_path = f"{vary_path}/{utils.get_vary_val_dir_name(vary_val)}"
+        new_config_path = f"{new_sim_path}/config.json"
+
+        os.makedirs(new_sim_path)
+
+        new_config = config.copy()
+        # just to be save in avoiding recursive behaviour
+        config["vary"] = False
+        config["simPath"] = new_sim_path
+        config[config["varyParam"]] = vary_val
+
+        with open(new_config_path, "w+") as f:
+            json.dump(config, f)
+
+        ### Run Sim ###
+
+        print(
+            f"Running "
+            f"{config['varyParam']}={utils.get_vary_val_dir_name(vary_val)} "
+            f"({vary_i}/{vary_values.shape[0]})."
+        )
+
+        run_sim(
+            new_sim_path,
+            args.calcdb0,
+            args.skipetacalc,
+            args.calcn0,
+            args.threadcount,
+            args.continuesim,
+            args.applyparamset,
+        )
+
+        print("")  # Just one empty line for better terminal readability.
+
+    ################
+    ## FINISH SIM ##
+    ################
+
+    time_diff = int(time.time() - start_time)
+    hours = time_diff // (60.0 * 60)
+    time_diff -= hours * 60 * 60
+    minutes = time_diff // 60
+    time_diff -= minutes * 60
+    seconds = time_diff
+
+    print(f"Time: {int(hours)}:{int(minutes)}:{int(seconds)}")
+
+    curr_date_time = datetime.datetime.now()
+    print(f"End Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}")
+
+    print(
+        "\n########\n"
+        f"Total time: {int(hours)}:{int(minutes)}:{int(seconds)}\n"
+        f"End Time: {curr_date_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+        "########"
+    )
+
+else:
+
+    run_sim(
+        args.sim_path,
+        args.calcdb0,
+        args.skipetacalc,
+        args.calcn0,
+        args.threadcount,
+        args.continuesim,
+        args.applyparamset,
+    )
