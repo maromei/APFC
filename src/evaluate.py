@@ -56,8 +56,16 @@ thetas_str = [f"{theta:.4f}" for theta in thetas]
 
 df_surf_en = pd.DataFrame(columns=thetas_str, index=range(line_count))
 
-eval_columns = ["eqEtaSolid", "eqEtaLiquid", "eqN0Solid", "eqN0Liquid"]
-eval_all = np.zeros((line_count, thetas.shape[0], 6))
+eval_columns = [
+    "eqEtaSolid",
+    "eqEtaLiquid",
+    "eqN0Solid",
+    "eqN0Liquid",
+    "interfaceWidth",
+    "radius",
+]
+eval_index = pd.MultiIndex.from_product([[i for i in range(line_count)], eval_columns])
+df_eval = pd.DataFrame(colums=thetas_str, index=eval_index)
 
 for theta_i, theta in enumerate(thetas):
 
@@ -71,6 +79,8 @@ for theta_i, theta in enumerate(thetas):
         float,
         config["simType"] == "n0",
     )
+
+    theta_col_name = thetas_str[theta_i]
 
     for entry_i, entry in enumerate(eta_it):
 
@@ -96,14 +106,42 @@ for theta_i, theta in enumerate(thetas):
         surf_en = observables.calc_surf_en_1d(etas, n0, config, theta)
         df_surf_en.iloc[entry_i, theta_i] = surf_en
 
-##########################
-## Widen Surface Energy ##
-##########################
+        ######################
+        ## Eval Observables ##
+        ######################
+
+        eta_sum = np.zeros(etas[0].shape)
+        for eta_i in range(eta_count):
+            eta_sum += etas[eta_i] ** 2
+
+        x_pos, eta_sum = utils.get_positive_range(x, eta_sum)
+
+        eta_s, eta_l = observables.get_phase_eq_values(eta_sum)
+        radius, intWidth = observables.fit_to_pos_tanhmin(x_pos, eta_sum)
+
+        n0_s = n0
+        n0_l = n0
+
+        if include_n0:
+            n0_s, n0_l = observables.get_phase_eq_values(n0)
+
+        df_eval.loc[(entry_i, "eqEtaSolid"), theta_col_name] = eta_s
+        df_eval.loc[(entry_i, "eqEtaLiquid"), theta_col_name] = eta_l
+        df_eval.loc[(entry_i, "eqN0Solid"), theta_col_name] = n0_s
+        df_eval.loc[(entry_i, "eqN0Liquid"), theta_col_name] = n0_l
+        df_eval.loc[(entry_i, "interfaceWidth"), theta_col_name] = intWidth
+        df_eval.loc[(entry_i, "radius"), theta_col_name] = radius
+
+
+######################
+## Widen DataFrames ##
+######################
 
 thetas = utils.fill(thetas, config["thetaDiv"], True)
 thetas_str = [f"{theta:.4f}" for theta in thetas]
 
 df_surf_en = utils.fill_df(df_surf_en, thetas_str, config["thetaDiv"])
+df_eval = utils.fill_df(df_eval, thetas_str, config["thetaDiv"])
 
 #######################
 ## Stiffness and Fits##
@@ -131,3 +169,4 @@ for i in range(df_surf_en.shape[0]):
 df_surf_en.to_csv(f"{out_dir}/surf_en.csv")
 df_stiff.to_csv(f"{out_dir}/stiff.csv")
 df_fits.to_csv(f"{out_dir}/fits.csv")
+df_eval.to_csv(f"{out_dir}/eval.csv")
