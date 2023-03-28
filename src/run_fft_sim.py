@@ -197,7 +197,7 @@ if config.get("vary", False):
         print(
             f"Running "
             f"{config['varyParam']}={utils.get_vary_val_dir_name(vary_val)} "
-            f"({vary_i}/{vary_values.shape[0]})."
+            f"({vary_i + 1}/{vary_values.shape[0]})."
         )
 
         run_sim(
