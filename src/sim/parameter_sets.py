@@ -54,4 +54,9 @@ DEFAULT_CONFIG = {
     "eqSteps": 0,
     "simPath": "",
     "simType": "base",
+    "vary": False,
+    "varyParam": "Bx",
+    "varyStart": 0.0,
+    "varyEnd": 1.0,
+    "varyAmount": 100,
 }
