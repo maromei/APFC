@@ -193,10 +193,8 @@ config = utils.get_config(sim_path)
 
 if config.get("vary", False):
 
-    vary_values = np.linspace(
-        config["varyStart"], config["varyEnd"], config["varyAmount"]
-    )
     vary_path = f"{sim_path}/{config['varyParam']}"
+    vary_values = utils.read_vary_vals_from_dir(vary_path, config["varyParam"])
 
     for vary_i, vary_val in enumerate(vary_values):
         print(

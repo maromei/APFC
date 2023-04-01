@@ -217,3 +217,23 @@ def get_positive_range(x, arrs, do_second_entry=False):
 
 def get_vary_val_dir_name(vary_val: float) -> str:
     return f"{vary_val:.6f}"
+
+
+def read_vary_vals_from_dir(vary_dir: str, vary_val_key: str) -> np.ndarray[float]:
+
+    all_files = os.listdir(
+        vary_dir,
+    )
+
+    dirs = []
+    for sim_dir in all_files:
+        full_path = f"{vary_dir}/{sim_dir}"
+        if os.path.isdir(full_path):
+            dirs.append(full_path)
+
+    vary_vals = np.zeros(len(dirs))
+    for sim_dir_i, sim_dir in enumerate(dirs):
+        config = get_config(sim_dir)
+        vary_vals[sim_dir_i] = config[vary_val_key]
+
+    return vary_vals
