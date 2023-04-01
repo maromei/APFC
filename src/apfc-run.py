@@ -260,4 +260,5 @@ else:
         args.threadcount,
         args.continuesim,
         args.applyparamset,
+        args.keepdir,
     )
