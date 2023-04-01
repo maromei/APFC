@@ -171,9 +171,11 @@ if config.get("vary", False):
 
     ### Remove Dir incase it exists ###
 
-    if os.path.exists(vary_path):
+    if os.path.exists(vary_path) and not args.keepdir:
         shutil.rmtree(vary_path)
-    os.makedirs(vary_path)
+
+    if not os.path.exists(vary_path):
+        os.makedirs(vary_path)
 
     ### Time ###
 
