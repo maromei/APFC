@@ -48,7 +48,9 @@ def calc_surf_en_1d(etas, n0, config, theta, div_interface_width=True):
 
     interface_width = 1
     if div_interface_width:
-        interface_width = get_interface_width(x, eta_sum, config["interfaceWidth"])
+        interface_width = get_interface_width(x, eta_sum, True)
+        if interface_width is None:
+            return 0.0
 
     ########################
     ### integrand values ###
@@ -199,12 +201,12 @@ def get_phase_volumes(arr: np.array, dx=float, dy: float = 1.0) -> tuple[float, 
     return sol_area, liq_area
 
 
-def get_interface_width(x: np.array, y: np.array, initIntWidth: float = 5.0) -> float:
+def get_interface_width(x: np.array, y: np.array, silent: bool = True) -> float:
 
-    return fit_to_tanhmin(x, y, initIntWidth)[1]
+    return fit_to_tanhmin(x, y, silent)[1]
 
 
-def fit_to_tanhmin(x: np.array, y: np.array, initIntWidth: float = 5.0) -> float:
+def fit_to_tanhmin(x: np.array, y: np.array, silent: bool = True) -> float:
 
     tanhfit = lambda x, r, eps: tanhmin(x - r, eps)
 
@@ -213,13 +215,30 @@ def fit_to_tanhmin(x: np.array, y: np.array, initIntWidth: float = 5.0) -> float
 
     dx = np.abs(x[0] - x[1])
 
-    sol_area, _ = get_phase_volumes(y, dx)
+    ### make first general estimate for fit ###
 
-    popt, pcov = scipy.optimize.curve_fit(tanhfit, x, y_fit, [sol_area, initIntWidth])
+    dy = np.abs(np.gradient(y_fit, dx))
+    dy = dy / np.max(dy)
 
-    if np.any(pcov > 1e-1) or np.any(np.isnan(pcov)):
-        print("WARNING:")
-        print("Fitting interface width resulted in large variance!", pcov)
+    dyoverthresh = dy > 0.2
+    initIntWidth = np.sum(dyoverthresh) * dx
+
+    if initIntWidth == 0:
+        return 0.0, 0.0
+
+    sol_area = np.median(x[np.where(dyoverthresh)])
+
+    ###  ###
+
+    popt, pcov = scipy.optimize.curve_fit(
+        tanhfit, x, y_fit, p0=[sol_area, initIntWidth]
+    )
+
+    if np.any(pcov > 1) or np.any(np.isnan(pcov)):
+        if not silent:
+            print("WARNING:")
+            print("Fitting interface width resulted in large variance!", pcov)
+        return None, None
 
     return popt
 

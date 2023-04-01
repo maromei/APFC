@@ -89,7 +89,19 @@ def fit_surf_en(thetas: np.array, surf_en: np.array) -> tuple[float, float]:
         tuple[float, float]: :math:`\\varepsilon, \\gamma_0`
     """
 
-    popt, pcov = scipy.optimize.curve_fit(theo_surf_en, thetas, surf_en)
+    if np.sum(surf_en == 0.0) == surf_en.shape[0]:
+        return 0.0, 0.0
+
+    gamma0 = (np.max(surf_en) - np.min(surf_en)) / 2
+    eps = 1
+
+    if gamma0 < 0.1:
+        eps = 0.0
+
+    popt, pcov = scipy.optimize.curve_fit(
+        theo_surf_en, thetas, surf_en, p0=[eps, gamma0]
+    )
+
     return popt
 
 

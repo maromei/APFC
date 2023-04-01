@@ -130,9 +130,7 @@ def run_evaluation(sim_path: str):
             x_pos, eta_sum = utils.get_positive_range(x, eta_sum)
 
             eta_s, eta_l = observables.get_phase_eq_values(eta_sum)
-            radius, intWidth = observables.fit_to_tanhmin(
-                x_pos, eta_sum, config["interfaceWidth"]
-            )
+            radius, intWidth = observables.fit_to_tanhmin(x_pos, eta_sum, True)
 
             n0_s = n0
             n0_l = n0
