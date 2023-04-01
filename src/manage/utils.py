@@ -59,7 +59,7 @@ def build_sim_info_str(
         {theta_str}
         $B^x = {config['Bx']:.4f}, n_0 = {config['n0']:.4f}$
         $v = {config['v']:.4f}, t = {config['t']:.4f}$
-        $\\Delta B^0 = {config['dB0']:.4f}$
+        $\\Delta B^0 = {config['dB0']:.4f}, \\beta = {config['beta']:.4f}$
         $\\mathrm{{d}}t = {config['dt']:.4f}$ \\vspace{{0.5em}}
         initial Radius: {config['initRadius']:.4f}
         initial Eta in solid: {config['initEta']:.4f}

@@ -38,6 +38,7 @@ DEFAULT_CONFIG = {
     "n0": -0.03,
     "t": 0.5,
     "v": 0.3333333333333333,
+    "beta": 1.0,
     "dt": 0.75,
     "initRadius": 10,
     "interfaceWidth": 5.0,

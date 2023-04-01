@@ -130,6 +130,8 @@ def sub_energy_functional_1d(etas, n0, dx, config, G):
     d = params.D(config)
     e = params.E(config, n0)
 
+    beta = config["beta"]
+
     phi_ = phi(etas)
     tri_f = triangular_one_mode_func(etas, n0, config)
 
@@ -141,7 +143,7 @@ def sub_energy_functional_1d(etas, n0, dx, config, G):
 
         G_elem = G[eta_i, 0] ** 2 + G[eta_i, 1] ** 2
 
-        op = d2eta**2 + G_elem * deta**2
+        op = beta * d2eta**2 + G_elem * deta**2
 
         sum_ += a * op - 3 * d / 2 * etas[eta_i] ** 4
 

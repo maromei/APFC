@@ -18,6 +18,7 @@ class FFTN0Sim:
     v: float = 1.0 / 3.0  #: param in eq. :eq:`eqn:apfc_flow_constants`
     dB0: float = 0.044  #: :math:`\Delta B^0` param in eq. :eq:`eqn:apfc_flow_constants`
     Bx: float = 0.988  #: :math:`B^x` param in eq. :eq:`eqn:apfc_flow_constants`
+    beta_sqrt: float = 1  #: :math:`\sqrt\beta` in eq. :eq:`eqn:apfc_flow_constants`
 
     init_n0: float = 0.0
 
@@ -74,6 +75,7 @@ class FFTN0Sim:
         self.D = params.D(config)
         self.t = config.get("t", self.t)
         self.v = config.get("v", self.v)
+        self.beta_sqrt = np.sqrt(config.get("beta", 1.0))
         self.init_n0 = config.get("n0", self.init_n0)
 
         self.dB0 = config.get("dB0", self.dB0)
@@ -277,7 +279,7 @@ class FFTN0Sim:
             np.array: operator
         """
 
-        ret = self.kxm**2 + self.kym**2
+        ret = self.beta_sqrt * (self.kxm**2 + self.kym**2)
         ret += 2.0 * self.G[eta_i, 0] * self.kxm
         ret += 2.0 * self.G[eta_i, 1] * self.kym
 

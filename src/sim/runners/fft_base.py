@@ -14,6 +14,7 @@ class FFTBaseSim:
     B: float = 0.044  #: param in eq. :eq:`eqn:apfc_flow_constants`
     C: float = -0.5  #: param in eq. :eq:`eqn:apfc_flow_constants`
     D: float = 0.33333  #: param in eq. :eq:`eqn:apfc_flow_constants`
+    beta_sqrt: float = 1.0  #: :math:`\sqrt\beta` in eq. :eq:`eqn:apfc_flow_constants`
 
     #: The bounds of the domain :math:`[-\text{xlim}, \text{xlim}]^2`
     xlim: int = 400
@@ -61,6 +62,7 @@ class FFTBaseSim:
         self.B = params.B(config)
         self.C = params.C(config)
         self.D = params.D(config)
+        self.beta_sqrt = np.sqrt(config.get("beta", 1.0))
 
         self.xlim = config.get("xlim", self.xlim)
         self.pt_count_x = config.get("numPtsX", self.pt_count_x)
@@ -232,7 +234,7 @@ class FFTBaseSim:
             np.array: operator
         """
 
-        ret = self.kxm**2 + self.kym**2
+        ret = self.beta_sqrt * (self.kxm**2 + self.kym**2)
         ret += 2.0 * self.G[eta_i, 0] * self.kxm
         ret += 2.0 * self.G[eta_i, 1] * self.kym
 
