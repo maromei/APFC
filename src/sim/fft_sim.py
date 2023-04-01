@@ -57,6 +57,7 @@ def initialize_sim_threads(
     thread_count: int,
     continue_sim: bool,
     param_set: int | None,
+    keep_dir: bool,
 ) -> list[mp.Process]:
     """
     Initializes a simulation with its threads
@@ -79,6 +80,8 @@ def initialize_sim_threads(
             :py:data:`sim/parameter_sets.PARAM_SETS`
             with the corresponding index will be applied to the
             config.
+        keep_dir (bool): If the simulation is not continued, the directories
+            are usually deleted. This options keeps this from happening.
 
     Returns:
         list[mp.Process]: The list of processes.
@@ -124,7 +127,7 @@ def initialize_sim_threads(
     thetas = utils.get_thetas(config)
 
     eta_path = f"{sim_path}/eta_files"
-    if not continue_sim and os.path.exists(eta_path):
+    if not continue_sim and os.path.exists(eta_path) and not keep_dir:
         shutil.rmtree(eta_path)
 
     if not os.path.exists(eta_path):

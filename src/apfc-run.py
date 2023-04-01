@@ -64,6 +64,16 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "-kd",
+    "--keepdir",
+    action="store_true",
+    help=(
+        "Usally the directory will be delted when the simulations "
+        "are not continued. With this option, everything is kept."
+    ),
+)
+
+parser.add_argument(
     "-aps",
     "--applyparamset",
     action="store",
@@ -86,6 +96,7 @@ def run_sim(
     threadcount: int,
     continuesim: bool,
     applyparamset: bool,
+    keepdir: bool,
 ):
 
     thread_list = fft_sim.initialize_sim_threads(
@@ -96,6 +107,7 @@ def run_sim(
         threadcount,
         continuesim,
         applyparamset,
+        keepdir,
     )
 
     start_time = time.time()
@@ -208,6 +220,7 @@ if config.get("vary", False):
             args.threadcount,
             args.continuesim,
             args.applyparamset,
+            args.keepdir,
         )
 
         print("")  # Just one empty line for better terminal readability.
