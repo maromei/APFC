@@ -1,6 +1,6 @@
 #!/bin/bash
 
-alias apfc-watch='python src/watch.py'
-alias apfc-eval='python src/evaluate.py'
-alias apfc-run='python src/run_fft_sim.py'
-alias apfc-generate-ps="python src/generate_param_set.py"
+alias apfc-watch='python src/apfc-watch.py'
+alias apfc-eval='python src/apfc-eval.py'
+alias apfc-run='python src/apfc-run.py'
+alias apfc-gen-param-set="python src/apfc-gen-param-set.py"
