@@ -53,8 +53,11 @@ def build_sim_info_str(
 
     is_1d = config["numPtsY"] <= 1
 
+    time = index * config["dt"]
+
     txt = f"""\
         \\begin{{center}}
+        time: {time}
         sim iteration: {index} \\vspace{{0.5em}}
         {theta_str}
         $B^x = {config['Bx']:.4f}, n_0 = {config['n0']:.4f}$
