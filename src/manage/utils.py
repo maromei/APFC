@@ -239,4 +239,6 @@ def read_vary_vals_from_dir(vary_dir: str, vary_val_key: str) -> np.ndarray[floa
         config = get_config(sim_dir)
         vary_vals[sim_dir_i] = config[vary_val_key]
 
+    vary_vals = np.sort(vary_vals)
+
     return vary_vals
