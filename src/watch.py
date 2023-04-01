@@ -52,13 +52,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-sp",
-    "--singleplot",
-    action="store_true",
-    help="Whether to plot just one timestep or animate it.",
-)
-
-parser.add_argument(
     "-pi",
     "--plotindex",
     action="store",
@@ -94,6 +87,17 @@ parser.add_argument(
     help="Skips this many entries per frame.",
 )
 
+parser.add_argument(
+    "-vv",
+    "--varyvalue",
+    action="store",
+    type=str,
+    help=(
+        "If the directory contains vary parameters, this specifies the folder."
+        "Default is the lowest value found."
+    ),
+)
+
 args = parser.parse_args()
 
 ####################
@@ -103,6 +107,17 @@ args = parser.parse_args()
 config = utils.get_config(args.sim_path)
 
 out_dir = utils.make_path_arg_absolute(args.sim_path)
+if config.get("vary", False):
+
+    out_dir = f"{out_dir}/{config['varyParam']}"
+
+    vary_dir_name = utils.get_vary_val_dir_name(config["varyStart"])
+    if args.varyvalue is not None:
+        vary_dir_name = args.varyvalue
+
+    out_dir = f"{out_dir}/{vary_dir_name}"
+    config = utils.get_config(out_dir)
+
 sim_path = f"{out_dir}/eta_files/{args.theta}"
 
 eta_count = len(config["G"])
