@@ -109,7 +109,7 @@ def initialize_sim_threads(
         config["dB0"] = dB0
 
     if calc_init_eta:
-        initialize.init_eta_height(config, use_pm=True, use_n0=False)
+        initialize.init_eta_height(config, use_pm=True, use_n0=True)
 
     if calc_init_n0:
         initialize.init_n0_height(config)
@@ -124,9 +124,11 @@ def initialize_sim_threads(
     thetas = utils.get_thetas(config)
 
     eta_path = f"{sim_path}/eta_files"
-    if os.path.exists(eta_path):
+    if not continue_sim and os.path.exists(eta_path):
         shutil.rmtree(eta_path)
-    os.makedirs(eta_path)
+
+    if not os.path.exists(eta_path):
+        os.makedirs(eta_path)
 
     return create_thread_list(
         config, thetas, thread_count, eta_path, continue_sim, config["simType"]
