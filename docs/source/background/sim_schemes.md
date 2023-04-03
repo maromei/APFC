@@ -22,8 +22,9 @@ $\mathcal{G}^2$ becomes:
 
 $$
 \begin{align}
-\mathcal{G}_m &= \nabla^2 + 2 \mathbb{i} \boldsymbol{G}_m \nabla \\
-\widehat{\mathcal{G}_m^2} &= \left( k_x^2 + k_y^2 + 2 G_m^{(x)} k_x + 2 G_m^{(y)} k_y \right)^2
+\mathcal{G}_m &= \sqrt\beta \nabla^2 + 2 \mathbb{i} \boldsymbol{G}_m \nabla \\
+\widehat{\mathcal{G}_m^2} &=
+\left[ \sqrt\beta\left(k_x^2 + k_y^2\right) + 2 G_m^{(x)} k_x + 2 G_m^{(y)} k_y \right]^2
 \end{align}
 $$ (eqn:g_sq_op_fourier)
 

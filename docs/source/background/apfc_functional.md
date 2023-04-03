@@ -15,6 +15,7 @@ $$
 $$ (eqn:apfc_energy_functional)
 
 With {cite:p}`2022Salvalaglio_apfc_overview` {cite:p}`2010Yeon_apfc_density`
+{cite:p}`2018Ofori_anisotrop_pfc`
 
 $$
 \begin{aligned}
@@ -25,7 +26,7 @@ D &= v \\
 E &= (\Delta B^0 + B^x) \frac{n_0^2}{2} - t \frac{n_0^3}{3} + v \frac{n_0^4}{4} \\
 v &= 1 / 3 \\
 \Phi &= 2 \sum\limits_m^M |\eta_m|^2 \\
-\mathcal{G}_m &= \nabla^2 + 2 \mathbb{i} \boldsymbol{G}_m \nabla
+\mathcal{G}_m &= \sqrt\beta \nabla^2 + 2 \mathbb{i} \boldsymbol{G}_m \nabla
 \end{aligned}
 $$ (eqn:apfc_flow_constants)
 
