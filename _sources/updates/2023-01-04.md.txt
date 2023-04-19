@@ -1,0 +1,19 @@
+# 2023-01-04
+
+One step index corresponds to 100 simulation iterations.
+
+## Sim 1
+
+![](../figures/updates/2023-01-04/2023-01-04_03_5000.png)
+
+## Sim 2
+
+![](../figures/updates/2023-01-04/2023-01-04_01_2500.png)
+![](../figures/updates/2023-01-04/2023-01-04_fft_02_db0m0.01.png)
+
+(2023-01-04_update#sim-3)=
+## Sim 3
+
+![](../figures/updates/2023-01-04/2023-01-04_2_4500.png)
+![](../figures/updates/2023-01-04/2023-01-04_fft_01_db00.01.png)
+![](../figures/updates/2023-01-04/2023-01-04_2_10000.png)

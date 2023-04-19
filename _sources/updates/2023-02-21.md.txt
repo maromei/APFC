@@ -1,0 +1,16 @@
+# 2023-02-21
+
+Updated scheme can be found here: [](ch:scheme_ampl_n0).
+
+The results now seem
+like they match the paper. Here is the end-result:
+
+![](../figures/updates/2023-02-21/endresult.png)
+
+Results of the {cite:t}`2010Yeon_apfc_density` for comparisson:
+
+![](../figures/updates/2023-02-20/yeon_results.png)
+
+The time-evolution towards the result:
+
+![](../figures/updates/2023-02-21/evolution.gif)

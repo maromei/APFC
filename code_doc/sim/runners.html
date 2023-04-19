@@ -1,0 +1,1185 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Parameter Sets" href="parameter_sets.html" /><link rel="prev" title="FFT Sim" href="fft_sim.html" />
+
+    <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.27 -->
+        <title>Runners - APFC</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">APFC</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">APFC</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../background/index.html">Background</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../background/apfc_functional.html">Energy Functional and Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../background/fourier.html">Fourier Approach</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../background/sim_schemes.html">Simulation Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../background/surf_en_stiff_wulf.html">Surface Energy, Stiffness ans Wulff Shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../background/init.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../background/bibliography.html">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Code Doc</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../calculations/index.html">Calculations</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../calculations/initialize.html">Initialize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../calculations/observables.html">Observables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../calculations/params.html">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../calculations/triangular.html">Triangular symmetry</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../manage/index.html">Manage</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../manage/utils.html">Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manage/read_write.html">Read and Write</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Simulations</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="fft_sim.html">FFT Sim</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Runners</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_sets.html">Parameter Sets</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../plots/index.html">Plots</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../plots/fields.html">Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plots/other.html">Other</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../config_reference.html">Config Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../updates/index.html">Updates</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../updates/2023-01-04.html">2023-01-04</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../updates/2023-01-16.html">2023-01-16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../updates/2023-01-24.html">2023-01-24</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../updates/2023-02-20.html">2023-02-20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../updates/2023-02-21.html">2023-02-21</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../updates/2023-03-14.html">2023-03-14</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../updates/2023-04-17.html">2023-04-17</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="runners">
+<h1>Runners<a class="headerlink" href="#runners" title="Permalink to this heading">#</a></h1>
+<section id="amplitude-only-runner">
+<h2>Amplitude only Runner<a class="headerlink" href="#amplitude-only-runner" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sim.runners.fft_base.</span></span><span class="sig-name descname"><span class="pre">FFTBaseSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">con_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim" title="Permalink to this definition">#</a></dt>
+<dd><p>This class is supposed to run a base FFT simulations, where
+<span class="math notranslate nohighlight">\(n_0\)</span> is constant everywhere.</p>
+<p>For more information see the <a class="reference internal" href="../../background/sim_schemes.html#ch-scheme-ampl"><span class="std std-ref">Just the amplitudes</span></a> section.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.98</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.A" title="Permalink to this definition">#</a></dt>
+<dd><p>param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.B">
+<span class="sig-name descname"><span class="pre">B</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.044</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.B" title="Permalink to this definition">#</a></dt>
+<dd><p>param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.C">
+<span class="sig-name descname"><span class="pre">C</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-0.5</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.C" title="Permalink to this definition">#</a></dt>
+<dd><p>param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.D">
+<span class="sig-name descname"><span class="pre">D</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.33333</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.D" title="Permalink to this definition">#</a></dt>
+<dd><p>param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.G">
+<span class="sig-name descname"><span class="pre">G</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.G" title="Permalink to this definition">#</a></dt>
+<dd><p>reciprical vector; see eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a>.
+Should have shape <code class="code docutils literal notranslate"><span class="pre">(eta_count,</span> <span class="pre">2)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">con_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the simulation. Gets all the parameters from
+the config and initializes all grids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<em>dict</em>) – config object</p></li>
+<li><p><strong>con_sim</strong> (<em>bool</em>) – whether the simulations should continue.
+If <code class="code docutils literal notranslate"><span class="pre">True</span></code>, it will read the last values
+from a file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.amp_abs_sq_sum">
+<span class="sig-name descname"><span class="pre">amp_abs_sq_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.amp_abs_sq_sum" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\sum\limits_j | \eta_j |^2 - | \eta_m |^2\]</div>
+</div>
+<p>for one amplitude <span class="math notranslate nohighlight">\(\eta_m\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.beta_sqrt">
+<span class="sig-name descname"><span class="pre">beta_sqrt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.beta_sqrt" title="Permalink to this definition">#</a></dt>
+<dd><p><span class="math notranslate nohighlight">\(\sqrt\beta\)</span> in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">con_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.build" title="Permalink to this definition">#</a></dt>
+<dd><p>Builds the grids, amplitudes and operators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>con_sim</strong> (<em>bool</em>) – Whether the simulation should continue
+from the last values.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – config object.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.build_eta">
+<span class="sig-name descname"><span class="pre">build_eta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.build_eta" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the amplitudes</p>
+<p>Needs build_grid() to be called before this function!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – config object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.build_grid">
+<span class="sig-name descname"><span class="pre">build_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.build_grid" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializess the grid.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.build_gsq_hat">
+<span class="sig-name descname"><span class="pre">build_gsq_hat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.build_gsq_hat" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializess the <span class="math notranslate nohighlight">\(\widehat{\mathcal{G}^2_m}\)</span> operator.</p>
+<p>Needs build_eta() to be called before this function!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – config object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.dt">
+<span class="sig-name descname"><span class="pre">dt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.dt" title="Permalink to this definition">#</a></dt>
+<dd><p>timestep</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.eta_count">
+<span class="sig-name descname"><span class="pre">eta_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.eta_count" title="Permalink to this definition">#</a></dt>
+<dd><p>number of etas</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.eta_routine">
+<span class="sig-name descname"><span class="pre">eta_routine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.eta_routine" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs one time step for one single amplitude.
+See <a class="reference internal" href="../../background/sim_schemes.html#ch-scheme-ampl"><span class="std std-ref">Just the amplitudes</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.etas">
+<span class="sig-name descname"><span class="pre">etas</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.etas" title="Permalink to this definition">#</a></dt>
+<dd><p>the amplitudes. Should have
+shape <code class="code docutils literal notranslate"><span class="pre">(eta_count,</span> <span class="pre">pt_count_x,</span> <span class="pre">pt_count_y)</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.g_sq_hat">
+<span class="sig-name descname"><span class="pre">g_sq_hat</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.g_sq_hat" title="Permalink to this definition">#</a></dt>
+<dd><p>The <span class="math notranslate nohighlight">\(\widehat{\mathcal{G}_m^2}\)</span> operator.
+See eq. <a class="reference internal" href="../../background/sim_schemes.html#equation-eqn-g-sq-op-fourier">(11)</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.g_sq_hat_fnc">
+<span class="sig-name descname"><span class="pre">g_sq_hat_fnc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.g_sq_hat_fnc" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculated the <span class="math notranslate nohighlight">\(\widehat{\mathcal{G}_m^2}\)</span>
+For one single amplitude.
+See eq. <a class="reference internal" href="../../background/sim_schemes.html#equation-eqn-g-sq-op-fourier">(11)</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>operator</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.init_eta_center_line">
+<span class="sig-name descname"><span class="pre">init_eta_center_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.init_eta_center_line" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the amplitudes with the
+<a class="reference internal" href="../calculations/initialize.html#calculations.initialize.center_line" title="calculations.initialize.center_line"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculations.initialize.center_line()</span></code></a> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – config object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.init_eta_file">
+<span class="sig-name descname"><span class="pre">init_eta_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.init_eta_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the amplitudes with the
+<a class="reference internal" href="../calculations/initialize.html#calculations.initialize.load_eta_from_file" title="calculations.initialize.load_eta_from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculations.initialize.load_eta_from_file()</span></code></a> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – config object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.init_eta_grain">
+<span class="sig-name descname"><span class="pre">init_eta_grain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.init_eta_grain" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the amplitudes with the
+<a class="reference internal" href="../calculations/initialize.html#calculations.initialize.single_grain" title="calculations.initialize.single_grain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculations.initialize.single_grain()</span></code></a> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – config object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.kxm">
+<span class="sig-name descname"><span class="pre">kxm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.kxm" title="Permalink to this definition">#</a></dt>
+<dd><p>x frequency meshgrid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.kym">
+<span class="sig-name descname"><span class="pre">kym</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.kym" title="Permalink to this definition">#</a></dt>
+<dd><p>y frequency meshgrid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.lagr_hat">
+<span class="sig-name descname"><span class="pre">lagr_hat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.lagr_hat" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the linear part <span class="math notranslate nohighlight">\(\widehat{\mathcal{L}}\)</span>
+for one amplitude.</p>
+<p>See <a class="reference internal" href="../../background/sim_schemes.html#ch-scheme-ampl"><span class="std std-ref">Just the amplitudes</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.n_hat">
+<span class="sig-name descname"><span class="pre">n_hat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.n_hat" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes <span class="math notranslate nohighlight">\(\widehat{N}\)</span>
+for one amplitude.</p>
+<p>See <a class="reference internal" href="../../background/sim_schemes.html#ch-scheme-ampl"><span class="std std-ref">Just the amplitudes</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.pt_count_x">
+<span class="sig-name descname"><span class="pre">pt_count_x</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.pt_count_x" title="Permalink to this definition">#</a></dt>
+<dd><p>number of points in x-direction</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.pt_count_y">
+<span class="sig-name descname"><span class="pre">pt_count_y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.pt_count_y" title="Permalink to this definition">#</a></dt>
+<dd><p>number of points in y-direction</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.reset_out_files">
+<span class="sig-name descname"><span class="pre">reset_out_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.reset_out_files" title="Permalink to this definition">#</a></dt>
+<dd><p>Empties or creates the output files if they don’t exist.</p>
+<p>Checks all <code class="code docutils literal notranslate"><span class="pre">out_{eta_i}.txt</span></code> files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out_path</strong> (<em>str</em>) – directory of the output files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.run_one_step">
+<span class="sig-name descname"><span class="pre">run_one_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.run_one_step" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs one timestep for every amplitude.</p>
+<p>See <a class="reference internal" href="../../background/sim_schemes.html#ch-scheme-ampl"><span class="std std-ref">Just the amplitudes</span></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.write" title="Permalink to this definition">#</a></dt>
+<dd><p>Writes the current content of
+<code class="code docutils literal notranslate"><span class="pre">etas</span></code> into the output files in <code class="code docutils literal notranslate"><span class="pre">out_{eta_i}.txt</span></code>.
+Every line corresponds to one flattened amplitude.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out_path</strong> (<em>str</em>) – Path where the out files are located.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.xlim">
+<span class="sig-name descname"><span class="pre">xlim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">400</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.xlim" title="Permalink to this definition">#</a></dt>
+<dd><p>The bounds of the domain <span class="math notranslate nohighlight">\([-\text{xlim}, \text{xlim}]^2\)</span></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.xm">
+<span class="sig-name descname"><span class="pre">xm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.xm" title="Permalink to this definition">#</a></dt>
+<dd><p>x meshgrid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_base.FFTBaseSim.ym">
+<span class="sig-name descname"><span class="pre">ym</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_base.FFTBaseSim.ym" title="Permalink to this definition">#</a></dt>
+<dd><p>y meshgrid</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="amplitude-and-average-densities">
+<h2>Amplitude and Average Densities<a class="headerlink" href="#amplitude-and-average-densities" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sim.runners.fft_n0.</span></span><span class="sig-name descname"><span class="pre">FFTN0Sim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">con_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim" title="Permalink to this definition">#</a></dt>
+<dd><p>This class is supposed to run a FFT simulations with
+<span class="math notranslate nohighlight">\(n_0\)</span>, where</p>
+<p>For more information see the <a class="reference internal" href="../../background/sim_schemes.html#ch-scheme-ampl-n0"><span class="std std-ref">Amplitudes and average density</span></a> section.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.98</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.A" title="Permalink to this definition">#</a></dt>
+<dd><p>param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.B">
+<span class="sig-name descname"><span class="pre">B</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.B" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculates the <span class="math notranslate nohighlight">\(B\)</span> parameter in <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n0</strong> (<em>np.array</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.Bx">
+<span class="sig-name descname"><span class="pre">Bx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.988</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.Bx" title="Permalink to this definition">#</a></dt>
+<dd><p><span class="math notranslate nohighlight">\(B^x\)</span> param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.C">
+<span class="sig-name descname"><span class="pre">C</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.C" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculates the <span class="math notranslate nohighlight">\(C\)</span> parameter in <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n0</strong> (<em>np.array</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.D">
+<span class="sig-name descname"><span class="pre">D</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.33333</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.D" title="Permalink to this definition">#</a></dt>
+<dd><p>param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.G">
+<span class="sig-name descname"><span class="pre">G</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.G" title="Permalink to this definition">#</a></dt>
+<dd><p>reciprical vector; see eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a>.
+Should have shape <code class="code docutils literal notranslate"><span class="pre">(eta_count,</span> <span class="pre">2)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">con_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the simulation. Gets all the parameters from
+the config and initializes all grids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<em>dict</em>) – config object</p></li>
+<li><p><strong>con_sim</strong> (<em>bool</em>) – whether the simulations should continue.
+If <code class="code docutils literal notranslate"><span class="pre">True</span></code>, it will read the last values
+from a file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.amp_abs_sq_sum">
+<span class="sig-name descname"><span class="pre">amp_abs_sq_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.amp_abs_sq_sum" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\sum\limits_j | \eta_j |^2 - | \eta_m |^2\]</div>
+</div>
+<p>for one amplitude <span class="math notranslate nohighlight">\(\eta_m\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.beta_sqrt">
+<span class="sig-name descname"><span class="pre">beta_sqrt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.beta_sqrt" title="Permalink to this definition">#</a></dt>
+<dd><p><span class="math notranslate nohighlight">\(\sqrt\beta\)</span> in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">con_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.build" title="Permalink to this definition">#</a></dt>
+<dd><p>Builds the grids, amplitudes, densities and operators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>con_sim</strong> (<em>bool</em>) – Whether the simulation should continue
+from the last values.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – config object.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.build_eta">
+<span class="sig-name descname"><span class="pre">build_eta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.build_eta" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the amplitudes</p>
+<p>Needs build_grid() to be called before this function!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – config object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.build_grid">
+<span class="sig-name descname"><span class="pre">build_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.build_grid" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializess the grid.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.build_gsq_hat">
+<span class="sig-name descname"><span class="pre">build_gsq_hat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.build_gsq_hat" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializess the <span class="math notranslate nohighlight">\(\widehat{\mathcal{G}^2_m}\)</span> operator.</p>
+<p>Needs build_eta() to be called before this function!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.build_laplace_op">
+<span class="sig-name descname"><span class="pre">build_laplace_op</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.build_laplace_op" title="Permalink to this definition">#</a></dt>
+<dd><p>Builds the laplace operator
+<span class="math notranslate nohighlight">\(-(k_x^2 + k_y^2)\)</span></p>
+<p>Needs build_grid() to be called before this function!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.build_n0">
+<span class="sig-name descname"><span class="pre">build_n0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">con_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.build_n0" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes <span class="math notranslate nohighlight">\(n_0\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>con_sim</strong> (<em>bool</em>) – whether the last densities should be read from a
+file</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – config object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.dB0">
+<span class="sig-name descname"><span class="pre">dB0</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.044</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.dB0" title="Permalink to this definition">#</a></dt>
+<dd><p><span class="math notranslate nohighlight">\(\Delta B^0\)</span> param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.dt">
+<span class="sig-name descname"><span class="pre">dt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.dt" title="Permalink to this definition">#</a></dt>
+<dd><p>timestep</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.eta_count">
+<span class="sig-name descname"><span class="pre">eta_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.eta_count" title="Permalink to this definition">#</a></dt>
+<dd><p>number of etas</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.eta_routine">
+<span class="sig-name descname"><span class="pre">eta_routine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.eta_routine" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs one time step for one single amplitude.
+See <a class="reference internal" href="../../background/sim_schemes.html#ch-scheme-ampl-n0"><span class="std std-ref">Amplitudes and average density</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.etas">
+<span class="sig-name descname"><span class="pre">etas</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.etas" title="Permalink to this definition">#</a></dt>
+<dd><p>the amplitudes. Should have
+shape <code class="code docutils literal notranslate"><span class="pre">(eta_count,</span> <span class="pre">pt_count_x,</span> <span class="pre">pt_count_y)</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.g_sq_hat">
+<span class="sig-name descname"><span class="pre">g_sq_hat</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.g_sq_hat" title="Permalink to this definition">#</a></dt>
+<dd><p>The <span class="math notranslate nohighlight">\(\widehat{\mathcal{G}_m^2}\)</span> operator.
+See eq. <a class="reference internal" href="../../background/sim_schemes.html#equation-eqn-g-sq-op-fourier">(11)</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.g_sq_hat_fnc">
+<span class="sig-name descname"><span class="pre">g_sq_hat_fnc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.g_sq_hat_fnc" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculated the <span class="math notranslate nohighlight">\(\widehat{\mathcal{G}_m^2}\)</span>
+For one single amplitude.
+See eq. <a class="reference internal" href="../../background/sim_schemes.html#equation-eqn-g-sq-op-fourier">(11)</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>operator</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.get_eta_prod">
+<span class="sig-name descname"><span class="pre">get_eta_prod</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.get_eta_prod" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculates</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[2 \left( \prod_m \eta_m + \prod_m \eta_m^* \right)\]</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.get_phi">
+<span class="sig-name descname"><span class="pre">get_phi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.get_phi" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculates <span class="math notranslate nohighlight">\(\Phi\)</span> in <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.init_eta_center_line">
+<span class="sig-name descname"><span class="pre">init_eta_center_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.init_eta_center_line" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the amplitudes with the
+<a class="reference internal" href="../calculations/initialize.html#calculations.initialize.center_line" title="calculations.initialize.center_line"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculations.initialize.center_line()</span></code></a> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – config object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.init_eta_file">
+<span class="sig-name descname"><span class="pre">init_eta_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.init_eta_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the amplitudes with the
+<a class="reference internal" href="../calculations/initialize.html#calculations.initialize.load_eta_from_file" title="calculations.initialize.load_eta_from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculations.initialize.load_eta_from_file()</span></code></a> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – config object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.init_eta_grain">
+<span class="sig-name descname"><span class="pre">init_eta_grain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.init_eta_grain" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the amplitudes with the
+<a class="reference internal" href="../calculations/initialize.html#calculations.initialize.single_grain" title="calculations.initialize.single_grain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculations.initialize.single_grain()</span></code></a> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – config object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.kxm">
+<span class="sig-name descname"><span class="pre">kxm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.kxm" title="Permalink to this definition">#</a></dt>
+<dd><p>x frequency meshgrid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.kym">
+<span class="sig-name descname"><span class="pre">kym</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.kym" title="Permalink to this definition">#</a></dt>
+<dd><p>y frequency meshgrid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.lagr_hat">
+<span class="sig-name descname"><span class="pre">lagr_hat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.lagr_hat" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the linear part <span class="math notranslate nohighlight">\(\widehat{\mathcal{L}}\)</span>
+for one amplitude.</p>
+<p>See <a class="reference internal" href="../../background/sim_schemes.html#ch-scheme-ampl-n0"><span class="std std-ref">Amplitudes and average density</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.laplace_op">
+<span class="sig-name descname"><span class="pre">laplace_op</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.laplace_op" title="Permalink to this definition">#</a></dt>
+<dd><p>The fourier transformed laplace operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.lbd">
+<span class="sig-name descname"><span class="pre">lbd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.024</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.lbd" title="Permalink to this definition">#</a></dt>
+<dd><p><span class="math notranslate nohighlight">\(\lambda\)</span> param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.n0">
+<span class="sig-name descname"><span class="pre">n0</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.n0" title="Permalink to this definition">#</a></dt>
+<dd><p>average densities. Should have
+shape <code class="code docutils literal notranslate"><span class="pre">(pt_count_x,</span> <span class="pre">pt_count_y)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.n0_routine">
+<span class="sig-name descname"><span class="pre">n0_routine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.n0_routine" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the new <span class="math notranslate nohighlight">\(n_0\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.n_hat">
+<span class="sig-name descname"><span class="pre">n_hat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.n_hat" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes <span class="math notranslate nohighlight">\(\widehat{N}\)</span>
+for one amplitude.</p>
+<p>See <a class="reference internal" href="../../background/sim_schemes.html#ch-scheme-ampl-n0"><span class="std std-ref">Amplitudes and average density</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta_i</strong> (<em>int</em>) – amplitude index</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.pt_count_x">
+<span class="sig-name descname"><span class="pre">pt_count_x</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.pt_count_x" title="Permalink to this definition">#</a></dt>
+<dd><p>number of points in x-direction</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.pt_count_y">
+<span class="sig-name descname"><span class="pre">pt_count_y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.pt_count_y" title="Permalink to this definition">#</a></dt>
+<dd><p>number of points in y-direction</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.reset_out_files">
+<span class="sig-name descname"><span class="pre">reset_out_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.reset_out_files" title="Permalink to this definition">#</a></dt>
+<dd><p>Empties or creates the output files if they don’t exist.</p>
+<p>Checks all <code class="code docutils literal notranslate"><span class="pre">out_{eta_i}.txt</span></code> files and the
+<code class="code docutils literal notranslate"><span class="pre">n0.txt</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out_path</strong> (<em>str</em>) – directory of the output files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.run_one_step">
+<span class="sig-name descname"><span class="pre">run_one_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.run_one_step" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs one entire timestep for the amplitudes and the average density.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.t">
+<span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.t" title="Permalink to this definition">#</a></dt>
+<dd><p>param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.v">
+<span class="sig-name descname"><span class="pre">v</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.3333333333333333</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.v" title="Permalink to this definition">#</a></dt>
+<dd><p>param in eq. <a class="reference internal" href="../../background/apfc_functional.html#equation-eqn-apfc-flow-constants">(2)</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.write" title="Permalink to this definition">#</a></dt>
+<dd><p>Writes the current content of
+<code class="code docutils literal notranslate"><span class="pre">etas</span></code> and <code class="code docutils literal notranslate"><span class="pre">n0</span></code> into the
+output files in <code class="code docutils literal notranslate"><span class="pre">out_{eta_i}.txt</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">n0.txt</span></code>.
+Every line corresponds to one flattened entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out_path</strong> (<em>str</em>) – Path where the out files are located.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.xlim">
+<span class="sig-name descname"><span class="pre">xlim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">400</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.xlim" title="Permalink to this definition">#</a></dt>
+<dd><p>The bounds of the domain <span class="math notranslate nohighlight">\([-\text{xlim}, \text{xlim}]^2\)</span></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.xm">
+<span class="sig-name descname"><span class="pre">xm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.xm" title="Permalink to this definition">#</a></dt>
+<dd><p>x meshgrid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sim.runners.fft_n0.FFTN0Sim.ym">
+<span class="sig-name descname"><span class="pre">ym</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#sim.runners.fft_n0.FFTN0Sim.ym" title="Permalink to this definition">#</a></dt>
+<dd><p>y meshgrid</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="parameter_sets.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Parameter Sets</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="fft_sim.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">FFT Sim</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, maromei
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Runners</a><ul>
+<li><a class="reference internal" href="#amplitude-only-runner">Amplitude only Runner</a><ul>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim</span></code></a><ul>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.A"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.A</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.B"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.B</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.C"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.C</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.D"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.D</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.G"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.G</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.__init__"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.amp_abs_sq_sum"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.amp_abs_sq_sum()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.beta_sqrt"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.beta_sqrt</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.build"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.build()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.build_eta"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.build_eta()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.build_grid"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.build_grid()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.build_gsq_hat"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.build_gsq_hat()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.dt"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.dt</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.eta_count"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.eta_count</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.eta_routine"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.eta_routine()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.etas"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.etas</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.g_sq_hat"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.g_sq_hat</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.g_sq_hat_fnc"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.g_sq_hat_fnc()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.init_eta_center_line"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.init_eta_center_line()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.init_eta_file"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.init_eta_file()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.init_eta_grain"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.init_eta_grain()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.kxm"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.kxm</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.kym"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.kym</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.lagr_hat"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.lagr_hat()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.n_hat"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.n_hat()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.pt_count_x"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.pt_count_x</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.pt_count_y"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.pt_count_y</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.reset_out_files"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.reset_out_files()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.run_one_step"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.run_one_step()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.write"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.write()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.xlim"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.xlim</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.xm"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.xm</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_base.FFTBaseSim.ym"><code class="docutils literal notranslate"><span class="pre">FFTBaseSim.ym</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#amplitude-and-average-densities">Amplitude and Average Densities</a><ul>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim</span></code></a><ul>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.A"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.A</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.B"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.B()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.Bx"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.Bx</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.C"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.C()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.D"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.D</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.G"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.G</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.__init__"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.amp_abs_sq_sum"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.amp_abs_sq_sum()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.beta_sqrt"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.beta_sqrt</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.build"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.build()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.build_eta"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.build_eta()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.build_grid"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.build_grid()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.build_gsq_hat"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.build_gsq_hat()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.build_laplace_op"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.build_laplace_op()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.build_n0"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.build_n0()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.dB0"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.dB0</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.dt"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.dt</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.eta_count"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.eta_count</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.eta_routine"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.eta_routine()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.etas"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.etas</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.g_sq_hat"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.g_sq_hat</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.g_sq_hat_fnc"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.g_sq_hat_fnc()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.get_eta_prod"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.get_eta_prod()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.get_phi"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.get_phi()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.init_eta_center_line"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.init_eta_center_line()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.init_eta_file"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.init_eta_file()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.init_eta_grain"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.init_eta_grain()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.kxm"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.kxm</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.kym"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.kym</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.lagr_hat"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.lagr_hat()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.laplace_op"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.laplace_op</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.lbd"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.lbd</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.n0"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.n0</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.n0_routine"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.n0_routine()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.n_hat"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.n_hat()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.pt_count_x"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.pt_count_x</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.pt_count_y"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.pt_count_y</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.reset_out_files"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.reset_out_files()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.run_one_step"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.run_one_step()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.t"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.t</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.v"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.v</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.write"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.write()</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.xlim"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.xlim</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.xm"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.xm</span></code></a></li>
+<li><a class="reference internal" href="#sim.runners.fft_n0.FFTN0Sim.ym"><code class="docutils literal notranslate"><span class="pre">FFTN0Sim.ym</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>
