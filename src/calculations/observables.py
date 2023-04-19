@@ -7,7 +7,12 @@ from .initialize import tanhmin
 from . import params
 
 
-def calc_surf_en_1d(etas, n0, config, theta, div_interface_width=True):
+def calc_surf_en_1d(
+    etas, n0, config, theta, div_interface_width=True, phase_eq_func=None
+):
+
+    if phase_eq_func is None:
+        phase_eq_func = get_phase_eq_values
 
     config = config.copy()
     eta_count = etas.shape[0]
@@ -56,7 +61,9 @@ def calc_surf_en_1d(etas, n0, config, theta, div_interface_width=True):
     ### integrand values ###
     ########################
 
-    _, n0_liq = get_phase_eq_values(n0)
+    n0_liq = n0
+    if is_n0_sim:
+        _, n0_liq = phase_eq_func(n0)
 
     f = sub_energy_functional_1d(etas, n0, dx, config, G_rot)
     mu = get_chemical_potential(etas, n0, config)
@@ -73,7 +80,28 @@ def calc_surf_en_1d(etas, n0, config, theta, div_interface_width=True):
     ### integrate ###
     #################
 
-    ret = f - mu * n0 - f_liq + mu * n0_liq
+    ### Option 1 - same mu ###
+
+    # ret = f - mu * n0 - f_liq + mu * n0_liq
+
+    ### Option 2 - liquid mu ###
+
+    mu_liq = get_chemical_potential(full_etas_liq, n0_liq, config)
+    ret = f - mu * n0 - f_liq + mu_liq * n0_liq
+
+    ### Option 3 - tangent rule ###
+
+    """fs, fl = get_phase_eq_values(f)
+    ns = n0
+    nl = n0
+    if is_n0_sim:
+        ns, nl = get_phase_eq_values(n0)
+        print(ns, nl)
+
+    m = (fs-fl)/(ns-nl)
+    ret = f - m * n0 - f_liq + m * nl"""
+
+    ##############################
     ret = scipy.integrate.simpson(ret, x)
 
     if div_interface_width:
@@ -179,11 +207,23 @@ def calc_stiffness(surf_en: np.array, thetas: np.array) -> np.array:
 
 
 def get_phase_eq_values(arr: np.array) -> tuple[float, float]:
+    """
+    Computes the phase equilibrium values.
 
-    max_val = np.max(arr)
-    min_val = np.min(arr)
+    Assumes LHS of domain is solid and RHS of domain is liquid.
+    Just takes the first and last value.
 
-    return max_val, min_val
+    Args:
+        arr (np.array): Array to evaluate
+
+    Returns:
+        tuple[float, float]: solid, liquid values
+    """
+
+    sol_val = arr[0]
+    liq_val = arr[-1]
+
+    return sol_val, liq_val
 
 
 def get_phase_volumes(arr: np.array, dx=float, dy: float = 1.0) -> tuple[float, float]:

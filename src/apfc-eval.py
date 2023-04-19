@@ -3,7 +3,6 @@ import argparse
 
 import numpy as np
 import pandas as pd
-import scipy
 
 from manage import utils
 from manage import read_write as rw
@@ -26,6 +25,18 @@ parser.add_argument(
     ),
 )
 
+parser.add_argument(
+    "-pes",
+    "--phase-eq-strategy",
+    action="store",
+    type=str,
+    help=(
+        "Strategy to determine how the equilibrium values are determined."
+        " It will override the strategy found in the config."
+        " Possible values are: 'minmax', 'maxmin' and 'firstlast'."
+    ),
+)
+
 args = parser.parse_args()
 
 ####################
@@ -33,7 +44,13 @@ args = parser.parse_args()
 ####################
 
 
-def run_evaluation(sim_path: str):
+def norm(arr):
+    ret = arr
+    # ret = arr - np.min(arr)
+    return ret / np.max(ret)
+
+
+def run_evaluation(sim_path: str, phase_eq_func):
 
     config = utils.get_config(sim_path)
 
@@ -116,7 +133,9 @@ def run_evaluation(sim_path: str):
             ## Surface Energy ##
             ####################
 
-            surf_en = observables.calc_surf_en_1d(etas, n0, config, theta)
+            surf_en = observables.calc_surf_en_1d(
+                etas, n0, config, theta, phase_eq_func=phase_eq_func
+            )
             df_surf_en.iloc[entry_i, theta_i] = surf_en
 
             ######################
@@ -129,14 +148,14 @@ def run_evaluation(sim_path: str):
 
             x_pos, eta_sum = utils.get_positive_range(x, eta_sum)
 
-            eta_s, eta_l = observables.get_phase_eq_values(eta_sum)
-            radius, intWidth = observables.fit_to_tanhmin(x_pos, eta_sum, True)
+            eta_s, eta_l = (np.max(eta_sum), np.min(eta_sum))  # phase_eq_func(eta_sum)
+            radius, intWidth = observables.fit_to_tanhmin(x_pos, eta_sum, False)
 
             n0_s = n0
             n0_l = n0
 
             if include_n0:
-                n0_s, n0_l = observables.get_phase_eq_values(n0)
+                n0_s, n0_l = phase_eq_func(n0)
 
             df_eval.loc[(entry_i, "eqEtaSolid"), theta_col_name] = eta_s
             df_eval.loc[(entry_i, "eqEtaLiquid"), theta_col_name] = eta_l
@@ -161,12 +180,16 @@ def run_evaluation(sim_path: str):
 
     df_stiff = pd.DataFrame(columns=thetas_str, index=range(line_count))
     df_fits = pd.DataFrame(columns=["eps", "gamma0"], index=range(line_count))
+    df_fits_norm = pd.DataFrame(columns=["eps", "gamma0"], index=range(line_count))
 
     for i in range(df_surf_en.shape[0]):
         df_stiff.iloc[i, :] = observables.calc_stiffness(df_surf_en.iloc[i, :], thetas)
 
+        surf_en_norm = norm(df_surf_en.iloc[i, :].to_numpy())
+
         try:
             df_fits.iloc[i, :] = triangular.fit_surf_en(thetas, df_surf_en.iloc[i, :])
+            df_fits_norm.iloc[i, :] = triangular.fit_surf_en(thetas, surf_en_norm)
         except Exception as e:
             print(
                 f"Could not calculate the fits for index {i}/{line_count} because of the Error:"
@@ -181,6 +204,7 @@ def run_evaluation(sim_path: str):
     df_surf_en.to_csv(f"{out_dir}/surf_en.csv")
     df_stiff.to_csv(f"{out_dir}/stiff.csv")
     df_fits.to_csv(f"{out_dir}/fits.csv")
+    df_fits_norm.to_csv(f"{out_dir}/fits_norm.csv")
     df_eval.to_csv(f"{out_dir}/eval.csv")
 
 
@@ -190,6 +214,27 @@ def run_evaluation(sim_path: str):
 
 sim_path = utils.make_path_arg_absolute(args.sim_path)
 config = utils.get_config(sim_path)
+
+phase_eq_strategy = config.get("phase_eq_strategy", "firstlast")
+if args.phase_eq_strategy is not None:
+    phase_eq_strategy = args.phase_eq_strategy
+
+phase_eq_func = observables.get_phase_eq_values
+if phase_eq_strategy == "firstlast":
+    phase_eq_func = observables.get_phase_eq_values
+elif phase_eq_strategy == "minmax":
+    phase_eq_func = lambda x: (np.min(x), np.max(x))
+elif phase_eq_strategy == "maxmin":
+    phase_eq_func = lambda x: (np.max(x), np.min(x))
+else:
+    print(
+        (
+            "Invalid phase eq strategy found. "
+            "See '--help' for infos. "
+            "Defaulting to 'firstlast'."
+        )
+    )
+
 
 if config.get("vary", False):
 
@@ -203,8 +248,8 @@ if config.get("vary", False):
             f"({vary_i + 1}/{vary_values.shape[0]})."
         )
         new_sim_path = f"{vary_path}/{utils.get_vary_val_dir_name(vary_val)}"
-        run_evaluation(new_sim_path)
+        run_evaluation(new_sim_path, phase_eq_func)
 
 else:
 
-    run_evaluation(sim_path)
+    run_evaluation(sim_path, phase_eq_func)

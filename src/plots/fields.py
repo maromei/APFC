@@ -33,13 +33,13 @@ def plot_eta(etas: np.array, config: dict, axis: plt.Axes, cbar_cax=None):
 
     if is_1d:
 
-        plot_1d(x, eta_sum.flatten(), title, axis)
+        return plot_1d(x, eta_sum.flatten(), title, axis)
 
     else:
 
-        y = np.linspace(-config["xlim"], config["xlim"], config["numPtsY"], axis)
+        y = np.linspace(-config["xlim"], config["xlim"], config["numPtsY"])
         xm, ym = np.meshgrid(x, y)
-        plot_2d(xm, ym, eta_sum, title, axis, cbar_cax)
+        return plot_2d(xm, ym, eta_sum, title, axis, cbar_cax)
 
 
 def plot_n0(n0: np.array, config: dict, axis: plt.Axes, cbar_cax=None):
@@ -62,13 +62,13 @@ def plot_n0(n0: np.array, config: dict, axis: plt.Axes, cbar_cax=None):
 
     if is_1d:
 
-        plot_1d(x, n0.flatten(), title, axis)
+        return plot_1d(x, n0.flatten(), title, axis)
 
     else:
 
         y = np.linspace(-config["xlim"], config["xlim"], config["numPtsY"], axis)
         xm, ym = np.meshgrid(x, y)
-        plot_2d(xm, ym, n0, title, axis, cbar_cax)
+        return plot_2d(xm, ym, n0, title, axis, cbar_cax)
 
 
 def plot_1d(x: np.array, y: np.array, title: str, axis: plt.Axes):
@@ -82,8 +82,10 @@ def plot_1d(x: np.array, y: np.array, title: str, axis: plt.Axes):
         axis (plt.Axes): axis to plot on
     """
 
-    axis.plot(x, y)
+    p = axis.plot(x, y)
     axis.set_title(title)
+
+    return p
 
 
 def plot_2d(
@@ -107,3 +109,5 @@ def plot_2d(
 
     if cbar_cax is not None:
         plt.colorbar(cont, cax=cbar_cax)
+
+    return cont

@@ -171,7 +171,7 @@ if config.get("vary", False):
 
     ### Remove Dir incase it exists ###
 
-    if os.path.exists(vary_path) and not args.keepdir:
+    if os.path.exists(vary_path) and not args.keepdir and not args.continuesim:
         shutil.rmtree(vary_path)
 
     if not os.path.exists(vary_path):
@@ -195,7 +195,8 @@ if config.get("vary", False):
         new_sim_path = f"{vary_path}/{utils.get_vary_val_dir_name(vary_val)}"
         new_config_path = f"{new_sim_path}/config.json"
 
-        os.makedirs(new_sim_path)
+        if not os.path.exists(new_sim_path):
+            os.makedirs(new_sim_path)
 
         new_config = config.copy()
         # just to be save in avoiding recursive behaviour
